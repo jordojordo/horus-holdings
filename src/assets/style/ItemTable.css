@@ -1,0 +1,61 @@
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.item-table th,
+.item-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--foreground-secondary);
+}
+
+.item-table th {
+  background-color: var(--background-secondary);
+  color: var(--foreground-primary);
+}
+
+.item-table td {
+  color: var(--foreground-secondary);
+}
+
+.item-table tr:hover {
+  background-color: var(--background-hover);
+}
+
+.action-dots {
+  background-color: var(--background-secondary);
+  padding: .25rem .25rem;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.action-dropdown {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-secondary);
+  padding: .25rem .25rem;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 6rem;
+}
+
+.action-dropdown a {
+  color: var(--foreground-primary);
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  cursor: pointer;
+}
+
+.action-dropdown:hover {
+  border: 1px solid var(--background-hover);
+}
+
+.action-dropdown a:hover {
+  color: var(--foreground-highlight);
+  text-decoration: underline;
+}

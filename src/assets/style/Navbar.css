@@ -1,0 +1,81 @@
+.navbar {
+  grid-area: nav;
+  grid-column: 1 / 2;
+  grid-row: 1;
+  background-color: var(--background-secondary);
+  color: var(--foreground-primary);
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  overflow-y: auto;
+  top: 0;
+  bottom: 0;
+  width: 220px;
+  position: relative;
+}
+
+.navbar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 220px;
+  padding: 1rem;
+  box-sizing: border-box;
+  position: fixed;
+}
+
+header {
+  color: var(--foreground-primary);
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
+}
+
+header img {
+  width: 32px;
+  height: 32px;
+  margin-right: 1rem;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.navbar-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.navbar-links a {
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  width: 100%;
+  color: var(--foreground-primary);
+  text-decoration: none;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-radius: .5rem;
+}
+
+.navbar-links a:hover {
+  color: var(--foreground-nav);
+  background-color: var(--background-tertiary);
+  text-decoration: underline;
+}
+
+.theme-button {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+}
