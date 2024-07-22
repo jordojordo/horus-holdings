@@ -13,9 +13,6 @@ import authRoutes from './routes/auth';
 import incomeRoutes from './routes/incomes';
 import expenseRoutes from './routes/expenses';
 
-console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
-console.log('# NODE_ENV:', process.env.NODE_ENV);
-
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const CORS_OPT = {

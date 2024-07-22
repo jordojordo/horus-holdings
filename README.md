@@ -1,8 +1,8 @@
-# Horus Holdings Application
+# Horus Holdings
 
 ## Overview
 
-The Horus Holdings application is a cash flow management tool that allows users to input incomes and expenses and visualize their cash flow over time. The application includes user authentication to ensure that each user's data is secure and private.
+Horus Holdings is a cash flow management tool that allows users to input incomes and expenses and visualize their cash flow over time. The application includes user authentication to ensure that each user's data is secure and private.
 
 The application consists of a frontend and a backend:
 - **Frontend**: Located in the `./src` directory.
@@ -31,28 +31,46 @@ The application requires a MySQL database to store user data. You need to set up
 For development purposes, you can run the MySQL database locally using a Docker container. Use the following command to start the MySQL container:
 
 ```sh
-docker run -d --name mysql-dev -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=devdb -p 3306:3306 -d mysql:latest
+docker run -d --name mysql-dev \
+   -e MYSQL_ROOT_PASSWORD=admin \
+   -e MYSQL_DATABASE=devdb \
+   --network host \
+   mysql:latest
 ```
 
 This command will start a MySQL container with the specified environment variables.
 
 ## Building and Running the Application in a Container
 
-The `Containerfile` is set up to build both the frontend and backend applications in separate stages and then combine them into a final image.
+The `Dockerfile` is set up to build both the frontend and backend applications in separate stages and then combine them into a final image.
 
 ### Steps to Build and Run the Container
 
 1. **Build the Docker Image**:
    ```sh
-   docker build -t horusholdings:latest .
+   docker build -t horus-holdings:latest .
    ```
 
 2. **Run the Docker Container**:
    ```sh
-   docker run -p 3000:3000 -p 5000:5000 horusholdings:latest
+   docker run -d --name horus \
+      --network host \
+      -e DATABASE_URL=mysql://root:admin@localhost:3306/devdb \
+      -e CORS_ORIGIN=http://localhost:3000 \
+      -e JWT_SECRET=super-secret \
+      horus-holdings:latest
    ```
 
 This will start the frontend on port 3000 and the backend on port 5000.
+
+## Environment Variables
+
+The following environment variables are required to run the application:
+
+- `DATABASE_URL`: The URL for the database connection.
+- `CORS_ORIGIN`: The origin allowed for CORS.
+- `JWT_SECRET`: The secret key used for JWT authentication.
+
 
 ## Running the Application Locally
 
@@ -62,7 +80,7 @@ To run the application locally, you need to have Node.js and Yarn installed.
 
 1. **Install Dependencies**:
    ```sh
-   yarn install-all
+   yarn install:all
    ```
 
 2. **Set Up Environment Variables**:
@@ -80,12 +98,3 @@ To run the application locally, you need to have Node.js and Yarn installed.
    ```
 
 This will start both the frontend and backend applications concurrently.
-
-## Environment Variables
-
-The following environment variables are required to run the application:
-
-- `DATABASE_URL`: The URL for the database connection.
-- `JWT_SECRET`: The secret key used for JWT authentication.
-- `CORS_ORIGIN`: The origin allowed for CORS.
-- `NODE_ENV`: The environment mode (e.g., development, production).
