@@ -2,7 +2,28 @@
 
 ## Overview
 
-Horus Holdings is a cash flow management tool that allows users to input incomes and expenses and visualize their cash flow over time. The application includes user authentication to ensure that each user's data is secure and private.
+Horus Holdings is a sophisticated cash flow management tool designed to help users track their incomes and expenses, providing a clear visualization of their cash flow over time.
+
+Named after the Egyptian god Horus, who symbolizes protection, stability, and prosperity, this application aims to bring financial clarity and control to its users. By offering robust user authentication, Horus Holdings ensures that each user's financial data remains secure and private, echoing the protective nature of its namesake.
+
+![Frontend Demo](assets/frontend-demo.png)
+
+## Quickstart
+
+To quickly get started with Horus Holdings using Docker, you can use the provided `quickstart.sh` script. This script will set up and run both the MySQL database and the Horus Holdings application in Docker containers.
+
+```bash
+./scripts/quickstart.sh
+```
+
+This script will:
+- Pull the latest MySQL and Horus Holdings Docker images.
+- Run the MySQL container with the specified environment variables.
+- Wait for MySQL to initialize.
+- Run the Horus Holdings container with the necessary environment variables.
+- Output the URLs where the frontend and backend are accessible.
+
+## Folder Structure
 
 The application consists of a frontend and a backend:
 - **Frontend**: Located in the `./src` directory.

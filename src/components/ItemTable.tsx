@@ -112,8 +112,8 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
             <tr key={item.id}>
               <td>{item.description}</td>
               <td>{item.amount}</td>
-              {itemType === 'expenses' && <td>{item.category}</td>}
-              <td>{item.date}</td>
+              {itemType === 'expenses' && <td>{item.category || '-'}</td>}
+              <td>{item.date ?? '-'}</td>
               <td>
                 <Dropdown
                   dropdownRender={() => (

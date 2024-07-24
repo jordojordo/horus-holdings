@@ -3,10 +3,14 @@ import axios from 'axios';
 import {
   Modal, Checkbox, Form, Input, InputNumber, DatePicker, Select, Space, message
 } from 'antd';
+import dayjs from 'dayjs';
+
+import type { DatePickerProps } from 'antd';
+import type { Dayjs } from 'dayjs';
+import type { Item } from './ItemTable';
 
 import useAuth from '../hooks/useAuth';
 import { useTheme, THEME } from '../context/ThemeContext';
-import type { Item } from './ItemTable';
 import { Expense } from '../types/Expense';
 import { Income } from '../types/Income';
 
@@ -34,10 +38,10 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   const [id, setId] = useState(0);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number>(0);
-  const [date, setDate] = useState<string | null>(null);
+  const [date, setDate] = useState<Dayjs | null | undefined>(null);
   const [recurring, setRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState<string | null>(null);
-  const [recurrenceEndDate, setRecurrenceEndDate] = useState<string | null>(null);
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState<Dayjs | null | undefined>(null);
   const [category, setCategory] = useState<string | null | undefined>(undefined);
 
   const colors = {
@@ -69,13 +73,16 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
 
   useEffect(() => {
     if ( itemToUpdate ) {
+      const itemDate = dayjs(itemToUpdate.date);
+      const itemRecurrenceEndDate = dayjs(itemToUpdate.recurrenceEndDate);
+
       setId(itemToUpdate.id);
       setDescription(itemToUpdate.description);
       setAmount(itemToUpdate.amount);
-      setDate(itemToUpdate.date);
+      setDate(itemDate.isValid() ? itemDate : null);
       setRecurring(itemToUpdate.recurring);
       setRecurrenceType(itemToUpdate.recurrenceType);
-      setRecurrenceEndDate(itemToUpdate.recurrenceEndDate);
+      setRecurrenceEndDate(itemRecurrenceEndDate.isValid() ? itemRecurrenceEndDate : null);
 
       if ( itemToUpdate.category ) {
         setCategory(itemToUpdate.category);
@@ -147,6 +154,18 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
     }
   };
 
+  const handleDateChange: DatePickerProps['onChange'] = (date) => {
+    if ( date ) {
+      setDate(date);
+    }
+  };
+
+  const handleRecurrenceEndDateChange: DatePickerProps['onChange'] = (date) => {
+    if ( date ) {
+      setRecurrenceEndDate(date);
+    }
+  };
+
   return (
     <>
       {!itemToUpdate && (
@@ -201,7 +220,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
               <InputNumber type="number" onChange={(e) => setAmount(e as number)} />
             </Form.Item>
             <Form.Item name="date" label="Date">
-              <DatePicker value={date} />
+              <DatePicker value={date} onChange={handleDateChange} />
             </Form.Item>
             {formType === 'expense' && (
               <Form.Item name="category" label="Category" rules={[{ message: 'Please enter a category' }]}>
@@ -226,7 +245,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
                   </Select>
                 </Form.Item>
                 <Form.Item name="recurrenceEndDate" label="Recurrence End Date">
-                  <DatePicker value={recurrenceEndDate} />
+                  <DatePicker value={recurrenceEndDate} onChange={handleRecurrenceEndDateChange} />
                 </Form.Item>
               </>
             )}
