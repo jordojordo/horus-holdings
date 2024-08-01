@@ -11,6 +11,8 @@ router.post('/register', async(req, res) => {
   try {
     const { username, password } = req.body;
 
+    console.log('username:', username);
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
@@ -37,7 +39,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure:   process.env.NODE_ENV === 'production',
+      secure:   process.env.NODE_ENV !== 'development',
       sameSite: 'strict',
     });
 

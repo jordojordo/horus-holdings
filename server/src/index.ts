@@ -54,7 +54,10 @@ const server = app.listen(PORT, () => {
 });
 
 // WebSocket setup
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({
+  server,
+  path: '/ws'
+});
 
 wss.on('connection', (ws: WebSocketServer) => {
   console.log('WebSocket connection established');

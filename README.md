@@ -77,21 +77,38 @@ The `Dockerfile` is set up to build both the frontend and backend applications i
    docker run -d --name horus \
       --network host \
       -e DATABASE_URL=mysql://root:admin@localhost:3306/devdb \
-      -e CORS_ORIGIN=http://localhost:3000 \
+      -e CORS_ORIGIN=http://localhost \
       -e JWT_SECRET=super-secret \
+      -e CLIENT_API_SCHEME=http \
+      -e CLIENT_PROXY_SCHEME=ws \
+      -e CLIENT_PROXY_HOST=localhost \
+      -e CLIENT_PROXY_PORT=5000 \
+      -e CLIENT_PROXY_PATH=/ws \
       horus-holdings:latest
    ```
 
-This will start the frontend on port 3000 and the backend on port 5000.
+This will start the frontend on port 80 and the backend on port 5000.
 
 ## Environment Variables
 
 The following environment variables are required to run the application:
 
-- `DATABASE_URL`: The URL for the database connection.
-- `CORS_ORIGIN`: The origin allowed for CORS.
-- `JWT_SECRET`: The secret key used for JWT authentication.
+- DATABASE_URL: The URL for the database connection.
+- CORS_ORIGIN: The origin allowed for CORS.
+- JWT_SECRET: The secret key used for JWT authentication.
+- CLIENT_API_SCHEME: The scheme used for API requests (e.g., http or https). Defaults to https if not provided.
+- CLIENT_PROXY_HOST: The host used for WebSocket connections. Defaults to localhost if not provided.
+- CLIENT_PROXY_PORT: The port used for WebSocket connections. Defaults to 5000 if not provided.
+- CLIENT_PROXY_PATH: The path used for WebSocket connections. Defaults to /ws if not provided.
 
+### Default Values
+
+If the following environment variables are not provided, the application will use these defaults:
+
+- CLIENT_API_SCHEME: Defaults to https.
+- CLIENT_PROXY_HOST: Defaults to localhost.
+- CLIENT_PROXY_PORT: Defaults to 5000.
+- CLIENT_PROXY_PATH: Defaults to /ws.
 
 ## Running the Application Locally
 

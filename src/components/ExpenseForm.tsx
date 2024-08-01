@@ -1,11 +1,14 @@
 import React from 'react';
 
+import { getWebsocketConfig } from '../utils/service';
 import FinancialForm from './FinancialForm';
 
 const ExpenseForm: React.FC = () => {
-  const apiUrl = `${ import.meta.env.VITE_API_URL }/api/expenses`;
+  const { apiUrl } = getWebsocketConfig();
 
-  return <FinancialForm formType="expense" apiUrl={apiUrl} />;
+  const url = `${ apiUrl }/expenses`;
+
+  return <FinancialForm formType="expense" apiUrl={url} />;
 };
 
 export default ExpenseForm;

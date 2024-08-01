@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 
 import { useWebSocketContext } from '../context/WebSocketContext';
+import { getWebsocketConfig } from '../utils/service';
 
 import DateRange from './DateRange';
 import { Expense } from '../types/Expense';
@@ -69,27 +70,29 @@ const FlowChart: React.FC = () => {
   const [startDate, setStartDate] = useState<Dayjs>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Dayjs>(today);
 
-  const apiUrl = `${ import.meta.env.VITE_API_URL }/api`;
+  const { apiUrl } = getWebsocketConfig();
+
+  const url = `${ apiUrl }`;
 
   const fetchIncomes = useCallback(async() => {
     try {
-      const response = await axios.get(`${ apiUrl }/incomes`);
+      const response = await axios.get(`${ url }/incomes`);
 
       setIncomes(response.data);
     } catch (error) {
       console.error(error);
     }
-  }, [apiUrl]);
+  }, [url]);
 
   const fetchExpenses = useCallback(async() => {
     try {
-      const response = await axios.get(`${ apiUrl }/expenses`);
+      const response = await axios.get(`${ url }/expenses`);
 
       setExpenses(response.data);
     } catch (error) {
       console.error(error);
     }
-  }, [apiUrl]);
+  }, [url]);
 
   useEffect(() => {
     fetchIncomes();

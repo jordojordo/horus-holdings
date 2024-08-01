@@ -5,6 +5,8 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { WebSocketProvider } from './context/WebSocketContext';
 
+import { getWebsocketConfig } from './utils/service';
+
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import LoginForm from './components/LoginForm';
@@ -17,9 +19,12 @@ import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
-  const apiUrl = import.meta.env.VITE_API_URL;
-  const wsProtocol = apiUrl.startsWith('https') ? 'wss' : 'ws';
-  const wsUrl = `${ wsProtocol }://${ apiUrl.split('://')[1] }/api/ws`;
+  const {
+    scheme, host, port, path
+  } = getWebsocketConfig();
+
+  const wsPort = (port && port !== 'CLIENT_PROXY_PORT') ? `:${ port }` : '';
+  const wsUrl = `${ scheme }://${ host }${ wsPort }${ path }`;
 
   return (
     <Router>

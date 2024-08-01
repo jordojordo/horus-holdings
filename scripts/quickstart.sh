@@ -4,8 +4,13 @@
 MYSQL_ROOT_PASSWORD=admin
 MYSQL_DATABASE=devdb
 DATABASE_URL="mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE"
-CORS_ORIGIN="http://localhost:3000"
+CORS_ORIGIN="http://localhost"
 JWT_SECRET="super-secret"
+CLIENT_PROXY_SCHEME="ws"
+CLIENT_PROXY_HOST="localhost"
+CLIENT_PROXY_PORT="5000"
+CLIENT_PROXY_PATH="/ws"
+CLIENT_API_SCHEME="http"
 
 # Pull the latest MySQL and Horus Holdings images
 echo "Pulling the latest MySQL and Horus Holdings Docker images..."
@@ -34,6 +39,11 @@ docker run -d --name horus \
    -e DATABASE_URL=$DATABASE_URL \
    -e CORS_ORIGIN=$CORS_ORIGIN \
    -e JWT_SECRET=$JWT_SECRET \
+   -e CLIENT_PROXY_SCHEME=$CLIENT_PROXY_SCHEME \
+   -e CLIENT_PROXY_HOST=$CLIENT_PROXY_HOST \
+   -e CLIENT_PROXY_PORT=$CLIENT_PROXY_PORT \
+   -e CLIENT_PROXY_PATH=$CLIENT_PROXY_PATH \
+   -e CLIENT_API_SCHEME=$CLIENT_API_SCHEME \
    ghcr.io/jordojordo/horus-holdings:latest
 
 echo "Horus Holdings is now running!"

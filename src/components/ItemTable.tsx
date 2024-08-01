@@ -4,6 +4,8 @@ import { Dropdown } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 
 import { useWebSocketContext } from '../context/WebSocketContext';
+import { getWebsocketConfig } from '../utils/service';
+import { generateRandomKey } from '../utils/string';
 
 import FinancialForm from './FinancialForm';
 
@@ -31,7 +33,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   const [itemToUpdate, setItemToUpdate] = useState<Item | null>(null);
   const [updateKey, setUpdateKey] = useState<number>(0);
 
-  const apiUrl = `${ import.meta.env.VITE_API_URL }/api`;
+  const { apiUrl } = getWebsocketConfig();
 
   const fetchItems = useCallback(async() => {
     try {
@@ -109,7 +111,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id}>
+            <tr key={item.id + generateRandomKey(4)}>
               <td>{item.description}</td>
               <td>{item.amount}</td>
               {itemType === 'expenses' && <td>{item.category || '-'}</td>}

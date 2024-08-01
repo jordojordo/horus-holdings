@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import { User } from '../types/User';
+import { getWebsocketConfig } from '../utils/service';
 
 export interface AuthContextType {
   user: User | null
@@ -26,7 +27,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  const apiUrl = `${ import.meta.env.VITE_API_URL }/api`;
+  const { apiUrl } = getWebsocketConfig();
 
   useEffect(() => {
     const fetchUser = async() => {
@@ -73,6 +74,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = async(username: string, password: string) => {
     try {
+      console.log('## auth register apiUrl:', apiUrl);
       const response = await axios.post(`${ apiUrl }/auth/register`, {
         username,
         password

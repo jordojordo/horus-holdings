@@ -5,6 +5,7 @@ const databaseUrl = process.env.DATABASE_URL || 'mysql://root:rootpassword@127.0
 const sequelize = new Sequelize(databaseUrl, {
   host:    'localhost',
   dialect: 'mysql',
+  logging: false
 });
 
 export default sequelize;

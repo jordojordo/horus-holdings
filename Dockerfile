@@ -5,7 +5,7 @@ COPY ./tsconfig.json ./tsconfig.app.json ./tsconfig.node.json ./
 COPY ./vite.config.ts ./
 COPY ./src ./src
 COPY ./public ./public
-COPY index.html .env ./
+COPY index.html .env.production ./
 RUN yarn
 RUN yarn build
 
@@ -17,15 +17,19 @@ COPY ./server/src ./src
 COPY ./server/.env ./
 RUN yarn
 RUN yarn build
+EXPOSE 5000 
 
-FROM node:22
-WORKDIR /app
-COPY --from=frontend-build /app/frontend/dist ./frontend
-COPY --from=backend-build /app/backend/dist ./backend
-COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
+FROM docker.io/nginx:latest AS production-stage
 
-RUN npm install -g serve
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+RUN apt-get update && apt-get install -y nodejs
 
-EXPOSE 3000 5000
+RUN mkdir /app
+COPY --from=frontend-build /app/frontend/dist /app/frontend
+COPY --from=backend-build /app/backend/dist /app/backend
+COPY --from=backend-build /app/backend/node_modules /app/backend/node_modules
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY scripts/production.sh /app/production.sh
 
-CMD ["sh", "-c", "serve -s frontend -l 3000 & node backend/index.js"]
+RUN chmod +x /app/production.sh
+ENTRYPOINT ["/app/production.sh"]
