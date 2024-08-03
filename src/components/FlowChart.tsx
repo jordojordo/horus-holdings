@@ -15,7 +15,7 @@ import {
 } from 'chart.js';
 
 import { useWebSocketContext } from '../context/WebSocketContext';
-import { getWebsocketConfig } from '../utils/service';
+import { getServiceConfig } from '../utils/service';
 
 import DateRange from './DateRange';
 import { Expense } from '../types/Expense';
@@ -70,7 +70,7 @@ const FlowChart: React.FC = () => {
   const [startDate, setStartDate] = useState<Dayjs>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Dayjs>(today);
 
-  const { apiUrl } = getWebsocketConfig();
+  const { apiUrl } = getServiceConfig();
 
   const fetchIncomes = useCallback(async() => {
     try {

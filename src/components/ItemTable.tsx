@@ -4,7 +4,7 @@ import { Dropdown } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 
 import { useWebSocketContext } from '../context/WebSocketContext';
-import { getWebsocketConfig } from '../utils/service';
+import { getServiceConfig } from '../utils/service';
 import { generateRandomKey } from '../utils/string';
 
 import FinancialForm from './FinancialForm';
@@ -33,7 +33,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   const [itemToUpdate, setItemToUpdate] = useState<Item | null>(null);
   const [updateKey, setUpdateKey] = useState<number>(0);
 
-  const { apiUrl } = getWebsocketConfig();
+  const { apiUrl } = getServiceConfig();
 
   const fetchItems = useCallback(async() => {
     try {

@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { getWebsocketConfig } from '../utils/service';
+import { getServiceConfig } from '../utils/service';
 import FinancialForm from './FinancialForm';
 
 const IncomeForm: React.FC = () => {
-  const { apiUrl } = getWebsocketConfig();
+  const { apiUrl } = getServiceConfig();
 
   const url = `${ apiUrl }/incomes`;
 

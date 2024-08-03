@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import { User } from '../types/User';
-import { getWebsocketConfig } from '../utils/service';
+import { getServiceConfig } from '../utils/service';
 
 export interface AuthContextType {
   user: User | null
@@ -27,7 +27,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  const { apiUrl } = getWebsocketConfig();
+  const { apiUrl } = getServiceConfig();
 
   useEffect(() => {
     const fetchUser = async() => {

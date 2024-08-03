@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { WebSocketProvider } from './context/WebSocketContext';
 
-import { getWebsocketConfig } from './utils/service';
+import { getServiceConfig } from './utils/service';
 
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
@@ -19,7 +19,7 @@ import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
-  const { wsUrl } = getWebsocketConfig();
+  const { wsUrl } = getServiceConfig();
 
   return (
     <Router>
