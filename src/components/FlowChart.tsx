@@ -72,27 +72,25 @@ const FlowChart: React.FC = () => {
 
   const { apiUrl } = getWebsocketConfig();
 
-  const url = `${ apiUrl }`;
-
   const fetchIncomes = useCallback(async() => {
     try {
-      const response = await axios.get(`${ url }/incomes`);
+      const response = await axios.get(`${ apiUrl }/incomes`);
 
       setIncomes(response.data);
     } catch (error) {
       console.error(error);
     }
-  }, [url]);
+  }, [apiUrl]);
 
   const fetchExpenses = useCallback(async() => {
     try {
-      const response = await axios.get(`${ url }/expenses`);
+      const response = await axios.get(`${ apiUrl }/expenses`);
 
       setExpenses(response.data);
     } catch (error) {
       console.error(error);
     }
-  }, [url]);
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchIncomes();

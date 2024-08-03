@@ -13,7 +13,6 @@ for i in $(env | grep CLIENT_); do
   value=$(echo $i | cut -d '=' -f 2-)
   echo $key=$value
 
-  # Adjust to search for the modified placeholder format
   placeholder="__PLACEHOLDER_${key}__"
 
   find /app/frontend/assets -type f \( -name '*.js' -o -name '*.css' \) -exec sed -i "s|${placeholder}|${value}|g" '{}' +

@@ -91,24 +91,19 @@ This will start the frontend on port 80 and the backend on port 5000.
 
 ## Environment Variables
 
-The following environment variables are required to run the application:
+The following table lists the configurable and required parameters for the application.
 
-- DATABASE_URL: The URL for the database connection.
-- CORS_ORIGIN: The origin allowed for CORS.
-- JWT_SECRET: The secret key used for JWT authentication.
-- CLIENT_API_SCHEME: The scheme used for API requests (e.g., http or https). Defaults to https if not provided.
-- CLIENT_PROXY_HOST: The host used for WebSocket connections. Defaults to localhost if not provided.
-- CLIENT_PROXY_PORT: The port used for WebSocket connections. Defaults to 5000 if not provided.
-- CLIENT_PROXY_PATH: The path used for WebSocket connections. Defaults to /ws if not provided.
+| Parameter               | Required | Description                                                   | Default                                          |
+|-------------------------|----------|---------------------------------------------------------------|--------------------------------------------------|
+| `DATABASE_URL`          | *        | The URL for the database connection.                          | 'mysql://root:rootpassword@127.0.0.1:3306/devdb' |
+| `CORS_ORIGIN`           | *        | The origin allowed for CORS.                                  | 'http://localhost'                               |
+| `JWT_SECRET`            | *        | The secret key used for JWT authentication.                   | 'super_secret_key'                               |
+| `CLIENT_API_SCHEME`     |          | The scheme used for API requests (e.g. https or http).        | 'https'                                          |
+| `CLIENT_PROXY_SCHEME`   |          | The scheme used for WebSocket connections. (e.g. wss or ws)   | 'wss'                                            |
+| `CLIENT_PROXY_HOST`     |          | The host used for WebSocket connections. (e.g. mydomain.com ) | 'localhost'                                      |
+| `CLIENT_PROXY_PORT`     |          | The port used for WebSocket connections.                      | ''                                               |
+| `CLIENT_PROXY_PATH`     |          | The path used for WebSocket connections.                      | '/ws'                                            |
 
-### Default Values
-
-If the following environment variables are not provided, the application will use these defaults:
-
-- CLIENT_API_SCHEME: Defaults to https.
-- CLIENT_PROXY_HOST: Defaults to localhost.
-- CLIENT_PROXY_PORT: Defaults to 5000.
-- CLIENT_PROXY_PATH: Defaults to /ws.
 
 ## Running the Application Locally
 

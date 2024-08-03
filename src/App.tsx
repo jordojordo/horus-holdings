@@ -19,12 +19,7 @@ import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
-  const {
-    scheme, host, port, path
-  } = getWebsocketConfig();
-
-  const wsPort = (port && port !== 'CLIENT_PROXY_PORT') ? `:${ port }` : '';
-  const wsUrl = `${ scheme }://${ host }${ wsPort }${ path }`;
+  const { wsUrl } = getWebsocketConfig();
 
   return (
     <Router>

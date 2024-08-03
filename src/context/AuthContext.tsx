@@ -74,7 +74,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = async(username: string, password: string) => {
     try {
-      console.log('## auth register apiUrl:', apiUrl);
       const response = await axios.post(`${ apiUrl }/auth/register`, {
         username,
         password

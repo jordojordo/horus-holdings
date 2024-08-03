@@ -3,6 +3,7 @@ export interface WebsocketConfig {
   host: string;
   port: string;
   path: string;
+  wsUrl: string;
   apiUrl: string;
   keepAliveInterval?: number;
 }
@@ -20,9 +21,9 @@ export function getWebsocketConfig(): WebsocketConfig {
   const defaultPort = '';
   const defaultPath = '/ws';
 
+  // Check if the value contains the '__PLACEHOLDER' pattern
   const isPlaceholder = (value: string) => {
-    // Check if the value contains the '__PLACEHOLDER__' pattern
-    return value.includes('__PLACEHOLDER__');
+    return value.includes('__PLACEHOLDER');
   };
 
   const scheme = isPlaceholder(envScheme) ? defaultWsScheme : envScheme;
@@ -30,15 +31,18 @@ export function getWebsocketConfig(): WebsocketConfig {
   const port = isPlaceholder(envPort) ? defaultPort : envPort;
   const path = isPlaceholder(envPath) ? defaultPath : envPath;
 
+  const resolvedPort = (port && !isPlaceholder(port)) ? `:${ port }` : defaultPort;
   const resolvedApiScheme = isPlaceholder(apiScheme) ? defaultApiScheme : apiScheme;
-  const apiPort = (port && port !== defaultPort) ? `:${ port }` : '';
-  const apiUrl = `${ resolvedApiScheme }://${ host }${ apiPort }/api`;
+
+  const wsUrl = `${ scheme }://${ host }${ resolvedPort }${ path }`;
+  const apiUrl = `${ resolvedApiScheme }://${ host }${ resolvedPort }/api`;
 
   return {
     scheme,
     host,
     port,
     path,
+    wsUrl,
     apiUrl
   };
 }
