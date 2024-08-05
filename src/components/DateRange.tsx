@@ -4,6 +4,10 @@ import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import { DatePicker, Space } from 'antd';
 
+import useViewport from '../hooks/useViewport';
+
+import '../assets/style/DateRange.css';
+
 const { RangePicker } = DatePicker;
 
 interface DateRangePickerProps {
@@ -17,6 +21,9 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   initialEndDate,
   onDateRangeChange,
 }) => {
+  const { width } = useViewport();
+  const isMobile = width < 725;
+
   const today = dayjs();
   const oneMonthAgo = dayjs().subtract(1, 'month');
 
@@ -66,16 +73,18 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   ];
 
   return (
-    <Space direction="vertical" size={12} className="mt-10">
-      <div>
-        Date Range:
-      </div>
-      <RangePicker
-        presets={rangePresets}
-        onChange={onRangeChange}
-        defaultValue={[startDate, endDate]}
-      />
-    </Space>
+    <div className="range-container">
+      <Space direction="vertical" size={12} className="mt-10">
+        <div>
+          Date Range:
+        </div>
+        <RangePicker
+          presets={rangePresets}
+          onChange={onRangeChange}
+          defaultValue={[startDate, endDate]}
+        />
+      </Space>
+    </div>
   );
 };
 

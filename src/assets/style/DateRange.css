@@ -1,0 +1,39 @@
+@media (max-width: 725px) {
+  .ant-picker-panels {
+    flex-direction: column;
+  }
+
+  .ant-picker-dropdown {
+    inset: 205px auto auto 0px !important;
+  }
+
+  .ant-picker-panel-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ant-picker-presets {
+    width: 100% !important;
+    height: auto !important;
+    max-width: unset !important;
+  }
+
+  .ant-picker-presets ul {
+    height: unset !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ant-picker-presets li {
+    flex: 1 0 30%;
+  }
+
+  .ant-picker-presets ul li+li {
+    margin-top: unset !important;
+  }
+}

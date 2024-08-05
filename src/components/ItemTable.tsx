@@ -99,41 +99,43 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
 
   return (
     <>
-      <table className="item-table">
-        <thead>
-          <tr>
-            <th>Description</th>
-            <th>Amount</th>
-            {itemType === 'expenses' && <th>Category</th>}
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.id + generateRandomKey(4)}>
-              <td>{item.description}</td>
-              <td>{item.amount}</td>
-              {itemType === 'expenses' && <td>{item.category || '-'}</td>}
-              <td>{item.date ?? '-'}</td>
-              <td>
-                <Dropdown
-                  dropdownRender={() => (
-                    <div className='action-dropdown'>
-                      <a className="" onClick={() => handleUpdate(item)}>Update</a>
-                      <a className="" onClick={() => handleDelete(item.id)}>Delete</a>
-                    </div>
-                  )}
-                >
-                  <a  className='action-dots' onClick={(e) => e.preventDefault()}>
-                    <MoreOutlined />
-                  </a>
-                </Dropdown>
-              </td>
+      <div className="table-container">
+        <table className="item-table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Amount</th>
+              {itemType === 'expenses' && <th>Category</th>}
+              <th>Date</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id + generateRandomKey(4)}>
+                <td>{item.description}</td>
+                <td>{item.amount}</td>
+                {itemType === 'expenses' && <td>{item.category || '-'}</td>}
+                <td>{item.date ?? '-'}</td>
+                <td>
+                  <Dropdown
+                    dropdownRender={() => (
+                      <div className='action-dropdown'>
+                        <a className="" onClick={() => handleUpdate(item)}>Update</a>
+                        <a className="" onClick={() => handleDelete(item.id)}>Delete</a>
+                      </div>
+                    )}
+                  >
+                    <a  className='action-dots' onClick={(e) => e.preventDefault()}>
+                      <MoreOutlined />
+                    </a>
+                  </Dropdown>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {itemToUpdate && (
         <FinancialForm
           key={updateKey}
