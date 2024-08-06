@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MenuOutlined } from '@ant-design/icons';
@@ -13,6 +13,7 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { width } = useViewport();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const isMobile = width < 725;
 
@@ -32,6 +33,24 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if ( menuRef.current && !menuRef.current.contains(event.target as Node) ) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if ( isMenuOpen ) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -49,7 +68,7 @@ const Navbar: React.FC = () => {
             </button>
           )}
         </header>
-        <div className={`navbar-links ${ isMenuOpen ? 'active' : '' }`}>
+        <div ref={menuRef} className={`navbar-links ${ isMenuOpen ? 'active' : '' }`}>
           {user ? (
             <>
               <Link to="/dashboard" onClick={toggleMenu} className="text-bold">Dashboard</Link>
@@ -61,8 +80,8 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="text-bold">Login</Link>
-              <Link to="/register" className="text-bold">Register</Link>
+              <Link to="/login" onClick={toggleMenu} className="text-bold">Login</Link>
+              <Link to="/register" onClick={toggleMenu} className="text-bold">Register</Link>
             </>
           )}
           {isMobile && (

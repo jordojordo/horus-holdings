@@ -51,3 +51,13 @@
   gap: 2rem;
   margin-top: 2rem;
 }
+
+@media (max-width: 725px) {
+  .auth-container {
+    min-height: calc(100vh - 100px);
+  }
+
+  .auth-form {
+    width: 100%;
+  }
+}

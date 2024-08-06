@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +12,7 @@ import {
   Legend,
   PointElement,
   LineElement,
+  ArcElement
 } from 'chart.js';
 
 import { useWebSocketContext } from '../context/WebSocketContext';
@@ -21,6 +22,8 @@ import DateRange from './DateRange';
 import { Expense } from '../types/Expense';
 import { Income } from '../types/Income';
 
+import '../assets/style/FlowChart.css';
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,7 +32,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   PointElement,
-  LineElement
+  LineElement,
+  ArcElement
 );
 
 interface ChartData {
@@ -54,6 +58,14 @@ interface ChartData {
       data: number[];
       fill: boolean;
       tension: number;
+    }[];
+  };
+  pieData: {
+    labels: string[];
+    datasets: {
+      label: string;
+      backgroundColor: string[];
+      data: number[];
     }[];
   };
 }
@@ -237,6 +249,9 @@ const FlowChart: React.FC = () => {
       },
     };
 
+    const totalIncome = incomeData.reduce((sum, val) => sum + val, 0);
+    const totalExpenses = expenseData.reduce((sum, val) => sum + val, 0);
+
     return {
       labels,
       barData: {
@@ -279,10 +294,20 @@ const FlowChart: React.FC = () => {
           },
         ],
       },
+      pieData: {
+        labels:   ['Total Income', 'Total Expenses'],
+        datasets: [
+          {
+            label:           'Budget Overview',
+            backgroundColor: ['rgba(44, 182, 125, 0.4)', 'rgba(255, 127, 80, 0.4)'],
+            data:            [totalIncome, totalExpenses],
+          },
+        ],
+      },
     };
   };
 
-  const { barData, lineData } = processChartData(
+  const { barData, lineData, pieData } = processChartData(
     incomes,
     expenses,
     startDate,
@@ -291,14 +316,9 @@ const FlowChart: React.FC = () => {
 
   const options = {
     responsive: true,
-    plugins:    {
-      legend: { position: 'top' as const },
-      title:  {
-        display: true,
-        text:    'Cash Flow Overview',
-      },
-    },
+    plugins:    { legend: { position: 'top' as const } },
   };
+
 
   const handleDateRangeChange = (start: Dayjs, end: Dayjs) => {
     setStartDate(start);
@@ -306,14 +326,23 @@ const FlowChart: React.FC = () => {
   };
 
   return (
-    <div>
-      <DateRange
-        initialStartDate={startDate}
-        initialEndDate={endDate}
-        onDateRangeChange={handleDateRangeChange}
-      />
-      <Bar data={barData} options={options} />
-      <Line data={lineData} options={options} />
+    <div className="flow-chart-container">
+      <div className="mb-10">
+        <DateRange
+          initialStartDate={startDate}
+          initialEndDate={endDate}
+          onDateRangeChange={handleDateRangeChange}
+        />
+      </div>
+      <div className="pie mb-5">
+        <Pie data={pieData} options={options} />
+      </div>
+      <div className="line mb-5">
+        <Line data={lineData} options={options} />
+      </div>
+      <div className="bar">
+        <Bar data={barData} options={options} />
+      </div>
     </div>
   );
 };

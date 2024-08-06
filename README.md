@@ -2,7 +2,7 @@
 
 ## Overview
 
-Horus Holdings is a sophisticated cash flow management tool designed to help users track their incomes and expenses, providing a clear visualization of their cash flow over time.
+Horus Holdings is a cash flow management tool designed to help users track their incomes and expenses, providing a clear visualization of their cash flow over time.
 
 Named after the Egyptian god Horus, who symbolizes protection, stability, and prosperity, this application aims to bring financial clarity and control to its users. By offering robust user authentication, Horus Holdings ensures that each user's financial data remains secure and private, echoing the protective nature of its namesake.
 

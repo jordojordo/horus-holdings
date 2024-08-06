@@ -1,0 +1,22 @@
+.flow-chart-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.pie {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.line,
+.bar {
+  width: 100%;
+}
+
+@media (max-width: 725px) {
+  .pie {
+    max-width: 100%;
+  }
+}
