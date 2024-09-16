@@ -10,7 +10,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  if ( !user ) {
+  if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

@@ -18,7 +18,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateTheme = (newTheme: THEME) => {
     setCurrentTheme(newTheme);
 
-    if ( newTheme === THEME.DARK ) {
+    if (newTheme === THEME.DARK) {
       document.documentElement.classList.add(THEME.DARK);
     } else {
       document.documentElement.classList.remove(THEME.DARK);
@@ -49,7 +49,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
 
-  if ( !context ) {
+  if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
 

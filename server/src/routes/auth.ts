@@ -21,7 +21,7 @@ router.post('/register', async(req, res) => {
 
     res.status(201).json(user);
   } catch (error: Error | any) {
-    if ( error?.name === 'SequelizeUniqueConstraintError' ) {
+    if (error?.name === 'SequelizeUniqueConstraintError') {
       res.status(400).json({ message: 'Username is unavailable. Please choose a different username.' });
     } else {
       res.status(500).json({ message: 'An unexpected error occurred. Please try again later.' });
@@ -30,7 +30,7 @@ router.post('/register', async(req, res) => {
 });
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
-  if ( !process.env.JWT_SECRET ) {
+  if (!process.env.JWT_SECRET) {
     return res.status(500).json({ error: 'JWT_SECRET not set' });
   }
 
@@ -55,7 +55,7 @@ router.post('/logout', (req, res) => {
 });
 
 router.get('/user', (req, res) => {
-  if ( req.isAuthenticated() ) {
+  if (req.isAuthenticated()) {
     res.json(req.user);
   } else {
     res.status(401).send('Unauthorized');
@@ -63,7 +63,7 @@ router.get('/user', (req, res) => {
 });
 
 router.put('/update', async(req, res) => {
-  if ( !req.isAuthenticated() ) {
+  if (!req.isAuthenticated()) {
     return res.status(401).send('Unauthorized');
   }
 
@@ -71,10 +71,10 @@ router.put('/update', async(req, res) => {
   const user = req.user as User;
 
   try {
-    if ( username ) {
+    if (username) {
       user.username = username;
     }
-    if ( newPassword ) {
+    if (newPassword) {
       user.password = await bcrypt.hash(newPassword, 10);
     }
 
@@ -82,7 +82,7 @@ router.put('/update', async(req, res) => {
 
     res.json(user);
   } catch (error: any) {
-    if ( error?.name === 'SequelizeUniqueConstraintError' ) {
+    if (error?.name === 'SequelizeUniqueConstraintError') {
       res.status(400).json({ message: 'Username is unavailable. Please choose a different username.' });
     } else {
       res.status(500).json({ message: 'An unexpected error occurred. Please try again later.' });
@@ -91,7 +91,7 @@ router.put('/update', async(req, res) => {
 });
 
 router.delete('/delete', async(req, res) => {
-  if ( !req.isAuthenticated() ) {
+  if (!req.isAuthenticated()) {
     return res.status(401).send('Unauthorized');
   }
 

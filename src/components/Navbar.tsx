@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async() => {
     try {
-      if ( isMenuOpen ) {
+      if (isMenuOpen) {
         toggleMenu();
       }
 
@@ -34,13 +34,13 @@ const Navbar: React.FC = () => {
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if ( menuRef.current && !menuRef.current.contains(event.target as Node) ) {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
       setIsMenuOpen(false);
     }
   };
 
   useEffect(() => {
-    if ( isMenuOpen ) {
+    if (isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);

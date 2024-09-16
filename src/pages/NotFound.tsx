@@ -10,7 +10,7 @@ const NotFound: React.FC = () => {
   const { user } = useAuth();
 
   const handleBackHome = () => {
-    if ( user ) {
+    if (user) {
       return navigate('/dashboard');
     }
 

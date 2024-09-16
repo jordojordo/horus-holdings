@@ -4,6 +4,11 @@
   width: 100%;
 }
 
+.ant-statistic-title,
+.ant-statistic-content {
+  color: var(--foreground-primary) !important;
+}
+
 .pie {
   max-width: 600px;
   width: 100%;

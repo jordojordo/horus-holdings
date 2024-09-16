@@ -16,7 +16,7 @@ const LoginForm: React.FC = () => {
     try {
       await login(username, password);
     } catch (error: any) {
-      if ( error?.message as string ) {
+      if (error?.message as string) {
         message.error(error.message);
       }
     }

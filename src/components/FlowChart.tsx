@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs, ManipulateType } from 'dayjs';
 import { Bar, Line, Pie } from 'react-chartjs-2';
+import { Col, Row, Statistic } from 'antd';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -68,7 +69,17 @@ interface ChartData {
       data: number[];
     }[];
   };
+  totalIncome: number;
+  totalExpenses: number;
+  netIncome: number;
+  averageMonthlyIncome: number;
+  averageMonthlyExpenses: number;
+  savingsRate: number;
+  highestIncomeMonth: string;
+  highestExpenseMonth: string;
 }
+
+type RecurrenceType = 'bi-weekly' | 'monthly' | 'bi-monthly';
 
 const FlowChart: React.FC = () => {
   const { setOnMessage } = useWebSocketContext();
@@ -113,11 +124,11 @@ const FlowChart: React.FC = () => {
     (event: MessageEvent) => {
       const message = JSON.parse(event.data);
 
-      if ( message.type === 'new_expense' ) {
+      if (message.type === 'new_expense') {
         setExpenses((prevExpenses) => [...prevExpenses, message.data]);
       }
 
-      if ( message.type === 'new_income' ) {
+      if (message.type === 'new_income') {
         setIncomes((prevIncomes) => [...prevIncomes, message.data]);
       }
     },
@@ -142,7 +153,7 @@ const FlowChart: React.FC = () => {
 
     let date = startDate.clone();
 
-    while ( date <= endDate ) {
+    while (date <= endDate) {
       labels.push(`${ date.format('MMM').toUpperCase() } ${ date.year() }`);
       incomeData.push(0);
       expenseData.push(0);
@@ -151,37 +162,51 @@ const FlowChart: React.FC = () => {
 
     const addRecurringAmount = (
       amount: number,
-      incomeStartDate: Dayjs,
+      entryStartDate: Dayjs,
       recurrenceType: string,
       recurrenceEndDate: Dayjs | undefined,
       data: number[]
     ) => {
-      const recurrenceInterval = {
-        'bi-weekly':  14,
-        monthly:      30,
-        'bi-monthly': 60,
-      }[recurrenceType];
+      const recurrenceIntervals: { [key in RecurrenceType]: { value: number; unit: ManipulateType } } = {
+        'bi-weekly':  {
+          value: 14,
+          unit:  'day'
+        },
+        monthly:      {
+          value: 1,
+          unit:  'month'
+        },
+        'bi-monthly': {
+          value: 2,
+          unit:  'month'
+        },
+      };
 
-      let date = incomeStartDate.clone();
+      const recurrenceInterval = recurrenceIntervals[recurrenceType as RecurrenceType];
+
+      if (!recurrenceInterval) {
+        return;
+      }
+
+      let date = entryStartDate.clone();
       const effectiveEndDate = recurrenceEndDate || endDate;
 
-      while ( date <= effectiveEndDate && recurrenceInterval ) {
-        if ( date >= startDate && date <= effectiveEndDate ) {
+      while (date <= effectiveEndDate) {
+        if (date >= startDate && date <= effectiveEndDate) {
           const monthIndex = date.diff(startDate.startOf('month'), 'month');
 
-          if ( monthIndex >= 0 && monthIndex < data.length ) {
+          if (monthIndex >= 0 && monthIndex < data.length) {
             data[monthIndex] += amount;
           }
         }
-
-        date = date.add(recurrenceInterval, 'day');
+        date = date.add(recurrenceInterval.value, recurrenceInterval.unit);
       }
     };
 
     incomes.forEach((income) => {
       const incomeStartDate = income.date ? dayjs(income.date) : startDate;
 
-      if ( income.recurring && income.recurrenceType ) {
+      if (income.recurring && income.recurrenceType) {
         addRecurringAmount(
           income.amount,
           incomeStartDate,
@@ -193,7 +218,7 @@ const FlowChart: React.FC = () => {
         const incomeDate = dayjs(income.date);
 
         if (incomeDate >= startDate && incomeDate <= endDate) {
-          const monthIndex = incomeDate.diff(startDate, 'month');
+          const monthIndex = incomeDate.diff(startDate.startOf('month'), 'month');
 
           incomeData[monthIndex] += income.amount;
         }
@@ -203,7 +228,7 @@ const FlowChart: React.FC = () => {
     expenses.forEach((expense) => {
       const expenseStartDate = expense.date ? dayjs(expense.date) : startDate;
 
-      if ( expense.recurring && expense.recurrenceType ) {
+      if (expense.recurring && expense.recurrenceType) {
         addRecurringAmount(
           expense.amount,
           expenseStartDate,
@@ -211,11 +236,11 @@ const FlowChart: React.FC = () => {
           expense.recurrenceEndDate ? dayjs(expense.recurrenceEndDate) : undefined,
           expenseData
         );
-      } else if ( expense.date ) {
+      } else if (expense.date) {
         const expenseDate = dayjs(expense.date);
 
         if (expenseDate >= startDate && expenseDate <= endDate) {
-          const monthIndex = expenseDate.diff(startDate, 'month');
+          const monthIndex = expenseDate.diff(startDate.startOf('month'), 'month');
 
           expenseData[monthIndex] += expense.amount;
         }
@@ -251,6 +276,18 @@ const FlowChart: React.FC = () => {
 
     const totalIncome = incomeData.reduce((sum, val) => sum + val, 0);
     const totalExpenses = expenseData.reduce((sum, val) => sum + val, 0);
+    const netIncome = totalIncome - totalExpenses;
+    const numberOfMonths = labels.length;
+    const averageMonthlyIncome = totalIncome / numberOfMonths;
+    const averageMonthlyExpenses = totalExpenses / numberOfMonths;
+    const savingsRate = totalIncome !== 0 ? (netIncome / totalIncome) * 100 : 0;
+
+    const highestIncome = Math.max(...incomeData);
+    const highestExpense = Math.max(...expenseData);
+    const highestIncomeMonthIndex = incomeData.indexOf(highestIncome);
+    const highestExpenseMonthIndex = expenseData.indexOf(highestExpense);
+    const highestIncomeMonth = labels[highestIncomeMonthIndex];
+    const highestExpenseMonth = labels[highestExpenseMonthIndex];
 
     return {
       labels,
@@ -304,21 +341,35 @@ const FlowChart: React.FC = () => {
           },
         ],
       },
+      totalIncome,
+      totalExpenses,
+      netIncome,
+      averageMonthlyIncome,
+      averageMonthlyExpenses,
+      savingsRate,
+      highestIncomeMonth,
+      highestExpenseMonth,
     };
   };
 
-  const { barData, lineData, pieData } = processChartData(
-    incomes,
-    expenses,
-    startDate,
-    endDate
-  );
+  const {
+    barData,
+    lineData,
+    pieData,
+    totalIncome,
+    totalExpenses,
+    netIncome,
+    averageMonthlyIncome,
+    averageMonthlyExpenses,
+    savingsRate,
+    highestIncomeMonth,
+    highestExpenseMonth,
+  } = processChartData(incomes, expenses, startDate, endDate);
 
   const options = {
     responsive: true,
     plugins:    { legend: { position: 'top' as const } },
   };
-
 
   const handleDateRangeChange = (start: Dayjs, end: Dayjs) => {
     setStartDate(start);
@@ -333,6 +384,57 @@ const FlowChart: React.FC = () => {
           initialEndDate={endDate}
           onDateRangeChange={handleDateRangeChange}
         />
+      </div>
+      <div className='mb-10'>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Statistic title="Total Income" value={totalIncome} precision={2} />
+          </Col>
+          <Col span={6}>
+            <Statistic title="Total Expenses" value={totalExpenses} precision={2} />
+          </Col>
+          <Col span={6}>
+            <Statistic title="Net Income" value={netIncome} precision={2} />
+          </Col>
+          <Col span={6}>
+            <Statistic
+              title="Savings Rate"
+              value={savingsRate}
+              precision={2}
+              suffix="%"
+            />
+          </Col>
+        </Row>
+      </div>
+      <div className='mb-10'>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Statistic
+              title="Avg Monthly Income"
+              value={averageMonthlyIncome}
+              precision={2}
+            />
+          </Col>
+          <Col span={6}>
+            <Statistic
+              title="Avg Monthly Expenses"
+              value={averageMonthlyExpenses}
+              precision={2}
+            />
+          </Col>
+          <Col span={6}>
+            <Statistic
+              title="Highest Income Month"
+              value={highestIncomeMonth}
+            />
+          </Col>
+          <Col span={6}>
+            <Statistic
+              title="Highest Expense Month"
+              value={highestExpenseMonth}
+            />
+          </Col>
+        </Row>
       </div>
       <div className="pie mb-5">
         <Pie data={pieData} options={options} />

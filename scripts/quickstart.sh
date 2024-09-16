@@ -2,7 +2,7 @@
 
 # Set environment variables
 MYSQL_ROOT_PASSWORD=admin
-MYSQL_DATABASE=devdb
+MYSQL_DATABASE=horusdevdb
 DATABASE_URL="mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE"
 CORS_ORIGIN="http://localhost"
 JWT_SECRET="super-secret"

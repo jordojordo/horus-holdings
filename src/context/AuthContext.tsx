@@ -45,7 +45,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async(username: string, password: string) => {
     try {
-      if ( !username || !password ) {
+      if (!username || !password) {
         throw new Error('Invalid username or password');
       }
 
@@ -79,7 +79,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         password
       });
 
-      if ( response.status === 201 ) {
+      if (response.status === 201) {
         await login(username, password);
       }
     } catch (error: any) {

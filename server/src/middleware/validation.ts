@@ -27,7 +27,7 @@ const incomeSchema = Joi.object({
 export const validateExpense = (req: Request, res: Response, next: NextFunction) => {
   const { error } = expenseSchema.validate(req.body);
 
-  if ( error ) {
+  if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }
 
@@ -37,7 +37,7 @@ export const validateExpense = (req: Request, res: Response, next: NextFunction)
 export const validateIncome = (req: Request, res: Response, next: NextFunction) => {
   const { error } = incomeSchema.validate(req.body);
 
-  if ( error ) {
+  if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }
 

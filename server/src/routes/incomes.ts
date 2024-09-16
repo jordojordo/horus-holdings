@@ -79,7 +79,7 @@ router.put('/:id', isAuthenticated, validateIncome, async(req, res) => {
       }
     });
 
-    if ( !income ) {
+    if (!income) {
       return res.status(404).json({ message: 'Income not found' });
     }
 
@@ -99,7 +99,6 @@ router.put('/:id', isAuthenticated, validateIncome, async(req, res) => {
 
     res.status(200).json(income);
   } catch (error) {
-    console.log('### error', error);
     res.status(500).json(error);
   }
 });

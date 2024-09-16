@@ -10,6 +10,6 @@ dist
 dist-pkg
 server/dist
 .DS_Store
-yarn.lock
+pnpm-lock.yaml
 public
 *.tsbuildinfo

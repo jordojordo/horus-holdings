@@ -72,6 +72,7 @@ module.exports = {
     'semi':                              ['warn', 'always'],
     'space-before-function-paren':       ['warn', 'never'],
     'space-infix-ops':                   'warn',
+    'space-in-parens':                   ['warn', 'never'],
     'spaced-comment':                    'warn',
     'switch-colon-spacing':              'warn',
     'template-curly-spacing':            ['warn', 'always'],

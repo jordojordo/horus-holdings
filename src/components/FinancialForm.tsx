@@ -64,7 +64,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
     setRecurrenceType(null);
     setRecurrenceEndDate(null);
 
-    if ( formType === 'expense' ) {
+    if (formType === 'expense') {
       setCategory(null);
     } else {
       setCategory(undefined);
@@ -72,7 +72,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   }, [formType, user]);
 
   useEffect(() => {
-    if ( itemToUpdate ) {
+    if (itemToUpdate) {
       const itemDate = dayjs(itemToUpdate.date);
       const itemRecurrenceEndDate = dayjs(itemToUpdate.recurrenceEndDate);
 
@@ -84,7 +84,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
       setRecurrenceType(itemToUpdate.recurrenceType);
       setRecurrenceEndDate(itemRecurrenceEndDate.isValid() ? itemRecurrenceEndDate : null);
 
-      if ( itemToUpdate.category ) {
+      if (itemToUpdate.category) {
         setCategory(itemToUpdate.category);
       }
 
@@ -104,7 +104,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
     try {
       let data: Income | Expense;
 
-      if ( formType === 'expense' ) {
+      if (formType === 'expense') {
         data = {
           id,
           description,
@@ -127,7 +127,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
         } as Income;
       }
 
-      if ( itemToUpdate ) {
+      if (itemToUpdate) {
         await axios.put(`${ apiUrl }/${ itemToUpdate.id }`, data);
       } else {
         await axios.post(apiUrl, data);
@@ -136,14 +136,14 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
       resetForm();
       setModalVisible(false);
 
-      if ( itemToUpdate && closeModal ) {
+      if (itemToUpdate && closeModal) {
         closeModal();
       }
     } catch (error) {
-      if ( axios.isAxiosError(error) && error.response ) {
-        if ( error?.response?.status === 400 ) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error?.response?.status === 400) {
           message.error(error.response.data.error);
-        } else if ( error?.response?.status === 401 ) {
+        } else if (error?.response?.status === 401) {
           message.error('You are not authorized to perform this action');
         } else {
           message.error('An unexpected error occurred');
@@ -155,13 +155,13 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   };
 
   const handleDateChange: DatePickerProps['onChange'] = (date) => {
-    if ( date ) {
+    if (date) {
       setDate(date);
     }
   };
 
   const handleRecurrenceEndDateChange: DatePickerProps['onChange'] = (date) => {
-    if ( date ) {
+    if (date) {
       setRecurrenceEndDate(date);
     }
   };

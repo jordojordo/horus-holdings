@@ -54,13 +54,13 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       const message = JSON.parse(event.data);
       const t = message.type.split('_')[1];
 
-      if ( message.type === `new_${ t }` ) {
+      if (message.type === `new_${ t }`) {
         setItems((prevItems) => [...prevItems, message.data]);
       }
 
-      if ( message.type === `update_${ t }` ) {
+      if (message.type === `update_${ t }`) {
         setItems((prevItems) => prevItems.map((item) => {
-          if ( item.id === message.data.id ) {
+          if (item.id === message.data.id) {
             return {
               ...item,
               ...message.data

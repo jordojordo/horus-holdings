@@ -32,7 +32,6 @@ router.post('/', isAuthenticated, validateExpense, async(req, res) => {
     });
     res.status(201).json(expense);
   } catch (error) {
-    console.log('### error', error);
     res.status(500).json(error);
   }
 });
@@ -81,7 +80,7 @@ router.put('/:id', isAuthenticated, validateExpense, async(req, res) => {
       }
     });
 
-    if ( !expense ) {
+    if (!expense) {
       return res.status(404).json({ message: 'Expense not found' });
     }
 
@@ -102,7 +101,6 @@ router.put('/:id', isAuthenticated, validateExpense, async(req, res) => {
 
     res.status(200).json(expense);
   } catch (error) {
-    console.log('### error', error);
     res.status(500).json(error);
   }
 });

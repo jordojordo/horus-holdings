@@ -12,11 +12,11 @@ const Settings: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleUpdate = async() => {
-    if ( !authContext?.user ) {
+    if (!authContext?.user) {
       return;
     }
 
-    if ( newPassword !== confirmPassword ) {
+    if (newPassword !== confirmPassword) {
       notification.error({ message: 'Passwords do not match' });
 
       return;
@@ -35,7 +35,7 @@ const Settings: React.FC = () => {
 
   const handleDelete = async() => {
     try {
-      if ( !authContext?.user ) {
+      if (!authContext?.user) {
         return;
       }
 

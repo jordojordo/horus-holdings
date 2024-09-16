@@ -16,7 +16,7 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
   const [onMessageHandler, setOnMessageHandler] = useState<(event: MessageEvent) => void>(() => () => {});
 
   const establishConnection = useCallback(() => {
-    if ( !socketRef.current ) {
+    if (!socketRef.current) {
       console.log('Establishing WebSocket connection...');
       socketRef.current = new WebSocket(url);
     }
@@ -26,7 +26,7 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
     };
 
     socketRef.current.onmessage = (event: MessageEvent) => {
-      if ( onMessageHandler ) {
+      if (onMessageHandler) {
         onMessageHandler(event);
       }
     };
@@ -38,7 +38,7 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
     socketRef.current.onclose = (event) => {
       console.log(`WebSocket connection closed: Code=${ event.code }, Reason=${ event.reason }, Clean=${ event.wasClean }`);
 
-      if ( !event.wasClean ) {
+      if (!event.wasClean) {
         console.log('WebSocket connection closed abnormally, retrying...');
         setTimeout(establishConnection, 5000);
       }
@@ -46,9 +46,9 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
   }, [url, onMessageHandler]);
 
   useEffect(() => {
-    if ( user ) {
+    if (user) {
       establishConnection();
-    } else if ( socketRef.current ) {
+    } else if (socketRef.current) {
       socketRef.current.close();
       socketRef.current = null;
     }
@@ -56,7 +56,7 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
 
   useEffect(() => {
     const handleUnload = () => {
-      if ( socketRef.current ) {
+      if (socketRef.current) {
         socketRef.current.close();
       }
     };
@@ -66,14 +66,14 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
     return () => {
       window.removeEventListener('beforeunload', handleUnload);
 
-      if ( socketRef.current ) {
+      if (socketRef.current) {
         socketRef.current.close();
       }
     };
   }, []);
 
   const sendMessage = (message: any) => {
-    if ( socketRef.current && socketRef.current.readyState === WebSocket.OPEN ) {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(message));
     }
   };
@@ -96,7 +96,7 @@ const WebSocketProvider: React.FC<{ url: string, children: React.ReactNode }> = 
 const useWebSocketContext = () => {
   const context = useContext(WebSocketContext);
 
-  if ( context === undefined ) {
+  if (context === undefined) {
     throw new Error('useWebSocketContext must be used within a WebSocketProvider');
   }
 

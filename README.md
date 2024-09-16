@@ -38,12 +38,12 @@ The application requires a MySQL database to store user data. You need to set up
 1. **Install MySQL**: Follow the instructions for your operating system to install MySQL.
 2. **Create a Database**: Create a new database for the application. For example:
    ```sql
-   CREATE DATABASE devdb;
+   CREATE DATABASE horusdevdb;
    ```
 3. **Create a User**: Create a new user and grant privileges to the database. For example:
    ```sql
    CREATE USER 'root'@'localhost' IDENTIFIED BY 'admin';
-   GRANT ALL PRIVILEGES ON devdb.* TO 'root'@'localhost';
+   GRANT ALL PRIVILEGES ON horusdevdb.* TO 'root'@'localhost';
    FLUSH PRIVILEGES;
    ```
 
@@ -54,7 +54,7 @@ For development purposes, you can run the MySQL database locally using a Docker 
 ```sh
 docker run -d --name mysql-dev \
    -e MYSQL_ROOT_PASSWORD=admin \
-   -e MYSQL_DATABASE=devdb \
+   -e MYSQL_DATABASE=horusdevdb \
    --network host \
    mysql:latest
 ```
@@ -76,7 +76,7 @@ The `Dockerfile` is set up to build both the frontend and backend applications i
    ```sh
    docker run -d --name horus \
       --network host \
-      -e DATABASE_URL=mysql://root:admin@localhost:3306/devdb \
+      -e DATABASE_URL=mysql://root:admin@localhost:3306/horusdevdb \
       -e CORS_ORIGIN=http://localhost \
       -e JWT_SECRET=super-secret \
       -e CLIENT_API_SCHEME=http \
@@ -95,7 +95,7 @@ The following table lists the configurable and required parameters for the appli
 
 | Parameter               | Required | Description                                                   | Default                                          |
 |-------------------------|----------|---------------------------------------------------------------|--------------------------------------------------|
-| `DATABASE_URL`          | *        | The URL for the database connection.                          | 'mysql://root:rootpassword@127.0.0.1:3306/devdb' |
+| `DATABASE_URL`          | *        | The URL for the database connection.                          | 'mysql://root:rootpassword@127.0.0.1:3306/horusdevdb' |
 | `CORS_ORIGIN`           | *        | The origin allowed for CORS.                                  | 'http://localhost'                               |
 | `JWT_SECRET`            | *        | The secret key used for JWT authentication.                   | 'super_secret_key'                               |
 | `CLIENT_API_SCHEME`     |          | The scheme used for API requests (e.g. https or http).        | 'https'                                          |
@@ -107,19 +107,19 @@ The following table lists the configurable and required parameters for the appli
 
 ## Running the Application Locally
 
-To run the application locally, you need to have Node.js and Yarn installed.
+To run the application locally, you need to have Node.js and PNPM installed.
 
 ### Steps to Run Locally
 
 1. **Install Dependencies**:
    ```sh
-   yarn install:all
+   pnpm install:all
    ```
 
 2. **Set Up Environment Variables**:
    Create a `.env` file in the `./server` directory with the following content:
    ```env
-   DATABASE_URL=mysql://root:admin@127.0.0.1:3306/devdb
+   DATABASE_URL=mysql://root:admin@127.0.0.1:3306/horusdevdb
    JWT_SECRET=your_secret_key
    CORS_ORIGIN=http://localhost:3000
    NODE_ENV=development
@@ -127,7 +127,7 @@ To run the application locally, you need to have Node.js and Yarn installed.
 
 3. **Run the Application**:
    ```sh
-   yarn dev
+   pnpm dev
    ```
 
 This will start both the frontend and backend applications concurrently.

@@ -17,7 +17,7 @@ const RegisterForm: React.FC = () => {
       await register(username, password);
       await login(username, password);
     } catch (error: any) {
-      if ( error?.message as string ) {
+      if (error?.message as string) {
         message.error(error.message);
       }
     }

@@ -1,22 +1,28 @@
 FROM node:22 AS frontend-build
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app/frontend
-COPY ./package.json ./yarn.lock ./
+COPY ./package.json ./pnpm-lock.yaml ./
 COPY ./tsconfig.json ./tsconfig.app.json ./tsconfig.node.json ./
 COPY ./vite.config.ts ./
 COPY ./src ./src
 COPY ./public ./public
 COPY index.html .env.production ./
-RUN yarn
-RUN yarn build
+RUN pnpm install
+RUN pnpm build
 
 FROM node:22 AS backend-build
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app/backend
-COPY ./server/package.json ./server/yarn.lock ./
+COPY ./server/package.json ./server/pnpm-lock.yaml ./
 COPY ./server/tsconfig.json ./
 COPY ./server/src ./src
 COPY ./server/.env ./
-RUN yarn
-RUN yarn build
+RUN pnpm install
+RUN pnpm build
 EXPOSE 5000 
 
 FROM docker.io/nginx:latest AS production-stage

@@ -26,11 +26,11 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const [endDate, setEndDate] = useState<Dayjs>(initialEndDate || today);
 
   const onRangeChange = (dates: null | (Dayjs | null)[]) => {
-    if ( dates && dates.length === 2 && dates[0] && dates[1] ) {
+    if (dates && dates.length === 2 && dates[0] && dates[1]) {
       setStartDate(dates[0]);
       setEndDate(dates[1]);
 
-      if ( onDateRangeChange ) {
+      if (onDateRangeChange) {
         onDateRangeChange(dates[0], dates[1]);
       }
     }
