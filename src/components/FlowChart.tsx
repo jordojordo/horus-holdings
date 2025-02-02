@@ -203,53 +203,53 @@ const FlowChart: React.FC = () => {
       }
     };
 
-    incomes.forEach((income) => {
-      const incomeStartDate = income.date ? dayjs(income.date) : startDate;
+    incomes?.forEach((income) => {
+      const incomeStartDate = income?.date ? dayjs(income.date) : startDate;
 
-      if (income.recurring && income.recurrenceType) {
+      if (income?.recurring && income?.recurrenceType) {
         addRecurringAmount(
-          income.amount,
+          income?.amount,
           incomeStartDate,
           income.recurrenceType,
-          income.recurrenceEndDate ? dayjs(income.recurrenceEndDate) : undefined,
+          income?.recurrenceEndDate ? dayjs(income.recurrenceEndDate) : undefined,
           incomeData
         );
-      } else if (income.date) {
+      } else if (income?.date) {
         const incomeDate = dayjs(income.date);
 
         if (incomeDate >= startDate && incomeDate <= endDate) {
-          const monthIndex = incomeDate.diff(startDate.startOf('month'), 'month');
+          const monthIndex = incomeDate?.diff(startDate.startOf('month'), 'month');
 
-          incomeData[monthIndex] += income.amount;
+          incomeData[monthIndex] += income?.amount;
         }
       }
     });
 
-    expenses.forEach((expense) => {
-      const expenseStartDate = expense.date ? dayjs(expense.date) : startDate;
+    expenses?.forEach((expense) => {
+      const expenseStartDate = expense?.date ? dayjs(expense.date) : startDate;
 
-      if (expense.recurring && expense.recurrenceType) {
+      if (expense?.recurring && expense?.recurrenceType) {
         addRecurringAmount(
-          expense.amount,
+          expense?.amount,
           expenseStartDate,
           expense.recurrenceType,
-          expense.recurrenceEndDate ? dayjs(expense.recurrenceEndDate) : undefined,
+          expense?.recurrenceEndDate ? dayjs(expense.recurrenceEndDate) : undefined,
           expenseData
         );
-      } else if (expense.date) {
+      } else if (expense?.date) {
         const expenseDate = dayjs(expense.date);
 
         if (expenseDate >= startDate && expenseDate <= endDate) {
-          const monthIndex = expenseDate.diff(startDate.startOf('month'), 'month');
+          const monthIndex = expenseDate?.diff(startDate.startOf('month'), 'month');
 
-          expenseData[monthIndex] += expense.amount;
+          expenseData[monthIndex] += expense?.amount;
         }
       }
     });
 
     let cumulativeSum = 0;
 
-    incomeData.forEach((income, index) => {
+    incomeData?.forEach((income, index) => {
       netCashFlowData[index] = income - expenseData[index];
       cumulativeSum += netCashFlowData[index];
       cumulativeCashFlowData[index] = cumulativeSum;
@@ -274,18 +274,18 @@ const FlowChart: React.FC = () => {
       },
     };
 
-    const totalIncome = incomeData.reduce((sum, val) => sum + val, 0);
-    const totalExpenses = expenseData.reduce((sum, val) => sum + val, 0);
+    const totalIncome = incomeData?.reduce((sum, val) => sum + val, 0);
+    const totalExpenses = expenseData?.reduce((sum, val) => sum + val, 0);
     const netIncome = totalIncome - totalExpenses;
-    const numberOfMonths = labels.length;
+    const numberOfMonths = labels?.length;
     const averageMonthlyIncome = totalIncome / numberOfMonths;
     const averageMonthlyExpenses = totalExpenses / numberOfMonths;
     const savingsRate = totalIncome !== 0 ? (netIncome / totalIncome) * 100 : 0;
 
     const highestIncome = Math.max(...incomeData);
     const highestExpense = Math.max(...expenseData);
-    const highestIncomeMonthIndex = incomeData.indexOf(highestIncome);
-    const highestExpenseMonthIndex = expenseData.indexOf(highestExpense);
+    const highestIncomeMonthIndex = incomeData?.indexOf(highestIncome);
+    const highestExpenseMonthIndex = expenseData?.indexOf(highestExpense);
     const highestIncomeMonth = labels[highestIncomeMonthIndex];
     const highestExpenseMonth = labels[highestExpenseMonthIndex];
 
