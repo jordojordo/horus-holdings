@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response }  from 'express';
 import passport from 'passport';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -7,7 +7,7 @@ import User from '../models/User';
 
 const router = express.Router();
 
-router.post('/register', async(req, res) => {
+router.post('/register', async(req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
 
@@ -29,9 +29,11 @@ router.post('/register', async(req, res) => {
   }
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', passport.authenticate('local'), (req: Request, res: Response) => {
   if (!process.env.JWT_SECRET) {
-    return res.status(500).json({ error: 'JWT_SECRET not set' });
+    res.status(500).json({ message: 'JWT_SECRET not set' });
+    
+    return;
   }
 
   try {
@@ -49,12 +51,12 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
   }
 });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', (req: Request, res: Response) => {
   req.logout({}, () => {});
   res.status(200).send('Logged out');
 });
 
-router.get('/user', (req, res) => {
+router.get('/user', (req: Request, res: Response) => {
   if (req.isAuthenticated()) {
     res.json(req.user);
   } else {
@@ -62,9 +64,11 @@ router.get('/user', (req, res) => {
   }
 });
 
-router.put('/update', async(req, res) => {
+router.put('/update', async(req: Request, res: Response) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).send('Unauthorized');
+    res.status(401).send('Unauthorized');
+
+    return;
   }
 
   const { username, newPassword } = req.body;
@@ -90,9 +94,11 @@ router.put('/update', async(req, res) => {
   }
 });
 
-router.delete('/delete', async(req, res) => {
+router.delete('/delete', async(req: Request, res: Response) => {
   if (!req.isAuthenticated()) {
-    return res.status(401).send('Unauthorized');
+    res.status(401).send('Unauthorized');
+
+    return;
   }
 
   const user = req.user as User;

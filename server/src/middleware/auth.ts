@@ -7,7 +7,9 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
   const token = req?.cookies?.token;
 
   if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    res.status(401).json({ error: 'Unauthorized' });
+
+    return;
   }
 
   try {
@@ -15,12 +17,16 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
     const user = await User.findByPk(decoded.user.id);
 
     if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Unauthorized' });
+
+      return;
     }
 
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    res.status(401).json({ error: 'Unauthorized' });
+
+    return;
   }
 };
