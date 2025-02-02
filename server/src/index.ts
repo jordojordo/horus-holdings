@@ -79,7 +79,7 @@ interface BroadcastData {
 
 
 const broadcast = (data: BroadcastData) => {
-  wss.clients.forEach((client) => {
+  wss.clients?.forEach((client) => {
     if (client.readyState === client.OPEN) {
       client.send(JSON.stringify(data));
     }

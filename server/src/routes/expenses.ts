@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 
 import Expense from '../models/Expense';
 import { isAuthenticated } from '../middleware/auth';
@@ -8,7 +8,7 @@ import { broadcast } from '../index';
 
 const router = express.Router();
 
-router.post('/', isAuthenticated, validateExpense, async(req, res) => {
+router.post('/', isAuthenticated, validateExpense, async(req: Request, res: Response) => {
   try {
     const {
       description, amount, category, date, recurring, recurrenceType, recurrenceEndDate
@@ -36,7 +36,7 @@ router.post('/', isAuthenticated, validateExpense, async(req, res) => {
   }
 });
 
-router.get('/', isAuthenticated, async(req, res) => {
+router.get('/', isAuthenticated, async(req: Request, res: Response) => {
   try {
     const user = req?.user as User;
 
@@ -48,7 +48,7 @@ router.get('/', isAuthenticated, async(req, res) => {
   }
 });
 
-router.delete('/:id', isAuthenticated, async(req, res) => {
+router.delete('/:id', isAuthenticated, async(req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const user = req?.user as User;
@@ -65,7 +65,7 @@ router.delete('/:id', isAuthenticated, async(req, res) => {
   }
 });
 
-router.put('/:id', isAuthenticated, validateExpense, async(req, res) => {
+router.put('/:id', isAuthenticated, validateExpense, async(req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const user = req?.user as User;
@@ -81,7 +81,9 @@ router.put('/:id', isAuthenticated, validateExpense, async(req, res) => {
     });
 
     if (!expense) {
-      return res.status(404).json({ message: 'Expense not found' });
+      res.status(404).json({ message: 'Expense not found' });
+
+      return;
     }
 
     expense.description = description || expense.description;

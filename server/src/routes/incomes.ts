@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 
 import Income from '../models/Income';
 import { isAuthenticated } from '../middleware/auth';
@@ -8,7 +8,7 @@ import { broadcast } from '../index';
 
 const router = express.Router();
 
-router.post('/', isAuthenticated, validateIncome, async(req, res) => {
+router.post('/', isAuthenticated, validateIncome, async(req: Request, res: Response) => {
   try {
     const {
       description, amount, date, recurring, recurrenceType, recurrenceEndDate
@@ -35,7 +35,7 @@ router.post('/', isAuthenticated, validateIncome, async(req, res) => {
   }
 });
 
-router.get('/', isAuthenticated, async(req, res) => {
+router.get('/', isAuthenticated, async(req: Request, res: Response) => {
   try {
     const user = req?.user as User;
 
@@ -47,7 +47,7 @@ router.get('/', isAuthenticated, async(req, res) => {
   }
 });
 
-router.delete('/:id', isAuthenticated, async(req, res) => {
+router.delete('/:id', isAuthenticated, async(req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const user = req?.user as User;
@@ -64,7 +64,7 @@ router.delete('/:id', isAuthenticated, async(req, res) => {
   }
 });
 
-router.put('/:id', isAuthenticated, validateIncome, async(req, res) => {
+router.put('/:id', isAuthenticated, validateIncome, async(req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const user = req?.user as User;
@@ -80,7 +80,9 @@ router.put('/:id', isAuthenticated, validateIncome, async(req, res) => {
     });
 
     if (!income) {
-      return res.status(404).json({ message: 'Income not found' });
+      res.status(404).json({ message: 'Income not found' });
+
+      return;
     }
 
     income.description = description || income.description;
