@@ -1,7 +1,7 @@
 {
   "name": "horusholdings",
   "private": true,
-  "version": "0.2.7",
+  "version": "0.2.8",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -29,7 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^8.24.1",
     "@typescript-eslint/parser": "^8.24.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "antd": "^5.24.1",
+    "antd": "^5.24.2",
     "chart.js": "^4.4.8",
     "concurrently": "^9.1.2",
     "dayjs": "^1.11.13",

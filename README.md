@@ -1,8 +1,6 @@
 # Horus Holdings
 
-[![CI & Build checks](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml)
-
-[![Publish to GHCR](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml)
+[![CI & Build checks](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml) [![Publish to GHCR](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml)
 
 ## Overview
 

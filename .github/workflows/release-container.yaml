@@ -1,4 +1,4 @@
-name: Release Horus Container
+name: Publish to GHCR
 
 on:
   release:
