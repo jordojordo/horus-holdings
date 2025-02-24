@@ -30,8 +30,6 @@ jobs:
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: latest ${{ github.ref_name }} ${{ github.sha }}
-          build-args: |
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
           containerfiles: |
             ./Dockerfile
           oci: true
