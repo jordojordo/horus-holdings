@@ -14,7 +14,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-release-container:
+  test-build-container:
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -32,7 +32,7 @@ jobs:
         id: build-image
         with:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: latest ${{ github.ref_name }} ${{ github.sha }}
+          tags: testing ${{ github.sha }}
           build-args: |
             JWT_SECRET=${{ secrets.JWT_SECRET }}
           containerfiles: |
