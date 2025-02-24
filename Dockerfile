@@ -1,7 +1,9 @@
-FROM node:22 AS frontend-build
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+FROM node:22-alpine AS frontend-build
+
+RUN apk add --no-cache curl ca-certificates nodejs npm \
+    && npm install -g pnpm \
+    && pnpm --version
+
 WORKDIR /app/frontend
 COPY ./package.json ./pnpm-lock.yaml ./
 COPY ./tsconfig.json ./tsconfig.app.json ./tsconfig.node.json ./
@@ -9,18 +11,22 @@ COPY ./vite.config.ts ./
 COPY ./src ./src
 COPY ./public ./public
 COPY index.html .env.production ./
+
 RUN pnpm install
 RUN pnpm build
 
-FROM node:22 AS backend-build
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+FROM node:22-alpine AS backend-build
+
+RUN apk add --no-cache curl ca-certificates nodejs npm \
+    && npm install -g pnpm \
+    && pnpm --version
+
 WORKDIR /app/backend
 COPY ./server/package.json ./server/pnpm-lock.yaml ./
 COPY ./server/tsconfig.json ./
 COPY ./server/src ./src
 COPY ./server/.env ./
+
 RUN pnpm install
 RUN pnpm build
 EXPOSE 5000 

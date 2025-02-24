@@ -1,10 +1,17 @@
 # Horus Holdings
 
+[![CI & Build checks](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml)
+
+[![Publish to GHCR](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml)
+
 ## Overview
 
 Horus Holdings is a cash flow management tool designed to help users track their incomes and expenses, providing a clear visualization of their cash flow over time.
 
 Named after the Egyptian god Horus, who symbolizes protection, stability, and prosperity, this application aims to bring financial clarity and control to its users. By offering robust user authentication, Horus Holdings ensures that each user's financial data remains secure and private, echoing the protective nature of its namesake.
+
+> [!TIP]
+> See it in action: https://horus.yokanga.xyz
 
 ![Frontend Demo](assets/frontend-demo.png)
 
