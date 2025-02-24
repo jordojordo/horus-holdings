@@ -1,18 +1,20 @@
-name: Release Horus Container
+name: CI & Build checks
 
 on:
-  release:
-    types: [released]
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "0 4 * * 4"
 
 env:
   ACTIONS_RUNNER_DEBUG: false
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 jobs:
   build-release-container:
-    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -32,22 +34,10 @@ jobs:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: latest ${{ github.ref_name }} ${{ github.sha }}
           build-args: |
-            JWT_SECRET=${{ env.JWT_SECRET }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
           containerfiles: |
             ./Dockerfile
           oci: true
 
-      - name: Login to GitHub Container Registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push To ghcr.io
-        id: push-to-ghcr
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build-image.outputs.image }}
-          tags: ${{ steps.build-image.outputs.tags }}
-          registry: ${{ env.REGISTRY }}
+      - name: Print image urls
+        run: echo "Images built ${{ toJSON(steps.build-image.outputs) }}"
