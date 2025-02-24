@@ -24,7 +24,10 @@ router.post('/register', async(req: Request, res: Response) => {
     if (error?.name === 'SequelizeUniqueConstraintError') {
       res.status(400).json({ message: 'Username is unavailable. Please choose a different username.' });
     } else {
-      res.status(500).json({ message: 'An unexpected error occurred. Please try again later.' });
+      res.status(500).json({
+        message: 'An unexpected error occurred.',
+        error
+      });
     }
   }
 });
@@ -32,7 +35,7 @@ router.post('/register', async(req: Request, res: Response) => {
 router.post('/login', passport.authenticate('local'), (req: Request, res: Response) => {
   if (!process.env.JWT_SECRET) {
     res.status(500).json({ message: 'JWT_SECRET not set' });
-    
+
     return;
   }
 
@@ -47,7 +50,10 @@ router.post('/login', passport.authenticate('local'), (req: Request, res: Respon
 
     res.json(req.user);
   } catch (error) {
-    res.status(500).json({ message: 'An unexpected error occurred. Please try again later.' });
+    res.status(500).json({
+      message: 'An unexpected error occurred.',
+      error
+    });
   }
 });
 
@@ -89,7 +95,10 @@ router.put('/update', async(req: Request, res: Response) => {
     if (error?.name === 'SequelizeUniqueConstraintError') {
       res.status(400).json({ message: 'Username is unavailable. Please choose a different username.' });
     } else {
-      res.status(500).json({ message: 'An unexpected error occurred. Please try again later.' });
+      res.status(500).json({
+        message: 'An unexpected error occurred',
+        error
+      });
     }
   }
 });
@@ -108,7 +117,10 @@ router.delete('/delete', async(req: Request, res: Response) => {
 
     res.status(200).send('User deleted');
   } catch (error: any) {
-    res.status(500).json({ message: 'An unexpected error occurred. Please try again later.' });
+    res.status(500).json({
+      message: 'An unexpected error occurred',
+      error
+    });
   }
 });
 
