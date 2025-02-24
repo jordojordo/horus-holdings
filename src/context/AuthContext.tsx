@@ -36,6 +36,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setUser(response.data);
       } catch (error) {
+        console.error('Unable to fetch user:', error);
         setUser(null);
       }
     };

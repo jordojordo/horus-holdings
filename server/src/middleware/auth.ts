@@ -25,6 +25,7 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
     req.user = user;
     next();
   } catch (error) {
+    console.warn('Unable to verify token:', error);
     res.status(401).json({ error: 'Unauthorized' });
 
     return;
