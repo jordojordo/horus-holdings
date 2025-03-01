@@ -19,4 +19,4 @@ for i in $(env | grep CLIENT_); do
 done
 
 # Start Node and Nginx
-node /app/backend/index.js & nginx -g 'daemon off;'
+node /app/backend/server.js & nginx -g 'daemon off;'
