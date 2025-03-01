@@ -1,16 +1,18 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import { User } from '../types/User';
-import { getServiceConfig } from '../utils/service';
+import { User } from '@/types/User';
+import { getServiceConfig } from '@/utils/service';
 
 export interface AuthContextType {
+  isLoading: boolean;
+  authenticated: boolean;
+  token: string | null;
   user: User | null
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (username: string, password: string) => Promise<void>;
-  updateProfile: (username: string, newPassword: string) => Promise<void>;
+  updateProfile: (username: string, password: string) => Promise<void>;
   deleteUser: () => Promise<void>;
 }
 
@@ -24,28 +26,73 @@ interface AuthProviderProps {
 axios.defaults.withCredentials = true;
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate();
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [user, setUser] = useState<User | null>(() => {
+    const localUser = localStorage.getItem('user');
+
+    return localUser ? JSON.parse(localUser) : null;
+  });
+  const [authenticated, setAuthenticated] = useState<boolean>(!!localStorage.getItem('token'));
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { apiUrl } = getServiceConfig();
 
   useEffect(() => {
-    const fetchUser = async() => {
-      try {
-        const response = await axios.get(`${ apiUrl }/auth/user`);
+    const loadUser = () => {
+      loadToken();
 
-        setUser(response.data);
-      } catch (error) {
-        console.error('Unable to fetch user:', error);
-        setUser(null);
+      if (localStorage.getItem('token')) {
+        setAuthenticated(true);
       }
+
+      setIsLoading(false);
     };
 
-    fetchUser();
+    loadUser();
   }, [apiUrl]);
+
+  function loadToken() {
+    const localToken = localStorage.getItem('token');
+    const localUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+    if (localToken && localUser) {
+      setToken(localToken);
+      setUser(localUser);
+    } else {
+      clearUser();
+    }
+  }
+
+  function clearUser() {
+    setToken(null);
+    setUser(null);
+    setAuthenticated(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  };
+
+  const register = async(username: string, password: string) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${ apiUrl }/auth/register`, {
+        username,
+        password
+      });
+
+      if (response.status === 201) {
+        await login(username, password);
+      }
+
+      setIsLoading(false);
+    } catch (error: any) {
+      setIsLoading(false);
+      throw new Error(error?.response?.data?.error || 'Unable to register. Please try again.');
+    }
+  };
 
   const login = async(username: string, password: string) => {
     try {
+      setIsLoading(true);
       if (!username || !password) {
         throw new Error('Invalid username or password');
       }
@@ -55,49 +102,42 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         password
       });
 
+      setToken(response.data.token);
       setUser(response.data);
-      navigate('/dashboard');
+      setAuthenticated(true);
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
+
+      setIsLoading(false);
     } catch (error: any) {
-      throw new Error(error?.response?.data?.message || 'Unable to login. Please try again.');
+      setIsLoading(false);
+      throw new Error(error?.response?.data?.error || 'Unable to login. Please try again.');
     }
   };
 
   const logout = async() => {
     try {
+      setIsLoading(true);
       await axios.post(`${ apiUrl }/auth/logout`);
 
-      setUser(null);
-      navigate('/login');
+      clearUser();
+      setIsLoading(false);
     } catch (error: any) {
-      throw new Error(error?.response?.data?.message || 'Unable to logout. Please try again.');
+      throw new Error(error?.response?.data?.error || 'Unable to logout. Please try again.');
     }
   };
 
-  const register = async(username: string, password: string) => {
+  const updateProfile = async(username: string, password: string) => {
     try {
-      const response = await axios.post(`${ apiUrl }/auth/register`, {
+      const response = await axios.put(`${ apiUrl }/auth/update`, {
         username,
         password
       });
 
-      if (response.status === 201) {
-        await login(username, password);
-      }
-    } catch (error: any) {
-      throw new Error(error?.response?.data?.message || 'Unable to register. Please try again.');
-    }
-  };
-
-  const updateProfile = async(username: string, newPassword: string) => {
-    try {
-      const response = await axios.put(`${ apiUrl }/auth/update`, {
-        username,
-        newPassword
-      });
-
       setUser(response.data);
     } catch (error: any) {
-      throw new Error(error?.response?.data?.message || 'Unable to update profile. Please try again.');
+      throw new Error(error?.response?.data?.error || 'Unable to update profile. Please try again.');
     }
   };
 
@@ -106,14 +146,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       await axios.delete(`${ apiUrl }/auth/delete`);
 
       setUser(null);
-      navigate('/');
     } catch (error: any) {
-      throw new Error(error?.response?.data?.message || 'Unable to delete user. Please try again.');
+      throw new Error(error?.response?.data?.error || 'Unable to delete user. Please try again.');
     }
   };
 
   return (
     <AuthContext.Provider value={{
+      isLoading,
+      authenticated,
+      token,
       user,
       login,
       logout,

@@ -7,21 +7,21 @@ import dayjs from 'dayjs';
 
 import type { DatePickerProps } from 'antd';
 import type { Dayjs } from 'dayjs';
-import type { Item } from './ItemTable';
+import type { Item } from '@/components/ItemTable';
 
-import useAuth from '../hooks/useAuth';
-import { useTheme, THEME } from '../context/ThemeContext';
-import { Expense } from '../types/Expense';
-import { Income } from '../types/Income';
+import useAuth from '@/hooks/useAuth';
+import { useTheme, THEME } from '@/context/ThemeContext';
+import { Expense } from '@/types/Expense';
+import { Income } from '@/types/Income';
 
-import '../assets/style/FinancialForm.css';
+import '@/assets/style/FinancialForm.css';
 
 const { Option } = Select;
 
 interface FinancialFormProps {
   formType: 'income' | 'expense';
   apiUrl: string;
-  itemType?: 'expenses' | 'incomes';
+  itemType?: 'expense' | 'income';
   additionalFields?: React.JSX.Element;
   itemToUpdate?: Item;
   closeModal?: () => void;
@@ -35,14 +35,13 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [id, setId] = useState(0);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState<number>(0);
   const [date, setDate] = useState<Dayjs | null | undefined>(null);
+  const [category, setCategory] = useState<string | null>(null);
   const [recurring, setRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState<string | null>(null);
   const [recurrenceEndDate, setRecurrenceEndDate] = useState<Dayjs | null | undefined>(null);
-  const [category, setCategory] = useState<string | null | undefined>(undefined);
 
   const colors = {
     backgroundColor: currentTheme === THEME.LIGHT ? '#CFC5BF' : '#594a4e',
@@ -56,19 +55,13 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   };
 
   const resetForm = useCallback(() => {
-    setId(user?.id ?? 0);
     setDescription('');
     setAmount(0);
     setDate(null);
+    setCategory(null);
     setRecurring(false);
     setRecurrenceType(null);
     setRecurrenceEndDate(null);
-
-    if (formType === 'expense') {
-      setCategory(null);
-    } else {
-      setCategory(undefined);
-    }
   }, [formType, user]);
 
   useEffect(() => {
@@ -76,17 +69,13 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
       const itemDate = dayjs(itemToUpdate.date);
       const itemRecurrenceEndDate = dayjs(itemToUpdate.recurrenceEndDate);
 
-      setId(itemToUpdate.id);
       setDescription(itemToUpdate.description);
       setAmount(itemToUpdate.amount);
       setDate(itemDate.isValid() ? itemDate : null);
+      setCategory(itemToUpdate.category);
       setRecurring(itemToUpdate.recurring);
       setRecurrenceType(itemToUpdate.recurrenceType);
       setRecurrenceEndDate(itemRecurrenceEndDate.isValid() ? itemRecurrenceEndDate : null);
-
-      if (itemToUpdate.category) {
-        setCategory(itemToUpdate.category);
-      }
 
       setModalVisible(true);
     } else {
@@ -104,31 +93,20 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
     try {
       let data: Income | Expense;
 
-      if (formType === 'expense') {
-        data = {
-          id,
-          description,
-          amount,
-          category,
-          date,
-          recurring,
-          recurrenceType,
-          recurrenceEndDate,
-        } as Expense;
-      } else {
-        data = {
-          id,
-          description,
-          amount,
-          date,
-          recurring,
-          recurrenceType,
-          recurrenceEndDate
-        } as Income;
-      }
+      data = {
+        description,
+        amount,
+        category,
+        date,
+        recurring,
+        recurrenceType,
+        recurrenceEndDate
+      } as Income | Expense;
 
       if (itemToUpdate) {
-        await axios.put(`${ apiUrl }/${ itemToUpdate.id }`, data);
+        data.id = itemToUpdate.id;
+
+        await axios.put(`${ apiUrl }/${ data.id }`, data);
       } else {
         await axios.post(apiUrl, data);
       }
@@ -222,11 +200,9 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
             <Form.Item name="date" label="Date">
               <DatePicker value={date} onChange={handleDateChange} />
             </Form.Item>
-            {formType === 'expense' && (
-              <Form.Item name="category" label="Category" rules={[{ message: 'Please enter a category' }]}>
-                <Input onChange={(e) => setCategory(e.target.value)} />
-              </Form.Item>
-            )}
+            <Form.Item name="category" label="Category" rules={[{ message: 'Please enter a category' }]}>
+              <Input onChange={(e) => setCategory(e.target.value)} />
+            </Form.Item>
             <Form.Item name="recurring" valuePropName="checked">
               <Checkbox onChange={(e) => setRecurring(e.target.checked)}>
                 Recurring

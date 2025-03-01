@@ -1,18 +1,18 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Space, Form, notification } from 'antd';
 
-import { AuthContext } from '../context/AuthContext';
+import useAuth from '@/hooks/useAuth';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
-  const [username, setUsername] = useState(authContext?.user?.username || '');
+  const { user, updateProfile, deleteUser } = useAuth();
+  const [username, setUsername] = useState(user?.username || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleUpdate = async() => {
-    if (!authContext?.user) {
+    if (!user) {
       return;
     }
 
@@ -23,7 +23,7 @@ const Settings: React.FC = () => {
     }
 
     try {
-      await authContext.updateProfile(username, newPassword);
+      await updateProfile(username, newPassword);
       notification.success({ message: 'Profile updated successfully' });
 
       setNewPassword('');
@@ -35,11 +35,11 @@ const Settings: React.FC = () => {
 
   const handleDelete = async() => {
     try {
-      if (!authContext?.user) {
+      if (!user) {
         return;
       }
 
-      await authContext.deleteUser();
+      await deleteUser();
       notification.success({ message: 'Account deleted successfully' });
 
       navigate('/');

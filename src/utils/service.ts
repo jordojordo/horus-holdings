@@ -1,5 +1,6 @@
 export interface ServiceConfig {
   wsUrl: string;
+  wsPath: string;
   apiUrl: string;
 }
 
@@ -28,11 +29,13 @@ export function getServiceConfig(): ServiceConfig {
   const port = envPort && !isPlaceholder(envPort) ? `:${ envPort }` : defaultConfig.port;
   const path = envPath && !isPlaceholder(envPath) ? envPath : defaultConfig.path;
 
-  const wsUrl = `${ wsScheme }://${ host }${ port }${ path }`;
-  const apiUrl = `${ apiScheme }://${ host }${ port }/api`;
+  const wsUrl = `${ wsScheme }://${ host }${ port }`;
+  const wsPath = path.startsWith('/') ? path : `/${ path }`;
+  const apiUrl = `${ apiScheme }://${ host }${ port }/api/v1`;
 
   return {
     wsUrl,
+    wsPath,
     apiUrl,
   };
 }

@@ -16,14 +16,14 @@ import {
   ArcElement
 } from 'chart.js';
 
-import { useWebSocketContext } from '../context/WebSocketContext';
-import { getServiceConfig } from '../utils/service';
+import { useSocketContext } from '@/context/SocketContext';
+import { getServiceConfig } from '@/utils/service';
 
-import DateRange from './DateRange';
-import { Expense } from '../types/Expense';
-import { Income } from '../types/Income';
+import DateRange from '@/components/DateRange';
+import { Expense } from '@/types/Expense';
+import { Income } from '@/types/Income';
 
-import '../assets/style/FlowChart.css';
+import '@/assets/style/FlowChart.css';
 
 ChartJS.register(
   CategoryScale,
@@ -82,7 +82,7 @@ interface ChartData {
 type RecurrenceType = 'bi-weekly' | 'monthly' | 'bi-monthly';
 
 const FlowChart: React.FC = () => {
-  const { setOnMessage } = useWebSocketContext();
+  const { setOnMessage } = useSocketContext();
 
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -97,21 +97,21 @@ const FlowChart: React.FC = () => {
 
   const fetchIncomes = useCallback(async() => {
     try {
-      const response = await axios.get(`${ apiUrl }/incomes`);
+      const response = await axios.get(`${ apiUrl }/income`);
 
       setIncomes(response.data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      throw new Error(`Unable to fetch incomes: ${ error?.message || error?.response?.data?.error }`);
     }
   }, [apiUrl]);
 
   const fetchExpenses = useCallback(async() => {
     try {
-      const response = await axios.get(`${ apiUrl }/expenses`);
+      const response = await axios.get(`${ apiUrl }/expense`);
 
       setExpenses(response.data);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      throw new Error(`Unable to fetch expenses: ${ error?.message || error?.response?.data?.error }`);
     }
   }, [apiUrl]);
 
@@ -136,7 +136,7 @@ const FlowChart: React.FC = () => {
   );
 
   useEffect(() => {
-    setOnMessage(handleNewItem);
+    setOnMessage('new_item', handleNewItem);
   }, [handleNewItem, setOnMessage]);
 
   const processChartData = (

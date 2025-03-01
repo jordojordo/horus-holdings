@@ -1,9 +1,9 @@
 import React from 'react';
 
-import ItemTable from './ItemTable';
+import ItemTable from '@/components/ItemTable';
 
 const ExpenseList: React.FC = () => {
-  return <ItemTable itemType="expenses" />;
+  return <ItemTable itemType="expense" />;
 };
 
 export default ExpenseList;

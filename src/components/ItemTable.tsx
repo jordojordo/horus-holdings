@@ -3,19 +3,19 @@ import axios from 'axios';
 import { Dropdown } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
 
-import { useWebSocketContext } from '../context/WebSocketContext';
-import { getServiceConfig } from '../utils/service';
-import { generateRandomKey } from '../utils/string';
+import { useSocketContext } from '@/context/SocketContext';
+import { getServiceConfig } from '@/utils/service';
+import { generateRandomKey } from '@/utils/string';
 
-import FinancialForm from './FinancialForm';
+import FinancialForm from '@/components/FinancialForm';
 
-import '../assets/style/ItemTable.css';
+import '@/assets/style/ItemTable.css';
 
 export interface Item {
   id: number;
   description: string;
   amount: number;
-  category?: string | null;
+  category: string | null;
   date: string | null;
   recurring: boolean;
   recurrenceType: string | null;
@@ -23,11 +23,11 @@ export interface Item {
 }
 
 interface ItemTableProps {
-  itemType: 'expenses' | 'incomes';
+  itemType: 'expense' | 'income';
 }
 
 const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
-  const { setOnMessage } = useWebSocketContext();
+  const { setOnMessage } = useSocketContext();
 
   const [items, setItems] = useState<Item[]>([]);
   const [itemToUpdate, setItemToUpdate] = useState<Item | null>(null);
@@ -49,34 +49,17 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
     fetchItems();
   }, [fetchItems]);
 
-  const handleItemChange = useCallback(
-    (event: MessageEvent) => {
-      const message = JSON.parse(event.data);
-      const t = message.type.split('_')[1];
-
-      if (message.type === `new_${ t }`) {
-        setItems((prevItems) => [...prevItems, message.data]);
-      }
-
-      if (message.type === `update_${ t }`) {
-        setItems((prevItems) => prevItems.map((item) => {
-          if (item.id === message.data.id) {
-            return {
-              ...item,
-              ...message.data
-            };
-          }
-
-          return item;
-        }));
-      }
-    },
-    []
-  );
-
   useEffect(() => {
-    setOnMessage(handleItemChange);
-  }, [handleItemChange, setOnMessage]);
+    // Listen for NEW
+    setOnMessage(`new_${ itemType }`, (payload) => {
+      setItems((prev) => [...prev, payload.data]);
+    });
+
+    // Listen for UPDATE
+    setOnMessage(`update_${ itemType }`, (payload) => {
+      setItems((prev) => prev.map((item) => (item.id === payload.data.id ? payload.data : item)));
+    });
+  }, [itemType, setOnMessage]);
 
   const handleDelete = async(id: number) => {
     try {
@@ -105,7 +88,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
             <tr>
               <th>Description</th>
               <th>Amount</th>
-              {itemType === 'expenses' && <th>Category</th>}
+              <th>Category</th>
               <th>Date</th>
               <th>Actions</th>
             </tr>
@@ -115,7 +98,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
               <tr key={item.id + generateRandomKey(4)}>
                 <td>{item.description}</td>
                 <td>{item.amount}</td>
-                {itemType === 'expenses' && <td>{item.category || '-'}</td>}
+                <td>{item.category || '-'}</td>
                 <td>{item.date ?? '-'}</td>
                 <td>
                   <Dropdown
