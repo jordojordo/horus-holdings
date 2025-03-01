@@ -1,14 +1,20 @@
 import React, { useState, FormEvent } from 'react';
 import { message } from 'antd';
 
-import useAuth from '../hooks/useAuth';
-import '../assets/style/AuthForm.css';
+import useAuth from '@/hooks/useAuth';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
+import '@/assets/style/AuthForm.css';
 
 const LoginForm: React.FC = () => {
+  const { isLoading, login } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { login } = useAuth();
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   const handleSubmit = async(e: FormEvent) => {
     e.preventDefault();

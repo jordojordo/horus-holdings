@@ -1,14 +1,28 @@
 import React, { useState, FormEvent } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { message } from 'antd';
 
-import useAuth from '../hooks/useAuth';
-import '../assets/style/AuthForm.css';
+import useAuth from '@/hooks/useAuth';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
+import '@/assets/style/AuthForm.css';
 
 const RegisterForm: React.FC = () => {
+  const {
+    authenticated, isLoading, register, login
+  } = useAuth();
+  const location = useLocation();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { register, login } = useAuth();
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (authenticated) {
+    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+  }
 
   const handleSubmit = async(e: FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import ExpenseForm from '../components/ExpenseForm';
-import ExpenseList from '../components/ExpenseList';
+import ExpenseForm from '@/components/ExpenseForm';
+import ExpenseList from '@/components/ExpenseList';
 
 const ExpensesPage: React.FC = () => {
   return (

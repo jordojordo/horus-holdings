@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # Set environment variables
-MYSQL_ROOT_PASSWORD=admin
-MYSQL_DATABASE=horusdevdb
-DATABASE_URL="mysql://root:$MYSQL_ROOT_PASSWORD@localhost:3306/$MYSQL_DATABASE"
+DATABASE_NAME=horusdevdb
+DATABASE_USER=root
+DATABASE_PASSWORD=admin
+DATABASE_HOST=localhost
+DATABASE_PORT=3306
+DATABASE_SSL=false
 CORS_ORIGIN="http://localhost"
 JWT_SECRET="super-secret"
 CLIENT_PROXY_SCHEME="ws"
@@ -20,14 +23,14 @@ docker pull ghcr.io/jordojordo/horus-holdings:latest
 # Run the MySQL container
 echo "Running the MySQL container..."
 docker run -d --name mysql-dev \
-   -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-   -e MYSQL_DATABASE=$MYSQL_DATABASE \
+   -e MYSQL_ROOT_PASSWORD=$DATABASE_PASSWORD \
+   -e MYSQL_DATABASE=$DATABASE_NAME \
    --network host \
    mysql:latest
 
 # Wait for MySQL to initialize
 echo "Waiting for MySQL to initialize..."
-until docker exec mysql-dev mysql -uroot -p$MYSQL_ROOT_PASSWORD -e "USE $MYSQL_DATABASE;" 2> /dev/null; do
+until docker exec mysql-dev mysql -uroot -p$DATABASE_PASSWORD -e "USE $DATABASE_NAME;" 2> /dev/null; do
     echo "Waiting for MySQL to be ready..."
     sleep 2
 done
@@ -36,7 +39,12 @@ done
 echo "Running the Horus Holdings container..."
 docker run -d --name horus \
    --network host \
-   -e DATABASE_URL=$DATABASE_URL \
+   -e DATABASE_NAME=$DATABASE_NAME \
+   -e DATABASE_USER=$DATABASE_USER \
+   -e DATABASE_PASSWORD=$DATABASE_PASSWORD \
+   -e DATABASE_HOST=$DATABASE_HOST \
+   -e DATABASE_PORT=$DATABASE_PORT \
+   -e DATABASE_SSL=$DATABASE_SSL \
    -e CORS_ORIGIN=$CORS_ORIGIN \
    -e JWT_SECRET=$JWT_SECRET \
    -e CLIENT_PROXY_SCHEME=$CLIENT_PROXY_SCHEME \

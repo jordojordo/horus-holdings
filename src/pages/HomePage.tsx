@@ -1,9 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Navigate, useLocation, Link } from 'react-router-dom';
+import useAuth from '@/hooks/useAuth';
 
-import '../assets/style/AuthForm.css';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
+import '@/assets/style/AuthForm.css';
 
 const HomePage: React.FC = () => {
+  const { authenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (authenticated) {
+    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+  }
+
   return (
     <div className="auth-container">
       <h1>Horus Holdings</h1>

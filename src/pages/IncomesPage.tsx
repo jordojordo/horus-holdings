@@ -1,7 +1,7 @@
 import React from 'react';
 
-import IncomeForm from '../components/IncomeForm';
-import IncomeList from '../components/IncomeList';
+import IncomeForm from '@/components/IncomeForm';
+import IncomeList from '@/components/IncomeList';
 
 const IncomesPage: React.FC = () => {
   return (

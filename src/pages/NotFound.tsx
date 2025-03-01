@@ -1,16 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import useAuth from '../hooks/useAuth';
+import useAuth from '@/hooks/useAuth';
 
-import '../assets/style/NotFound.css';
+import '@/assets/style/NotFound.css';
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { authenticated } = useAuth();
 
   const handleBackHome = () => {
-    if (user) {
+    if (authenticated) {
       return navigate('/dashboard');
     }
 

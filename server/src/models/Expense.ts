@@ -1,9 +1,11 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
-import User from './User';
+import { DataTypes, Model } from '@sequelize/core';
+import type { PartialBy } from '@sequelize/utils';
+
+import sequelize from '@server/config/database';
+import User from '@server/models/User';
 
 interface ExpenseAttributes {
-  id: number;
+  id: string;
   description: string;
   amount: number;
   category: string;
@@ -11,13 +13,13 @@ interface ExpenseAttributes {
   recurring: boolean;
   recurrenceType?: string;
   recurrenceEndDate?: string | null;
-  userId: number;
+  userID: string;
 }
 
-interface ExpenseCreationAttributes extends Optional<ExpenseAttributes, 'id'> {}
+interface ExpenseCreationAttributes extends PartialBy<ExpenseAttributes, 'id'> {}
 
 class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes> implements ExpenseAttributes {
-  public id!: number;
+  public id!: string;
   public description!: string;
   public amount!: number;
   public category!: string;
@@ -25,15 +27,16 @@ class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes> implem
   public recurring!: boolean;
   public recurrenceType?: string;
   public recurrenceEndDate?: string | null;
-  public userId!: number;
+  public userID!: string;
 }
 
 Expense.init(
   {
     id: {
-      type:          DataTypes.INTEGER,
-      autoIncrement: true,
+      type:          DataTypes.UUID,
+      defaultValue:  DataTypes.UUIDV4,
       primaryKey:    true,
+      allowNull:     false,
     },
     description: {
       type:      DataTypes.STRING(255),
@@ -79,8 +82,8 @@ Expense.init(
         this.setDataValue('recurrenceEndDate', value);
       },
     },
-    userId: {
-      type:      DataTypes.INTEGER,
+    userID: {
+      type:      DataTypes.UUID,
       allowNull: false,
     },
   },
@@ -90,6 +93,6 @@ Expense.init(
   }
 );
 
-Expense.belongsTo(User, { foreignKey: 'userId' });
+Expense.belongsTo(User, { foreignKey: 'userID' });
 
 export default Expense;

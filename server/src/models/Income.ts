@@ -1,38 +1,42 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model } from '@sequelize/core';
+import type { PartialBy } from '@sequelize/utils';
 
-import sequelize from '../config/database';
-import User from './User';
+import sequelize from '@server/config/database';
+import User from '@server/models/User';
 
 interface IncomeAttributes {
-  id: number;
+  id: string;
   description: string;
   amount: number;
-  date: string;
+  category: string;
+  date: string | null;
   recurring: boolean;
   recurrenceType?: string;
-  recurrenceEndDate?: string;
-  userId: number;
+  recurrenceEndDate?: string | null;
+  userID: string;
 }
 
-interface IncomeCreationAttributes extends Optional<IncomeAttributes, 'id'> {}
+interface IncomeCreationAttributes extends PartialBy<IncomeAttributes, 'id'> {}
 
 class Income extends Model<IncomeAttributes, IncomeCreationAttributes> implements IncomeAttributes {
-  public id!: number;
+  public id!: string;
   public description!: string;
   public amount!: number;
-  public date!: string;
+  public category!: string;
+  public date!: string | null;
   public recurring!: boolean;
   public recurrenceType?: string;
-  public recurrenceEndDate?: string;
-  public userId!: number;
+  public recurrenceEndDate?: string | null;
+  public userID!: string;
 }
 
 Income.init(
   {
     id: {
-      type:          DataTypes.INTEGER,
-      autoIncrement: true,
+      type:          DataTypes.UUID,
+      defaultValue:  DataTypes.UUIDV4,
       primaryKey:    true,
+      allowNull:     false,
     },
     description: {
       type:      DataTypes.STRING(255),
@@ -41,6 +45,10 @@ Income.init(
     amount: {
       type:      DataTypes.FLOAT,
       allowNull: false,
+    },
+    category: {
+      type:      DataTypes.STRING,
+      allowNull: true,
     },
     date: {
       type:      DataTypes.DATEONLY,
@@ -55,9 +63,8 @@ Income.init(
       },
     },
     recurring: {
-      type:         DataTypes.BOOLEAN,
-      allowNull:    false,
-      defaultValue: false,
+      type:      DataTypes.BOOLEAN,
+      allowNull: false,
     },
     recurrenceType: {
       type:      DataTypes.STRING,
@@ -75,9 +82,9 @@ Income.init(
         this.setDataValue('recurrenceEndDate', value);
       },
     },
-    userId: {
-      type:      DataTypes.INTEGER,
-      allowNull: false,
+    userID: {
+      type:      DataTypes.UUID,
+      allowNull: false
     },
   },
   {
@@ -86,6 +93,6 @@ Income.init(
   }
 );
 
-Income.belongsTo(User, { foreignKey: 'userId' });
+Income.belongsTo(User, { foreignKey: 'userID' });
 
 export default Income;

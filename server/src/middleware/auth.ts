@@ -1,13 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-import User from '../models/User';
+import User from '@server/models/User';
+import { handleError } from '@server/utils/errorHandler';
+import { broadcast } from '@server/plugins/io/clientNamespace';
 
 export const isAuthenticated = async(req: Request, res: Response, next: NextFunction) => {
-  const token = req?.cookies?.token;
+  const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    res.status(401).json({ error: 'Unauthorized' });
+    res.status(401).json({ error: 'Token undefined' });
 
     return;
   }
@@ -17,17 +19,23 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
     const user = await User.findByPk(decoded.user.id);
 
     if (!user) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'User not found' });
 
       return;
     }
 
     req.user = user;
     next();
-  } catch (error) {
-    console.warn('Unable to verify token:', error);
-    res.status(401).json({ error: 'Unauthorized' });
+  } catch (error: any) {
+    if (error instanceof jwt.TokenExpiredError) {
+      broadcast('token_expired', { message: 'Your session has expired, please log in again.' });
 
-    return;
+      res.status(401).json({ error: 'Token expired' });
+
+      return;
+    } else {
+      console.log('# Error:', error);
+      handleError(res, error, 'An unexpected error occurred.');
+    }
   }
 };

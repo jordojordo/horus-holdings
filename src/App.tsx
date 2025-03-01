@@ -1,38 +1,41 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { WebSocketProvider } from './context/WebSocketContext';
+import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { SocketProvider } from '@/context/SocketContext';
 
-import { getServiceConfig } from './utils/service';
+import { getServiceConfig } from '@/utils/service';
 
-import Navbar from './components/Navbar';
-import PrivateRoute from './components/PrivateRoute';
-import LoginForm from './components/LoginForm';
-import RegisterForm from './components/RegisterForm';
-import HomePage from './pages/HomePage';
-import DashboardPage from './pages/DashboardPage';
-import IncomesPage from './pages/IncomesPage';
-import ExpensesPage from './pages/ExpensesPage';
-import SettingsPage from './pages/SettingsPage';
-import NotFound from './pages/NotFound';
+import Navbar from '@/components/Navbar';
+
+import PublicRoute from './components/PublicRoute';
+import PrivateRoute from '@/components/PrivateRoute';
+
+import LoginForm from '@/components/LoginForm';
+import RegisterForm from '@/components/RegisterForm';
+import HomePage from '@/pages/HomePage';
+import DashboardPage from '@/pages/DashboardPage';
+import IncomesPage from '@/pages/IncomesPage';
+import ExpensesPage from '@/pages/ExpensesPage';
+import SettingsPage from '@/pages/SettingsPage';
+import NotFound from '@/pages/NotFound';
 
 const App: React.FC = () => {
-  const { wsUrl } = getServiceConfig();
+  const { wsUrl, wsPath } = getServiceConfig();
 
   return (
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <WebSocketProvider url={wsUrl}>
+          <SocketProvider url={wsUrl} path={wsPath}>
             <div className="container">
               <Navbar />
               <div className="content">
                 <Routes>
-                  <Route path="/login" element={<LoginForm />} />
-                  <Route path="/register" element={<RegisterForm />} />
-                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<PublicRoute element={<LoginForm />} />} />
+                  <Route path="/register" element={<PublicRoute element={<RegisterForm />} />} />
+                  <Route path="/" element={<PublicRoute element={<HomePage />} />} />
                   <Route
                     path="/dashboard"
                     element={<PrivateRoute element={<DashboardPage />} />}
@@ -53,7 +56,7 @@ const App: React.FC = () => {
                 </Routes>
               </div>
             </div>
-          </WebSocketProvider>
+          </SocketProvider>
         </ThemeProvider>
       </AuthProvider>
     </Router>

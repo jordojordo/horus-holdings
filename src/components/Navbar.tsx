@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 
 import { MenuOutlined } from '@ant-design/icons';
 
-import useAuth from '../hooks/useAuth';
-import useViewport from '../hooks/useViewport';
-import '../assets/style/Navbar.css';
+import useAuth from '@/hooks/useAuth';
+import useViewport from '@/hooks/useViewport';
+import '@/assets/style/Navbar.css';
 
-import ToggleThemeButton from './ToggleThemeButton';
+import ToggleThemeButton from '@/components/ToggleThemeButton';
 
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { authenticated, logout } = useAuth();
   const { width } = useViewport();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
           )}
         </header>
         <div ref={menuRef} className={`navbar-links ${ isMenuOpen ? 'active' : '' }`}>
-          {user ? (
+          {authenticated ? (
             <>
               <Link to="/dashboard" onClick={toggleMenu} className="text-bold">Dashboard</Link>
               <Link to="/incomes" onClick={toggleMenu} className="text-bold">Incomes</Link>

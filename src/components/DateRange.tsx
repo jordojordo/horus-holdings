@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import { DatePicker, Space } from 'antd';
 
-import '../assets/style/DateRange.css';
+import '@/assets/style/DateRange.css';
 
 const { RangePicker } = DatePicker;
 
