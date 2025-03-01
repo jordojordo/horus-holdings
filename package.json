@@ -1,7 +1,7 @@
 {
   "name": "horusholdings",
   "private": true,
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0-alpha.3",
   "license": "MIT",
   "type": "module",
   "scripts": {

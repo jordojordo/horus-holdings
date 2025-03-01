@@ -12,7 +12,7 @@
     "@sequelize/core": "7.0.0-alpha.45",
     "@sequelize/mysql": "7.0.0-alpha.45",
     "@sequelize/utils": "7.0.0-alpha.44",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
