@@ -81,7 +81,11 @@ The `Dockerfile` is set up to build both the frontend and backend applications i
    ```sh
    docker run -d --name horus \
       --network host \
-      -e DATABASE_URL=mysql://root:admin@localhost:3306/horusdevdb \
+      -e DATABASE_NAME=horusdevdb \
+      -e DATABASE_USER=root \
+      -e DATABASE_PASSWORD=admin \
+      -e DATABASE_HOST=localhost \
+      -e DATABASE_PORT=3306 \
       -e CORS_ORIGIN=http://localhost \
       -e JWT_SECRET=super-secret \
       -e CLIENT_API_SCHEME=http \
@@ -100,9 +104,15 @@ The following table lists the configurable and required parameters for the appli
 
 | Parameter               | Required | Description                                                   | Default                                          |
 |-------------------------|----------|---------------------------------------------------------------|--------------------------------------------------|
-| `DATABASE_URL`          | *        | The URL for the database connection.                          | 'mysql://root:rootpassword@127.0.0.1:3306/horusdevdb' |
-| `CORS_ORIGIN`           | *        | The origin allowed for CORS.                                  | 'http://localhost'                               |
+| `DATABASE_NAME`         | *        | The name of the database to connect to.                       | 'horusdevdb'                                     |
+| `DATABASE_USER`         | *        | The username for the database connection.                     | 'root'                                           |
+| `DATABASE_PASSWORD`     | *        | The password for the database connection.                     | 'admin'                                          |
+| `DATABASE_HOST`         | *        | The host for the database connection.                         | '127.0.0.1'                                      |
+| `DATABASE_PORT`         | *        | The port for the database connection.                         | '3306'                                           |
+| `CORS_ORIGIN`           | *        | The origin allowed for CORS.                                  | 'http://localhost:5173'                          |
+| `SESSION_SECRET`        |          | The secret key used for session management.                   | A random 64-byte hex string                      |
 | `JWT_SECRET`            | *        | The secret key used for JWT authentication.                   | 'super_secret_key'                               |
+| `ENCRYPTION_KEY`        | *        | The secret key used for encryption.                           | 'my_encryption_key'                              |
 | `CLIENT_API_SCHEME`     |          | The scheme used for API requests (e.g. https or http).        | 'https'                                          |
 | `CLIENT_PROXY_SCHEME`   |          | The scheme used for WebSocket connections. (e.g. wss or ws)   | 'wss'                                            |
 | `CLIENT_PROXY_HOST`     |          | The host used for WebSocket connections. (e.g. mydomain.com ) | 'localhost'                                      |
@@ -124,10 +134,19 @@ To run the application locally, you need to have Node.js and PNPM installed.
 2. **Set Up Environment Variables**:
    Create a `.env` file in the `./server` directory with the following content:
    ```env
-   DATABASE_URL=mysql://root:admin@127.0.0.1:3306/horusdevdb
-   JWT_SECRET=your_secret_key
-   CORS_ORIGIN=http://localhost:3000
-   NODE_ENV=development
+   NODE_ENV="development"
+   NODE_PORT=5000
+   CORS_ORIGIN=http://localhost:5173
+   SESSION_SECRET=my_development_secret
+   JWT_SECRET=my_development_secret
+   ENCRYPTION_KEY=my_development_secret
+
+   DATABASE_NAME=horusdevdb
+   DATABASE_USER=root
+   DATABASE_PASSWORD=admin
+   DATABASE_HOST=127.0.0.1
+   DATABASE_PORT=3306
+   DATABASE_LOGGING="false"
    ```
 
 3. **Run the Application**:
