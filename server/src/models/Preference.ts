@@ -6,7 +6,7 @@ import User from '@server/models/User';
 
 interface PreferenceAttributes {
   id: string;
-  userID: number;
+  userID: string;
   foobar?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -16,7 +16,7 @@ interface PreferenceCreationAttributes extends PartialBy<PreferenceAttributes, '
 
 class Preference extends Model<PreferenceAttributes, PreferenceCreationAttributes> implements PreferenceAttributes {
   public id!: string;
-  public userID!: number;
+  public userID!: string;
   public foobar!: string;
   public createdAt!: string;
   public updatedAt!: string;
