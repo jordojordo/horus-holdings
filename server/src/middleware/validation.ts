@@ -12,15 +12,19 @@ const userSchema = Joi.object({
 });
 
 const financeSchema = Joi.object({
-  id:                 Joi.string(),
-  description:        Joi.string().max(255).required().messages({ 'string.max': 'Description must be less than or equal to 255 characters.' }),
-  amount:             Joi.number().positive().required().messages({ 'number.positive': 'Amount must be a positive number.' }),
-  date:               Joi.date().allow(null),
-  category:           Joi.string().allow(null).max(255).messages({ 'string.max': 'Category must be less than or equal to 255 characters.' }),
-  recurring:          Joi.boolean(),
-  recurrenceType:     Joi.string().allow(null),
-  recurrenceEndDate:  Joi.date().allow(null),
-  userId:             Joi.number().positive()
+  id:                   Joi.string(),
+  description:          Joi.string().max(255).required().messages({ 'string.max': 'Description must be less than or equal to 255 characters.' }),
+  amount:               Joi.number().positive().required().messages({ 'number.positive': 'Amount must be a positive number.' }),
+  date:                 Joi.date().allow(null),
+  category:             Joi.string().allow(null).max(255).messages({ 'string.max': 'Category must be less than or equal to 255 characters.' }),
+  recurring:            Joi.boolean(),
+  recurrenceType:       Joi.string().allow(null),
+  recurrenceEndDate:    Joi.date().allow(null),
+  customRecurrenceDays: Joi.array().items(Joi.number().min(0).max(31)).allow(null).messages({
+    'number.min': 'Custom recurrence days must be greater than or equal to 0.',
+    'number.max': 'Custom recurrence days must be less than or equal to 31.'
+  }),
+  userId: Joi.number().positive()
 });
 
 export const validateExpense = (req: Request, res: Response, next: NextFunction) => {

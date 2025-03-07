@@ -9,19 +9,20 @@ class IncomeController extends BaseController {
   async createIncome(req: Request, res: Response) {
     try {
       const {
-        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate
+        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate, customRecurrenceDays
       } = req.body;
       const user = req?.user as User;
 
       const income = await Income.create({
-        description:       description || '',
-        amount:            amount || 0,
-        category:          category || '',
-        date:              date || null,
-        recurring:         recurring || false,
-        recurrenceType:    recurrenceType || null,
-        recurrenceEndDate: recurrenceEndDate || null,
-        userID:            user?.id
+        description:          description || '',
+        amount:               amount || 0,
+        category:             category || '',
+        date:                 date || null,
+        recurring:            recurring || false,
+        recurrenceType:       recurrenceType || null,
+        recurrenceEndDate:    recurrenceEndDate || null,
+        customRecurrenceDays: customRecurrenceDays || null,
+        userID:               user?.id
       });
 
       broadcast('new_income', { data: income });
@@ -46,7 +47,7 @@ class IncomeController extends BaseController {
   async updateIncome(req: Request, res: Response) {
     try {
       const {
-        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate
+        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate, customRecurrenceDays
       } = req.body;
       const { id } = req.params;
       const user = req?.user as User;
@@ -65,13 +66,14 @@ class IncomeController extends BaseController {
       }
 
       await income.update({
-        description:       description || '',
-        amount:            amount || 0,
-        category:          category || '',
-        date:              date || null,
-        recurring:         recurring || false,
-        recurrenceType:    recurrenceType || null,
-        recurrenceEndDate: recurrenceEndDate || null
+        description:          description || '',
+        amount:               amount || 0,
+        category:             category || '',
+        date:                 date || null,
+        recurring:            recurring || false,
+        recurrenceType:       recurrenceType || null,
+        recurrenceEndDate:    recurrenceEndDate || null,
+        customRecurrenceDays: customRecurrenceDays || null
       });
 
       broadcast('update_income', { data: income });
