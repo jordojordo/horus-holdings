@@ -9,19 +9,20 @@ class ExpenseController extends BaseController {
   async createExpense(req: Request, res: Response) {
     try {
       const {
-        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate
+        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate, customRecurrenceDays
       } = req.body;
       const user = req?.user as User;
 
       const expense = await Expense.create({
-        description:       description || '',
-        amount:            amount || 0,
-        category:          category || '',
-        date:              date || null,
-        recurring:         recurring || false,
-        recurrenceType:    recurrenceType || null,
-        recurrenceEndDate: recurrenceEndDate || null,
-        userID:            user?.id
+        description:          description || '',
+        amount:               amount || 0,
+        category:             category || '',
+        date:                 date || null,
+        recurring:            recurring || false,
+        recurrenceType:       recurrenceType || null,
+        recurrenceEndDate:    recurrenceEndDate || null,
+        customRecurrenceDays: customRecurrenceDays || null,
+        userID:               user?.id
       });
 
       broadcast('new_expense', { data: expense });
@@ -46,7 +47,7 @@ class ExpenseController extends BaseController {
   async updateExpense(req: Request, res: Response) {
     try {
       const {
-        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate
+        description, amount, category, date, recurring, recurrenceType, recurrenceEndDate, customRecurrenceDays
       } = req.body;
       const { id } = req.params;
       const user = req?.user as User;
@@ -66,6 +67,7 @@ class ExpenseController extends BaseController {
         expense.recurring = recurring || false;
         expense.recurrenceType = recurrenceType || null;
         expense.recurrenceEndDate = recurrenceEndDate || null;
+        expense.customRecurrenceDays = customRecurrenceDays || null;
 
         await expense.save();
 

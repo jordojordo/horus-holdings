@@ -20,6 +20,7 @@ export interface Item {
   recurring: boolean;
   recurrenceType: string | null;
   recurrenceEndDate: string | null;
+  customRecurrenceDays: number[] | null;
 }
 
 interface ItemTableProps {

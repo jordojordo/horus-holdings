@@ -2,6 +2,8 @@ import React, {
   createContext, useContext, useEffect, useRef, useCallback
 } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 import useAuthContext from '@/hooks/useAuth';
 
@@ -22,16 +24,19 @@ const SocketContext = createContext<SocketContextValue | undefined>(undefined);
 
 const SocketProvider: React.FC<{ url: string; path: string; children: React.ReactNode }> = ({ url, path, children }) => {
   const socketRef = useRef<Socket | null>(null);
-  const { isLoading, authenticated } = useAuthContext();
+  const sessionExpiredRef = useRef<boolean>(false);
+
+  const { isLoading, authenticated, logout } = useAuthContext();
+  const navigate = useNavigate();
 
   const establishConnection = useCallback(() => {
     if (!socketRef.current) {
       console.log(`[Socket] Establishing Socket.IO connection with: ${ url }${ path }${ CLIENT_NAMESPACE }`);
+
       socketRef.current = io(url + CLIENT_NAMESPACE, {
         path,
         transports: ['websocket']
       });
-
 
       socketRef.current.on('connect', () => {
         console.log('[Socket] Socket.IO connection established');
@@ -45,18 +50,25 @@ const SocketProvider: React.FC<{ url: string; path: string; children: React.Reac
         console.error('[Socket] Socket.IO connection error:', error);
       });
 
-      // Example: handle a token expiration event (similar to your Vue service)
-      socketRef.current.on('token_expired', () => {
+      // Handle token expiration: show an error, logout and redirect.
+      socketRef.current.on('token_expired', async() => {
         console.log('[Socket] Token expired event received');
-        // Add your token expiration handling logic here
+
+        message.error('Your session has expired. Please log in again.');
+        sessionExpiredRef.current = true;
+
+        await logout();
+
+        navigate('/login');
       });
     }
-  }, [url]);
+  }, [url, path, logout, navigate]);
 
   // Establish or disconnect the socket based on the user's authentication state
   useEffect(() => {
     if (!isLoading && authenticated) {
-      console.log('[Socket] User is authenticated, establishing Socket.IO connection...');
+      sessionExpiredRef.current = false;
+
       establishConnection();
     } else if (socketRef.current) {
       socketRef.current.disconnect();

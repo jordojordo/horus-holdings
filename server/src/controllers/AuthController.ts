@@ -43,7 +43,6 @@ class AuthController extends BaseController {
         secure:   false, // Because we’re on HTTP
       });
 
-      // Send back user information with decrypted email
       const user = req.user as User;
 
       res.json({

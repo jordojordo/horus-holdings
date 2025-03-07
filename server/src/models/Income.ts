@@ -13,6 +13,7 @@ interface IncomeAttributes {
   recurring: boolean;
   recurrenceType?: string;
   recurrenceEndDate?: string | null;
+  customRecurrenceDays?: number[];
   userID: string;
 }
 
@@ -27,6 +28,7 @@ class Income extends Model<IncomeAttributes, IncomeCreationAttributes> implement
   public recurring!: boolean;
   public recurrenceType?: string;
   public recurrenceEndDate?: string | null;
+  public customRecurrenceDays?: number[];
   public userID!: string;
 }
 
@@ -82,6 +84,20 @@ Income.init(
         this.setDataValue('recurrenceEndDate', value);
       },
     },
+    customRecurrenceDays: {
+      type:      DataTypes.JSON,
+      allowNull: true,
+      // Optionally, add getters/setters if you need to ensure the value is always parsed or stringified:
+      get() {
+        const value = this.getDataValue('customRecurrenceDays');
+
+        return typeof value === 'string' ? JSON.parse(value) : value;
+      },
+      set(value: number[]) {
+        this.setDataValue('customRecurrenceDays', value);
+      }
+    },
+
     userID: {
       type:      DataTypes.UUID,
       allowNull: false
