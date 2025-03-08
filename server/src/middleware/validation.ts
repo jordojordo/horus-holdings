@@ -16,7 +16,8 @@ const financeSchema = Joi.object({
   description:          Joi.string().max(255).required().messages({ 'string.max': 'Description must be less than or equal to 255 characters.' }),
   amount:               Joi.number().positive().required().messages({ 'number.positive': 'Amount must be a positive number.' }),
   date:                 Joi.date().allow(null),
-  category:             Joi.string().allow(null).max(255).messages({ 'string.max': 'Category must be less than or equal to 255 characters.' }),
+  category:             Joi.string().allow(null).allow('').max(255)
+    .messages({ 'string.max': 'Category must be less than or equal to 255 characters.' }),
   recurring:            Joi.boolean(),
   recurrenceType:       Joi.string().allow(null),
   recurrenceEndDate:    Joi.date().allow(null),

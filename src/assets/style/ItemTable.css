@@ -33,7 +33,7 @@
 }
 
 .action-dots {
-  background-color: var(--background-secondary);
+  background-color: var(--background-tertiary);
   padding: .25rem .25rem;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
