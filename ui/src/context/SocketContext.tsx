@@ -1,7 +1,12 @@
 import React, {
-  createContext, useContext, useEffect, useRef, useCallback
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
 } from 'react';
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,18 +16,22 @@ interface SocketContextValue {
   /**
    * Sends a message over a specified event (defaults to "message")
    */
-  sendMessage: (message: any, event?: string) => void;
+  sendMessage: (message: unknown, event?: string) => void;
   /**
    * Sets a handler for a given event
    */
-  setOnMessage: (event: string, handler: (data: any) => void) => void;
+  setOnMessage: (event: string, handler: (data: unknown) => void) => void;
 }
 
 const CLIENT_NAMESPACE = '/client';
 
 const SocketContext = createContext<SocketContextValue | undefined>(undefined);
 
-const SocketProvider: React.FC<{ url: string; path: string; children: React.ReactNode }> = ({ url, path, children }) => {
+const SocketProvider: React.FC<{
+  url: string;
+  path: string;
+  children: React.ReactNode;
+}> = ({ url, path, children }) => {
   const socketRef = useRef<Socket | null>(null);
   const sessionExpiredRef = useRef<boolean>(false);
 
@@ -31,11 +40,13 @@ const SocketProvider: React.FC<{ url: string; path: string; children: React.Reac
 
   const establishConnection = useCallback(() => {
     if (!socketRef.current) {
-      console.log(`[Socket] Establishing Socket.IO connection with: ${ url }${ path }${ CLIENT_NAMESPACE }`);
+      console.log(
+        `[Socket] Establishing Socket.IO connection with: ${ url }${ path }${ CLIENT_NAMESPACE }`,
+      );
 
       socketRef.current = io(url + CLIENT_NAMESPACE, {
         path,
-        transports: ['websocket']
+        transports: ['websocket'],
       });
 
       socketRef.current.on('connect', () => {
@@ -46,7 +57,7 @@ const SocketProvider: React.FC<{ url: string; path: string; children: React.Reac
         console.log(`[Socket] Socket.IO disconnected: ${ reason }`);
       });
 
-      socketRef.current.on('connect_error', (error: any) => {
+      socketRef.current.on('connect_error', (error: unknown) => {
         console.error('[Socket] Socket.IO connection error:', error);
       });
 
@@ -95,14 +106,14 @@ const SocketProvider: React.FC<{ url: string; path: string; children: React.Reac
   }, []);
 
   // Send a message on a given event (defaulting to "message")
-  const sendMessage = (message: any, event: string = 'message') => {
+  const sendMessage = (message: unknown, event: string = 'message') => {
     if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit(event, message);
     }
   };
 
   // Set (or replace) an event handler for a specified event
-  const setOnMessage = (event: string, handler: (data: any) => void) => {
+  const setOnMessage = (event: string, handler: (data: unknown) => void) => {
     if (socketRef.current) {
       socketRef.current.off(event);
       socketRef.current.on(event, handler);
@@ -110,10 +121,12 @@ const SocketProvider: React.FC<{ url: string; path: string; children: React.Reac
   };
 
   return (
-    <SocketContext.Provider value={{
-      sendMessage,
-      setOnMessage
-    }}>
+    <SocketContext.Provider
+      value={{
+        sendMessage,
+        setOnMessage,
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );
@@ -123,7 +136,9 @@ const useSocketContext = () => {
   const context = useContext(SocketContext);
 
   if (context === undefined) {
-    throw new Error('[Socket] useSocketContext must be used within a SocketProvider');
+    throw new Error(
+      '[Socket] useSocketContext must be used within a SocketProvider',
+    );
   }
 
   return context;

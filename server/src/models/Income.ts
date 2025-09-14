@@ -1,42 +1,42 @@
-import { DataTypes, Model } from '@sequelize/core';
+import { DataTypes, Model, sql } from '@sequelize/core';
 import type { PartialBy } from '@sequelize/utils';
 
 import sequelize from '@server/config/database';
 import User from '@server/models/User';
 
 interface IncomeAttributes {
-  id: string;
-  description: string;
-  amount: number;
-  category: string;
-  date: string | null;
-  recurring: boolean;
-  recurrenceType?: string;
-  recurrenceEndDate?: string | null;
+  id:                    string;
+  description:           string;
+  amount:                number;
+  category:              string;
+  date:                  string | null;
+  recurring:             boolean;
+  recurrenceType?:       string;
+  recurrenceEndDate?:    string | null;
   customRecurrenceDays?: number[];
-  userID: string;
+  userID:                string;
 }
 
 interface IncomeCreationAttributes extends PartialBy<IncomeAttributes, 'id'> {}
 
 class Income extends Model<IncomeAttributes, IncomeCreationAttributes> implements IncomeAttributes {
-  public id!: string;
-  public description!: string;
-  public amount!: number;
-  public category!: string;
-  public date!: string | null;
-  public recurring!: boolean;
-  public recurrenceType?: string;
-  public recurrenceEndDate?: string | null;
+  public id!:                   string;
+  public description!:          string;
+  public amount!:               number;
+  public category!:             string;
+  public date!:                 string | null;
+  public recurring!:            boolean;
+  public recurrenceType?:       string;
+  public recurrenceEndDate?:    string | null;
   public customRecurrenceDays?: number[];
-  public userID!: string;
+  public userID!:               string;
 }
 
 Income.init(
   {
     id: {
       type:          DataTypes.UUID,
-      defaultValue:  DataTypes.UUIDV4,
+      defaultValue:  sql.uuidV4,
       primaryKey:    true,
       allowNull:     false,
     },

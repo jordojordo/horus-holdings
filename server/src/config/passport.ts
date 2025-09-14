@@ -25,7 +25,7 @@ passport.use(
         }
 
         return done(null, user);
-      } catch (err) {
+      } catch(err) {
         return done(err);
       }
     }
@@ -41,7 +41,7 @@ passport.deserializeUser(async(id: number, done) => {
     const user = await User.findByPk(id);
 
     done(null, user);
-  } catch (err) {
+  } catch(err) {
     done(err);
   }
 });

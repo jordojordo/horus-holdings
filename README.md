@@ -1,157 +1,111 @@
 # Horus Holdings
 
-[![CI & Build checks](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml) [![Publish to GHCR](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml)
+[![CI & Build checks](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/tests.yaml)
+[![Publish to GHCR](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml/badge.svg)](https://github.com/jordojordo/horus-holdings/actions/workflows/release-container.yaml)
 
-## Overview
+Cash‑flow management for tracking incomes, expenses, and trends—built as a UI + API pair with secure auth.
 
-Horus Holdings is a cash flow management tool designed to help users track their incomes and expenses, providing a clear visualization of their cash flow over time.
+> Demo: https://horus.yokanga.xyz
 
-Named after the Egyptian god Horus, who symbolizes protection, stability, and prosperity, this application aims to bring financial clarity and control to its users. By offering robust user authentication, Horus Holdings ensures that each user's financial data remains secure and private, echoing the protective nature of its namesake.
+---
 
-> [!TIP]
-> See it in action: https://horus.yokanga.xyz
+## What’s in this repo
 
-![Frontend Demo](assets/frontend-demo.png)
+- **UI** – SPA served by a container built from `Dockerfile.ui`.
+- **Server** – Node/Express + MySQL + Redis, built from `Dockerfile.server`.
+- **Dev Compose** – `compose.dev.yaml` runs MySQL + Redis locally for development.
+- **Prod Compose** – `compose.prod.yaml` runs UI, Server, MySQL, and Redis together.
+- **CI/CD** – PR CI builds both Dockerfiles; `master`/tags publish to GHCR.
 
-## Quickstart
+---
 
-To quickly get started with Horus Holdings using Docker, you can use the provided `quickstart.sh` script. This script will set up and run both the MySQL database and the Horus Holdings application in Docker containers.
+## Quick start (development)
+
+1) Bring up infra (MySQL + Redis) via Docker:
 
 ```bash
-./scripts/quickstart.sh
+docker compose -f compose.dev.yaml up -d
 ```
 
-This script will:
-- Pull the latest MySQL and Horus Holdings Docker images.
-- Run the MySQL container with the specified environment variables.
-- Wait for MySQL to initialize.
-- Run the Horus Holdings container with the necessary environment variables.
-- Output the URLs where the frontend and backend are accessible.
+2) Install deps and start the app (local Node + Vite):
 
-## Folder Structure
-
-The application consists of a frontend and a backend:
-- **Frontend**: Located in the `./src` directory.
-- **Backend**: Located in the `./server` directory.
-
-## Database Requirement
-
-The application requires a MySQL database to store user data. You need to set up a MySQL database and provide the connection details in the environment variables.
-
-### Setting Up MySQL Database
-
-1. **Install MySQL**: Follow the instructions for your operating system to install MySQL.
-2. **Create a Database**: Create a new database for the application. For example:
-   ```sql
-   CREATE DATABASE horusdevdb;
-   ```
-3. **Create a User**: Create a new user and grant privileges to the database. For example:
-   ```sql
-   CREATE USER 'root'@'localhost' IDENTIFIED BY 'admin';
-   GRANT ALL PRIVILEGES ON horusdevdb.* TO 'root'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-
-### Running MySQL Database Locally Using Docker
-
-For development purposes, you can run the MySQL database locally using a Docker container. Use the following command to start the MySQL container:
-
-```sh
-docker run -d --name mysql-dev \
-   -e MYSQL_ROOT_PASSWORD=admin \
-   -e MYSQL_DATABASE=horusdevdb \
-   --network host \
-   mysql:latest
+```bash
+pnpm install
+pnpm dev
 ```
 
-This command will start a MySQL container with the specified environment variables.
+---
 
-## Building and Running the Application in a Container
+## Environment configuration
 
-The `Dockerfile` is set up to build both the frontend and backend applications in separate stages and then combine them into a final image.
+Create a `.env` file for the **server** (these can be supplied via Compose as well):
 
-### Steps to Build and Run the Container
+```env
+# Server
+NODE_ENV=development
+NODE_PORT=5000
+CORS_ORIGIN=http://localhost:5173
 
-1. **Build the Docker Image**:
-   ```sh
-   docker build -t horus-holdings:latest .
-   ```
+# Auth/crypto
+SESSION_SECRET=change-me
+JWT_SECRET=change-me
+ENCRYPTION_KEY=change-me
 
-2. **Run the Docker Container**:
-   ```sh
-   docker run -d --name horus \
-      --network host \
-      -e DATABASE_NAME=horusdevdb \
-      -e DATABASE_USER=root \
-      -e DATABASE_PASSWORD=admin \
-      -e DATABASE_HOST=localhost \
-      -e DATABASE_PORT=3306 \
-      -e CORS_ORIGIN=http://localhost \
-      -e JWT_SECRET=super-secret \
-      -e CLIENT_API_SCHEME=http \
-      -e CLIENT_PROXY_SCHEME=ws \
-      -e CLIENT_PROXY_HOST=localhost \
-      -e CLIENT_PROXY_PORT=5000 \
-      -e CLIENT_PROXY_PATH=/ws \
-      horus-holdings:latest
-   ```
+# Database
+DATABASE_NAME=horusdevdb
+DATABASE_USER=root
+DATABASE_PASSWORD=admin
+DATABASE_HOST=127.0.0.1
+DATABASE_PORT=3306
+DATABASE_LOGGING=false
 
-This will start the frontend on port 80 and the backend on port 5000.
+# UI → API / WebSocket hints used by the client
+CLIENT_API_SCHEME=http
+CLIENT_PROXY_SCHEME=ws
+CLIENT_PROXY_HOST=localhost
+CLIENT_PROXY_PORT=5000
+CLIENT_PROXY_PATH=/ws
+```
 
-## Environment Variables
+---
 
-The following table lists the configurable and required parameters for the application.
+## Containers
 
-| Parameter               | Required | Description                                                   | Default                                          |
-|-------------------------|----------|---------------------------------------------------------------|--------------------------------------------------|
-| `DATABASE_NAME`         | *        | The name of the database to connect to.                       | 'horusdevdb'                                     |
-| `DATABASE_USER`         | *        | The username for the database connection.                     | 'root'                                           |
-| `DATABASE_PASSWORD`     | *        | The password for the database connection.                     | 'admin'                                          |
-| `DATABASE_HOST`         | *        | The host for the database connection.                         | '127.0.0.1'                                      |
-| `DATABASE_PORT`         | *        | The port for the database connection.                         | '3306'                                           |
-| `CORS_ORIGIN`           | *        | The origin allowed for CORS.                                  | 'http://localhost:5173'                          |
-| `SESSION_SECRET`        |          | The secret key used for session management.                   | A random 64-byte hex string                      |
-| `JWT_SECRET`            | *        | The secret key used for JWT authentication.                   | 'super_secret_key'                               |
-| `ENCRYPTION_KEY`        | *        | The secret key used for encryption.                           | 'my_encryption_key'                              |
-| `CLIENT_API_SCHEME`     |          | The scheme used for API requests (e.g. https or http).        | 'https'                                          |
-| `CLIENT_PROXY_SCHEME`   |          | The scheme used for WebSocket connections. (e.g. wss or ws)   | 'wss'                                            |
-| `CLIENT_PROXY_HOST`     |          | The host used for WebSocket connections. (e.g. mydomain.com ) | 'localhost'                                      |
-| `CLIENT_PROXY_PORT`     |          | The port used for WebSocket connections.                      | ''                                               |
-| `CLIENT_PROXY_PATH`     |          | The path used for WebSocket connections.                      | '/ws'                                            |
+### Build locally
 
+```bash
+# Frontend
+docker build -f Dockerfile.ui -t horus-ui:local .
 
-## Running the Application Locally
+# Backend
+docker build -f Dockerfile.server -t horus-server:local .
+```
 
-To run the application locally, you need to have Node.js and PNPM installed.
+### Images published to GHCR
 
-### Steps to Run Locally
+CI publishes two images:
 
-1. **Install Dependencies**:
-   ```sh
-   pnpm install:all
-   ```
+- `ghcr.io/jordojordo/horus-ui:<tag>`
+- `ghcr.io/jordojordo/horus-server:<tag>`
 
-2. **Set Up Environment Variables**:
-   Create a `.env` file in the `./server` directory with the following content:
-   ```env
-   NODE_ENV="development"
-   NODE_PORT=5000
-   CORS_ORIGIN=http://localhost:5173
-   SESSION_SECRET=my_development_secret
-   JWT_SECRET=my_development_secret
-   ENCRYPTION_KEY=my_development_secret
+Tags include `master`, semver (`1.4.0`, `1.4`), and the commit SHA.
 
-   DATABASE_NAME=horusdevdb
-   DATABASE_USER=root
-   DATABASE_PASSWORD=admin
-   DATABASE_HOST=127.0.0.1
-   DATABASE_PORT=3306
-   DATABASE_LOGGING="false"
-   ```
+---
 
-3. **Run the Application**:
-   ```sh
-   pnpm dev
-   ```
+## Run with Docker Compose
 
-This will start both the frontend and backend applications concurrently.
+### Development services only (DB/Cache)
+
+```bash
+docker compose -f compose.dev.yaml up -d
+```
+
+### Production stack (UI + Server + DB + Redis)
+
+```bash
+# Pull the exact versions you want to deploy
+docker compose -f compose.prod.yaml pull
+
+# Launch everything
+docker compose -f compose.prod.yaml up -d
+```

@@ -1,0 +1,80 @@
+name: horus-dev
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-horusprod}
+      MYSQL_USER: ${MYSQL_USER:-horus}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-horus}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    command: ["mysqld", "--log_bin_trust_function_creators=1"]
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./scripts/init.prod.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [app]
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-my_redis_password}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-my_redis_password}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [app]
+    ports:
+      - "6379:6379"
+
+  server:
+    image: ghcr.io/jordojordo/horus-server:master
+    env_file:
+      - server/.env.production
+    environment:
+      MYSQL_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    networks: [app]
+
+  ui:
+    image: ghcr.io/jordojordo/horus-ui:master
+    env_file:
+      - ui/.env.production
+    environment:
+      CLIENT_API_SCHEME: ${VITE_API_SCHEME:-http}
+      CLIENT_PROXY_SCHEME: ${VITE_WS_SCHEME:-ws}
+      CLIENT_PROXY_HOST: ${VITE_WS_HOST:-localhost}
+      CLIENT_PROXY_PORT: ${VITE_WS_PORT:-80}
+      CLIENT_PROXY_PATH: ${VITE_WS_PATH:-/ws}
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    volumes:
+      - ./nginx.compose.conf:/etc/nginx/nginx.conf:ro
+      - ./scripts/production.sh:/docker-entrypoint.d/99-env.sh:ro
+    restart: unless-stopped
+    networks: [app]
+
+networks:
+  app: {}
+
+volumes:
+  db_data: {}
+  redis_data: {}

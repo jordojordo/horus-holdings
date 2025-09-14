@@ -6,11 +6,11 @@ if (process.env.NODE_ENV !== 'production') {
   dotenvFlow.config();
 }
 
-const database = process.env.DATABASE_NAME || 'horusdevdb';
-const user = process.env.DATABASE_USER || 'root';
-const password = process.env.DATABASE_PASSWORD || 'admin';
-const host = process.env.DATABASE_HOST || '127.0.0.1';
-const port = Number(process.env.DATABASE_PORT) || 3306;
+const database = process.env.MYSQL_DATABASE || 'horusdevdb';
+const user = process.env.MYSQL_USER || 'horus';
+const password = process.env.MYSQL_PASSWORD || 'horus';
+const host = process.env.MYSQL_HOST || 'localhost';
+const port = Number(process.env.MYSQL_PORT) || 3306;
 
 /**
  * Creates a connection pool for the main database

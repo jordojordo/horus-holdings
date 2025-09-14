@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect, FormEvent } from 'react';
+import type { FormEvent } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import {
   Modal,
@@ -9,7 +10,7 @@ import {
   DatePicker,
   Select,
   Space,
-  message
+  message,
 } from 'antd';
 import dayjs from 'dayjs';
 
@@ -17,10 +18,9 @@ import type { DatePickerProps } from 'antd';
 import type { Dayjs } from 'dayjs';
 import type { Item } from '@/components/ItemTable';
 
-import useAuth from '@/hooks/useAuth';
 import { useTheme, THEME } from '@/context/ThemeContext';
-import { Expense } from '@/types/Expense';
-import { Income } from '@/types/Income';
+import type { Expense } from '@/types/Expense';
+import type { Income } from '@/types/Income';
 
 import '@/assets/style/FinancialForm.css';
 
@@ -49,12 +49,17 @@ const RecurringSection: React.FC<RecurringSectionProps> = ({
       <Form.Item
         name="recurrenceType"
         label="Recurrence Type"
-        rules={[{
-          required: true,
-          message:  'Please select a recurrence type'
-        }]}
+        rules={[
+          {
+            required: true,
+            message:  'Please select a recurrence type',
+          },
+        ]}
       >
-        <Select value={recurrenceType || undefined} onChange={onRecurrenceTypeChange}>
+        <Select
+          value={recurrenceType || undefined}
+          onChange={onRecurrenceTypeChange}
+        >
           <Option value="bi-weekly">Bi-Weekly</Option>
           <Option value="monthly">Monthly</Option>
           <Option value="bi-monthly">Bi-Monthly</Option>
@@ -62,7 +67,10 @@ const RecurringSection: React.FC<RecurringSectionProps> = ({
         </Select>
       </Form.Item>
       <Form.Item name="recurrenceEndDate" label="Recurrence End Date">
-        <DatePicker value={recurrenceEndDate} onChange={onRecurrenceEndDateChange} />
+        <DatePicker
+          value={recurrenceEndDate}
+          onChange={onRecurrenceEndDateChange}
+        />
       </Form.Item>
       {recurrenceType === 'custom' && (
         <Form.Item
@@ -96,7 +104,6 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   itemToUpdate,
   closeModal,
 }) => {
-  const { user } = useAuth();
   const { currentTheme } = useTheme();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -107,7 +114,9 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   const [category, setCategory] = useState<string | null>(null);
   const [recurring, setRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState<string | null>(null);
-  const [recurrenceEndDate, setRecurrenceEndDate] = useState<Dayjs | null>(null);
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState<Dayjs | null>(
+    null,
+  );
   const [customRecurrenceDays, setCustomRecurrenceDays] = useState<string>('');
 
   const colors = {
@@ -130,7 +139,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
     setRecurrenceType(null);
     setRecurrenceEndDate(null);
     setCustomRecurrenceDays('');
-  }, [formType, user]);
+  }, []);
 
   useEffect(() => {
     if (itemToUpdate) {
@@ -143,8 +152,13 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
       setCategory(itemToUpdate.category);
       setRecurring(itemToUpdate.recurring);
       setRecurrenceType(itemToUpdate.recurrenceType);
-      setRecurrenceEndDate(itemRecurrenceEndDate.isValid() ? itemRecurrenceEndDate : null);
-      if (itemToUpdate.customRecurrenceDays && Array.isArray(itemToUpdate.customRecurrenceDays)) {
+      setRecurrenceEndDate(
+        itemRecurrenceEndDate.isValid() ? itemRecurrenceEndDate : null,
+      );
+      if (
+        itemToUpdate.customRecurrenceDays &&
+        Array.isArray(itemToUpdate.customRecurrenceDays)
+      ) {
         setCustomRecurrenceDays(itemToUpdate.customRecurrenceDays.join(','));
       } else {
         setCustomRecurrenceDays('');
@@ -181,7 +195,7 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
         recurring,
         recurrenceType,
         recurrenceEndDate,
-        ...(recurrenceType === 'custom' && { customRecurrenceDays: parsedCustomRecurrenceDays })
+        ...(recurrenceType === 'custom' && { customRecurrenceDays: parsedCustomRecurrenceDays }),
       };
 
       if (itemToUpdate) {
@@ -223,7 +237,10 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
   return (
     <>
       {!itemToUpdate && (
-        <button className="btn text-bold mt-5 mb-5" onClick={() => setModalVisible(true)}>
+        <button
+          className="btn text-bold mt-5 mb-5"
+          onClick={() => setModalVisible(true)}
+        >
           Add {formType.charAt(0).toUpperCase() + formType.slice(1)}
         </button>
       )}
@@ -231,15 +248,21 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
         open={modalVisible}
         title={itemToUpdate ? `Update ${ formType }` : `Add ${ formType }`}
         onCancel={(e) => handleModalVisible(e)}
-        destroyOnClose
+        destroyOnHidden
         centered
         styles={modalStyles}
         footer={() => (
           <Form.Item>
-            <button className="btn text-bold mr-4" onClick={(e) => handleModalVisible(e)}>
+            <button
+              className="btn text-bold mr-4"
+              onClick={(e) => handleModalVisible(e)}
+            >
               Cancel
             </button>
-            <button className="btn text-bold mt-5 mb-5" onClick={() => handleSubmit()}>
+            <button
+              className="btn text-bold mt-5 mb-5"
+              onClick={() => handleSubmit()}
+            >
               {itemToUpdate ? 'Save' : 'Add'}
             </button>
           </Form.Item>
@@ -263,10 +286,12 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
             <Form.Item
               name="description"
               label="Description"
-              rules={[{
-                required: true,
-                message:  'Please enter a description'
-              }]}
+              rules={[
+                {
+                  required: true,
+                  message:  'Please enter a description',
+                },
+              ]}
             >
               <Input
                 onChange={(e) => setDescription(e.target.value)}
@@ -276,10 +301,12 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
             <Form.Item
               name="amount"
               label="Amount"
-              rules={[{
-                required: true,
-                message:  'Please enter an amount'
-              }]}
+              rules={[
+                {
+                  required: true,
+                  message:  'Please enter an amount',
+                },
+              ]}
             >
               <InputNumber
                 onChange={(e) => setAmount(e as number)}

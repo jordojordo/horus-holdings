@@ -27,8 +27,8 @@ class IncomeController extends BaseController {
 
       broadcast('new_income', { data: income });
       res.status(201).json(income);
-    } catch (error) {
-      this.handleError(res, error, 'Error creating income');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error creating income');
     }
   }
 
@@ -39,8 +39,8 @@ class IncomeController extends BaseController {
       const incomes = await Income.findAll({ where: { userID: user?.id } });
 
       res.status(200).json(incomes);
-    } catch (error) {
-      this.handleError(res, error, 'Error getting incomes');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error getting incomes');
     }
   }
 
@@ -78,8 +78,8 @@ class IncomeController extends BaseController {
 
       broadcast('update_income', { data: income });
       res.status(200).json(income);
-    } catch (error) {
-      this.handleError(res, error, 'Error updating income');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error updating income');
     }
   }
 
@@ -96,8 +96,8 @@ class IncomeController extends BaseController {
       });
 
       res.status(204).send();
-    } catch (error) {
-      this.handleError(res, error, 'Error deleting income');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error deleting income');
     }
   }
 }

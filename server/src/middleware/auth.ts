@@ -26,7 +26,7 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
 
     req.user = user;
     next();
-  } catch (error: any) {
+  } catch(error: unknown) {
     if (error instanceof jwt.TokenExpiredError) {
       broadcast('token_expired', { message: 'Your session has expired, please log in again.' });
 
@@ -34,8 +34,7 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
 
       return;
     } else {
-      console.log('# Error:', error);
-      handleError(res, error, 'An unexpected error occurred.');
+      handleError(res, (error as Error), 'An unexpected error occurred.');
     }
   }
 };

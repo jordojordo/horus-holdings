@@ -1,7 +1,8 @@
-import dayjs, { Dayjs, ManipulateType } from 'dayjs';
+import type { Dayjs, ManipulateType } from 'dayjs';
+import dayjs from 'dayjs';
 
-import { Income } from '@/types/Income';
-import { Expense } from '@/types/Expense';
+import type { Income } from '@/types/Income';
+import type { Expense } from '@/types/Expense';
 
 export interface ChartData {
   labels: string[];

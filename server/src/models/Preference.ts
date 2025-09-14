@@ -1,13 +1,13 @@
-import { DataTypes, Model } from '@sequelize/core';
+import { DataTypes, Model, sql } from '@sequelize/core';
 import type { PartialBy } from '@sequelize/utils';
 
 import sequelize from '@server/config/database';
 import User from '@server/models/User';
 
 interface PreferenceAttributes {
-  id: string;
-  userID: string;
-  foobar?: string;
+  id:         string;
+  userID:     string;
+  foobar?:    string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -15,9 +15,9 @@ interface PreferenceAttributes {
 interface PreferenceCreationAttributes extends PartialBy<PreferenceAttributes, 'id'> {}
 
 class Preference extends Model<PreferenceAttributes, PreferenceCreationAttributes> implements PreferenceAttributes {
-  public id!: string;
-  public userID!: string;
-  public foobar!: string;
+  public id!:        string;
+  public userID!:    string;
+  public foobar!:    string;
   public createdAt!: string;
   public updatedAt!: string;
 }
@@ -26,7 +26,7 @@ Preference.init(
   {
     id: {
       type:          DataTypes.UUID,
-      defaultValue:  DataTypes.UUIDV4,
+      defaultValue:  sql.uuidV4,
       primaryKey:    true,
       allowNull:     false,
     },

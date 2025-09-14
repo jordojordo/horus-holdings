@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input, Space, Form, notification } from 'antd';
+import { AxiosError } from 'axios';
 
 import useAuth from '@/hooks/useAuth';
 
@@ -28,8 +29,13 @@ const Settings: React.FC = () => {
 
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: any) {
-      notification.error({ message: error.message });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        notification.error({ message: error?.response?.data?.error || 'Unable to update profile' });
+
+        return;
+      }
+      notification.error({ message: 'Unable to update profile' });
     }
   };
 
@@ -43,8 +49,14 @@ const Settings: React.FC = () => {
       notification.success({ message: 'Account deleted successfully' });
 
       navigate('/');
-    } catch (error: any) {
-      notification.error({ message: error.message });
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        notification.error({ message: error?.response?.data?.error || 'Unable to delete account' });
+
+        return;
+      }
+
+      notification.error({ message: 'Unable to delete account' });
     }
   };
 

@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import {
-  Table, Input, Button, Space, Dropdown, ConfigProvider
+ Table, Input, Button, Space, Dropdown, ConfigProvider
 } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 
 import type { InputRef, TableColumnType } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import type { FilterDropdownProps, FilterValue, SorterResult, SortOrder } from 'antd/es/table/interface';
+import type {
+  FilterDropdownProps,
+  FilterValue,
+  SorterResult,
+  SortOrder,
+} from 'antd/es/table/interface';
 
 import { useSocketContext } from '@/context/SocketContext';
 import { getServiceConfig } from '@/utils/service';
@@ -59,33 +64,35 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   // ----------------------------------
   // 1) Fetch data
   // ----------------------------------
-  const fetchItems = async() => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${ apiUrl }/${ itemType }`);
-
-      setItems(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchItems = async() => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${ apiUrl }/${ itemType }`);
+
+        setItems(response.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchItems();
-  }, [itemType]);
+  }, [itemType, apiUrl]);
 
   // Socket listeners
   useEffect(() => {
-    // Listen for NEW
     setOnMessage(`new_${ itemType }`, (payload) => {
-      setItems((prev) => [...prev, payload.data]);
+      const { data } = payload as { data: Item };
+
+      setItems((prev) => [...prev, data]);
     });
 
-    // Listen for UPDATE
     setOnMessage(`update_${ itemType }`, (payload) => {
-      setItems((prev) => prev.map((item) => (item.id === payload.data.id ? payload.data : item)));
+      const { data } = payload as { data: Item };
+
+      setItems((prev) => prev.map((item) => (item.id === data.id ? data : item)));
     });
   }, [itemType, setOnMessage]);
 
@@ -120,7 +127,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps['confirm'],
-    dataIndex: string
+    dataIndex: string,
   ) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -132,11 +139,14 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
     setSearchText('');
   };
 
-  const getColumnSearchProps = (dataIndex: keyof Item): TableColumnType<Item> => ({
+  const getColumnSearchProps = (
+    dataIndex: keyof Item,
+  ): TableColumnType<Item> => ({
     filterDropdown: (props: FilterDropdownProps) => {
       const {
-        setSelectedKeys, selectedKeys, confirm, clearFilters, close
-      } = props;
+ setSelectedKeys, selectedKeys, confirm, clearFilters, close
+} =
+        props;
 
       return (
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
@@ -146,17 +156,25 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
             value={selectedKeys[0]}
             onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])
             }
-            onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex as string)
+            onPressEnter={() => handleSearch(
+                selectedKeys as string[],
+                confirm,
+                dataIndex as string,
+              )
             }
             style={{
               marginBottom: 8,
-              display:      'block'
+              display:      'block',
             }}
           />
           <Space>
             <Button
               type="primary"
-              onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex as string)
+              onClick={() => handleSearch(
+                  selectedKeys as string[],
+                  confirm,
+                  dataIndex as string,
+                )
               }
               icon={<SearchOutlined />}
               size="small"
@@ -201,10 +219,9 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) => record[dataIndex] ? record[dataIndex]!
-      .toString()
-      .toLowerCase()
-      .includes((value as string).toLowerCase()) : false,
+    onFilter: (value, record) => record[dataIndex] ? record[dataIndex]!.toString()
+            .toLowerCase()
+            .includes((value as string).toLowerCase()) : false,
     filterDropdownProps: {
       onOpenChange(open) {
         if (open) {
@@ -213,18 +230,18 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       },
     },
     render: (text: string) => searchedColumn === dataIndex ? (
-      <Highlighter
-        highlightStyle={{
-          backgroundColor: '#ffc069',
-          padding:         0
-        }}
-        searchWords={[searchText]}
-        autoEscape
-        textToHighlight={text ? text.toString() : ''}
-      />
-    ) : (
-      text
-    ),
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding:         0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
   });
 
   // ----------------------------------
@@ -251,12 +268,12 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       dataIndex: 'category',
       key:       'category',
       filters:   [
-        ...Array.from(new Set(items.map((item) => item.category || 'Uncategorized'))).map(
-          (cat) => ({
-            text:  cat,
-            value: cat,
-          })
-        ),
+        ...Array.from(
+          new Set(items.map((item) => item.category || 'Uncategorized')),
+        ).map((cat) => ({
+          text:  cat,
+          value: cat,
+        })),
       ],
       onFilter: (value, record) => (record.category || 'Uncategorized') === value,
       width:    '20%',
@@ -275,11 +292,11 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       filters:   [
         {
           text:  'Recurring',
-          value: true
+          value: true,
         },
         {
           text:  'Not Recurring',
-          value: false
+          value: false,
         },
       ],
       onFilter: (value, record) => record.recurring === value,
@@ -296,17 +313,21 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
               items: [
                 {
                   key:   '1',
-                  label: <span onClick={() => handleUpdate(record)}>Update</span>,
+                  label: (
+                    <span onClick={() => handleUpdate(record)}>Update</span>
+                  ),
                 },
                 {
                   key:   '2',
-                  label: <span onClick={() => handleDelete(record.id)}>Delete</span>,
+                  label: (
+                    <span onClick={() => handleDelete(record.id)}>Delete</span>
+                  ),
                 },
               ],
             }}
           >
             <a className="action-dots">
-              <MoreOutlined style={{ color: 'var(--purple-dark)' }}/>
+              <MoreOutlined style={{ color: 'var(--purple-dark)' }} />
             </a>
           </Dropdown>
         );
@@ -317,7 +338,11 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   // ----------------------------------
   // 5) onChange for sorting/filter/pagination
   // ----------------------------------
-  const handleTableChange: TableProps<Item>['onChange'] = (_pagination, filters, sorter) => {
+  const handleTableChange: TableProps<Item>['onChange'] = (
+    _pagination,
+    filters,
+    sorter,
+  ) => {
     // If we were doing server-side calls, we’d capture the params here
     // and call the backend with &sort=field&order=asc, etc.
     // For client-side, antd will do it automatically if we define sorter / filters in columns.

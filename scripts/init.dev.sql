@@ -1,0 +1,2 @@
+GRANT ALL PRIVILEGES ON horusdevdb.* TO 'horus'@'%';
+FLUSH PRIVILEGES;

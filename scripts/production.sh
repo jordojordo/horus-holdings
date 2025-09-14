@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Provide default values for proxy environment variables
 # The proxy should be directed to the same ingress as the frontend
@@ -17,6 +17,3 @@ for i in $(env | grep CLIENT_); do
 
   find /app/frontend/assets -type f \( -name '*.js' -o -name '*.css' \) -exec sed -i "s|${placeholder}|${value}|g" '{}' +
 done
-
-# Start Node and Nginx
-node /app/backend/server.js & nginx -g 'daemon off;'

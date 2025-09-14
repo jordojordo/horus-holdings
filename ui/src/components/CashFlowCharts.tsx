@@ -3,16 +3,19 @@ import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 import { Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import { ChartData } from '@/utils/processChartData';
+import type { ChartData } from '@/utils/processChartData';
 
 import '@/assets/style/CashFlowCharts.css';
 
 interface CashFlowChartsProps {
   chartData: ChartData;
-  options: any;
+  options: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-const CashFlowCharts: React.FC<CashFlowChartsProps> = ({ chartData, options }) => {
+const CashFlowCharts: React.FC<CashFlowChartsProps> = ({
+  chartData,
+  options,
+}) => {
   // Options for the stacked bar chart
   const stackedOptions = {
     ...options,
@@ -40,7 +43,10 @@ const CashFlowCharts: React.FC<CashFlowChartsProps> = ({ chartData, options }) =
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
+          label: (context: {
+            dataset: { label: string };
+            parsed: { y: string };
+          }) => {
             const label = context.dataset.label || '';
             const value = context.parsed.y;
 
@@ -158,10 +164,7 @@ const CashFlowCharts: React.FC<CashFlowChartsProps> = ({ chartData, options }) =
         </div>
 
         <div className="stacked-bar mb-5">
-          <Bar
-            data={chartData.stackedBarData}
-            options={stackedOptions}
-          />
+          <Bar data={chartData.stackedBarData} options={stackedOptions} />
         </div>
       </div>
 
@@ -175,10 +178,7 @@ const CashFlowCharts: React.FC<CashFlowChartsProps> = ({ chartData, options }) =
         </div>
 
         <div className="comparison-chart">
-          <Bar
-            data={chartData.comparisonData}
-            options={comparisonOptions}
-          />
+          <Bar data={chartData.comparisonData} options={comparisonOptions} />
         </div>
       </div>
     </>
