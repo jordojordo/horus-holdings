@@ -3,7 +3,7 @@ import { UniqueConstraintError } from '@sequelize/core';
 
 import logger from '@server/config/logger';
 
-export const handleError = (res: Response, error: any, defaultMessage = 'An unexpected error occurred.') => {
+export const handleError = (res: Response, error: Error, defaultMessage = 'An unexpected error occurred.') => {
   let message;
 
   if (error instanceof UniqueConstraintError) {

@@ -8,7 +8,7 @@ export class BaseController {
     return getAuthenticatedUser(req);
   }
 
-  protected handleError(res: Response, error: any, defaultMessage = 'An unexpected error occurred.') {
+  protected handleError(res: Response, error: Error, defaultMessage = 'An unexpected error occurred.') {
     console.error(error);
 
     return handleError(res, error, defaultMessage);

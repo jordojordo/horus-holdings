@@ -1,49 +1,21 @@
 {
-  "name": "horusholdings",
+  "name": "horus-monorepo",
   "private": true,
-  "version": "0.4.2",
-  "license": "MIT",
-  "type": "module",
+  "packageManager": "pnpm@10.16.1",
   "scripts": {
-    "dev": "concurrently \"vite\" \"cd ./server && pnpm dev\"",
-    "build": "tsc -b && vite build",
-    "lint": "npx eslint .",
-    "format": "npx eslint . --fix",
-    "preview": "vite preview",
-    "install:all": "pnpm install && cd server && pnpm install"
-  },
-  "dependencies": {
-    "axios": "^1.9.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-router-dom": "^7.5.2",
-    "socket.io-client": "^4.8.1"
+    "build": "pnpm -r build",
+    "deps:check": "pnpm list -r",
+    "deps:update": "pnpm -r up --latest --interactive",
+    "dev": "pnpm --filter server --filter ui dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "@ant-design/icons": "^6.0.0",
-    "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "@eslint/js": "^9.25.1",
-    "@types/node": "^22.15.2",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "@types/react-highlight-words": "^0.20.0",
-    "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^8.31.0",
-    "@typescript-eslint/parser": "^8.31.0",
-    "@vitejs/plugin-react": "^4.4.1",
-    "antd": "^5.24.8",
-    "chart.js": "^4.4.9",
-    "concurrently": "^9.1.2",
-    "dayjs": "^1.11.13",
-    "esbuild": "^0.25.3",
-    "eslint": "^9.25.1",
+    "@eslint/js": "^9.35.0",
+    "@stylistic/eslint-plugin": "^5.3.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.0.0",
-    "react-chartjs-2": "^5.3.0",
-    "react-highlight-words": "^0.21.0",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.4"
+    "globals": "^16.4.0",
+    "typescript-eslint": "^8.43.0"
   }
 }

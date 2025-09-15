@@ -18,20 +18,21 @@ class AuthController extends BaseController {
       });
 
       res.status(201).json(user);
-    } catch (error: any) {
-      this.handleError(res, error, 'Error registering user');
+    } catch(error: unknown) {
+      this.handleError(res, (error as Error), 'Error registering user');
     }
   }
 
   async login(req: Request, res: Response) {
-    if (!process.env.JWT_SECRET) {
-      res.status(500).json({ error: 'JWT_SECRET not set' });
-
-      return;
-    }
-
     try {
-      const token = jwt.sign({ user: req?.user }, process.env.JWT_SECRET!, { expiresIn: '1d' });
+      if (!process.env.JWT_SECRET) {
+        res.status(500).json({ error: 'JWT_SECRET not set' });
+
+        return;
+      }
+
+      const user = req.user as User;
+      const token = jwt.sign({ user: req?.user }, process.env.JWT_SECRET!, { expiresIn: '7d' });
 
       /**
        * TODO: Use self-signed certificate for HTTPS
@@ -43,16 +44,14 @@ class AuthController extends BaseController {
         secure:   false, // Because we’re on HTTP
       });
 
-      const user = req.user as User;
-
       res.json({
         id: user.id,
         token,
       });
 
       logger.info(`User ${ user.id } logged in`);
-    } catch (error) {
-      this.handleError(res, error, 'Error logging in');
+    } catch(error: unknown) {
+      this.handleError(res, (error as Error), 'Error logging in');
     }
   }
 
@@ -93,8 +92,8 @@ class AuthController extends BaseController {
       await user.save();
 
       res.json(user);
-    } catch (error: any) {
-      this.handleError(res, error, 'Error updating user');
+    } catch(error: unknown) {
+      this.handleError(res, (error as Error), 'Error updating user');
     }
   }
 
@@ -106,8 +105,8 @@ class AuthController extends BaseController {
       await user.destroy();
 
       res.json({ message: 'User deleted' });
-    } catch (error: any) {
-      this.handleError(error, res, 'Error deleting user');
+    } catch(error: unknown) {
+      this.handleError(res, (error as Error), 'Error deleting user');
     }
   }
 }

@@ -23,7 +23,7 @@ export const encrypt = (text: string) => {
   };
 };
 
-export const decrypt = (text: { iv: string, encryptedData: string }) => {
+export const decrypt = (text: { iv: string; encryptedData: string }) => {
   const iv = Buffer.from(text.iv, 'hex');
   const encryptedText = Buffer.from(text.encryptedData, 'hex');
 
@@ -52,6 +52,6 @@ export const generateShortLinkToken = (originalToken: string) => {
   };
 };
 
-export const decryptShortLinkToken = (encryptedData: { iv: string, encryptedData: string }) => {
+export const decryptShortLinkToken = (encryptedData: { iv: string; encryptedData: string }) => {
   return decrypt(encryptedData);
 };

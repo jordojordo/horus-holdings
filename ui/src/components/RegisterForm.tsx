@@ -1,4 +1,5 @@
-import React, { useState, FormEvent } from 'react';
+import type { FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { message } from 'antd';
 
@@ -9,8 +10,8 @@ import '@/assets/style/AuthForm.css';
 
 const RegisterForm: React.FC = () => {
   const {
-    authenticated, isLoading, register, login
-  } = useAuth();
+ authenticated, isLoading, register, login
+} = useAuth();
   const location = useLocation();
 
   const [username, setUsername] = useState('');
@@ -30,8 +31,8 @@ const RegisterForm: React.FC = () => {
     try {
       await register(username, password);
       await login(username, password);
-    } catch (error: any) {
-      if (error?.message as string) {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
         message.error(error.message);
       }
     }
@@ -53,7 +54,9 @@ const RegisterForm: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit" className="btn text-bold">Register</button>
+        <button type="submit" className="btn text-bold">
+          Register
+        </button>
       </form>
     </div>
   );

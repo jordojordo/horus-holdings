@@ -1,0 +1,46 @@
+name: horus-dev
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-horusdevdb}
+      MYSQL_USER: ${MYSQL_USER:-horus}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-horus}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    command: ["mysqld", "--log_bin_trust_function_creators=1"]
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./scripts/init.dev.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [app]
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-my_redis_password}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-my_redis_password}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [app]
+    ports:
+      - "6379:6379"
+
+networks:
+  app: {}
+
+volumes:
+  db_data: {}
+  redis_data: {}

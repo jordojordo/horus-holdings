@@ -1,10 +1,11 @@
 import dotenvFlow from 'dotenv-flow';
 import express from 'express';
 import session from 'express-session';
-import 'express-async-errors';
 import cors from 'cors';
 import crypto from 'crypto';
 import cookieParser from 'cookie-parser';
+import { createClient } from 'redis';
+import { RedisStore } from 'connect-redis';
 
 import logger from '@server/config/logger';
 import passport from '@server/config/passport';
@@ -27,10 +28,32 @@ const CORS_OPT = {
   credentials: true,
 };
 
+// Create Redis client
+const redisClient = createClient({
+  socket: {
+    host:              process.env.REDIS_HOST || 'localhost',
+    port:              Number(process.env.REDIS_PORT) || 6379,
+    reconnectStrategy: (retries) => Math.min(retries * 50, 500),
+  },
+  password: process.env.REDIS_PASSWORD,
+});
+
+redisClient.connect()
+  .then(() => logger.info('Connected to Redis'))
+  .catch(console.error);
+
+// Handle Redis connection errors
+redisClient.on('error', (err) => logger.error('Redis Client Error', err));
+redisClient.on('connect', () => logger.info('Redis Client Connected'));
+redisClient.on('reconnecting', () => logger.info('Redis Client Reconnecting'));
+redisClient.on('ready', () => logger.info('Redis Client Ready'));
+
+const redisStore = new RedisStore({ client: redisClient });
+
 // Initialize database
 sequelize.sync()
   .then(() => logger.info('Database synchronized'))
-  .catch((err: any) => logger.error('Error synchronizing database:', err));
+  .catch((err: unknown) => logger.error('Error synchronizing database:', err));
 
 // Create the Express application
 const app = express();
@@ -46,13 +69,15 @@ app.use((req, res, next) => {
 
 app.use(
   session({
+    store:             redisStore,
     secret:            sessionSecret,
     resave:            false,
     saveUninitialized: false,
     cookie:            {
       httpOnly: true,
       sameSite: 'lax',
-      secure:   false,
+      secure:   !isDevelopment,
+      maxAge:   24 * 60 * 60 * 1000,
     },
   })
 );

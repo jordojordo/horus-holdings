@@ -1,11 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
-import { Income } from '@/types/Income';
-import { Expense } from '@/types/Expense';
+import type { Income } from '@/types/Income';
+import type { Expense } from '@/types/Expense';
 
 import { useSocketContext } from '@/context/SocketContext';
 import { getServiceConfig } from '@/utils/service';
+
+export type NewItemMessage =
+  | { type: 'new_expense'; data: Expense }
+  | { type: 'new_income';  data: Income };
 
 export const useFinancialData = () => {
   const { setOnMessage } = useSocketContext();
@@ -19,11 +23,13 @@ export const useFinancialData = () => {
       const response = await axios.get(`${ apiUrl }/income`);
 
       setIncomes(response.data);
-    } catch (error: any) {
-      console.error(
-        'Unable to fetch incomes:',
-        error?.message || error?.response?.data?.error
-      );
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error(
+          'Unable to fetch incomes:',
+          error?.message || error?.response?.data?.error
+        );
+      }
     }
   }, [apiUrl]);
 
@@ -32,11 +38,13 @@ export const useFinancialData = () => {
       const response = await axios.get(`${ apiUrl }/expense`);
 
       setExpenses(response.data);
-    } catch (error: any) {
-      console.error(
-        'Unable to fetch expenses:',
-        error?.message || error?.response?.data?.error
-      );
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error(
+          'Unable to fetch expenses:',
+          error?.message || error?.response?.data?.error
+        );
+      }
     }
   }, [apiUrl]);
 
@@ -45,19 +53,17 @@ export const useFinancialData = () => {
     fetchExpenses();
   }, [fetchIncomes, fetchExpenses]);
 
-  const handleNewItem = useCallback((event: MessageEvent) => {
-    const message = JSON.parse(event.data);
-
+  const handleNewItem = useCallback((message: NewItemMessage) => {
     if (message.type === 'new_expense') {
       setExpenses((prev) => [...prev, message.data]);
-    }
-    if (message.type === 'new_income') {
+    } else if (message.type === 'new_income') {
       setIncomes((prev) => [...prev, message.data]);
     }
   }, []);
 
   useEffect(() => {
-    setOnMessage('new_item', handleNewItem);
+    // setOnMessage expects (data: unknown) => void, so this matches
+    setOnMessage('new_item', handleNewItem as (d: unknown) => void);
   }, [handleNewItem, setOnMessage]);
 
   return {

@@ -1,14 +1,15 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import type { ReactNode } from 'react';
+import { createContext, useState, useEffect } from 'react';
+import axios, { AxiosError } from 'axios';
 
-import { User } from '@/types/User';
+import type { User } from '@/types/User';
 import { getServiceConfig } from '@/utils/service';
 
 export interface AuthContextType {
   isLoading: boolean;
   authenticated: boolean;
   token: string | null;
-  user: User | null
+  user: User | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (username: string, password: string) => Promise<void>;
@@ -26,23 +27,33 @@ interface AuthProviderProps {
 axios.defaults.withCredentials = true;
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem('token'),
+  );
   const [user, setUser] = useState<User | null>(() => {
     const localUser = localStorage.getItem('user');
 
     return localUser ? JSON.parse(localUser) : null;
   });
-  const [authenticated, setAuthenticated] = useState<boolean>(!!localStorage.getItem('token'));
+  const [authenticated, setAuthenticated] = useState<boolean>(
+    !!localStorage.getItem('token'),
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { apiUrl } = getServiceConfig();
 
   useEffect(() => {
     const loadUser = () => {
-      loadToken();
+      const localToken = localStorage.getItem('token');
+      const localUser = JSON.parse(localStorage.getItem('user') || 'null');
 
-      if (localStorage.getItem('token')) {
+      if (localToken && localUser) {
+        setToken(localToken);
+        setUser(localUser);
+
         setAuthenticated(true);
+      } else {
+        clearUser();
       }
 
       setIsLoading(false);
@@ -51,32 +62,20 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     loadUser();
   }, [apiUrl]);
 
-  function loadToken() {
-    const localToken = localStorage.getItem('token');
-    const localUser = JSON.parse(localStorage.getItem('user') || 'null');
-
-    if (localToken && localUser) {
-      setToken(localToken);
-      setUser(localUser);
-    } else {
-      clearUser();
-    }
-  }
-
   function clearUser() {
     setToken(null);
     setUser(null);
     setAuthenticated(false);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-  };
+  }
 
   const register = async(username: string, password: string) => {
     try {
       setIsLoading(true);
       const response = await axios.post(`${ apiUrl }/auth/register`, {
         username,
-        password
+        password,
       });
 
       if (response.status === 201) {
@@ -84,22 +83,31 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       setIsLoading(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsLoading(false);
-      throw new Error(error?.response?.data?.error || 'Unable to register. Please try again.');
+
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error?.response?.data?.error ||
+            'Unable to register. Please try again.',
+        );
+      }
+
+      throw new Error('Unable to register. Please try again.');
     }
   };
 
   const login = async(username: string, password: string) => {
     try {
       setIsLoading(true);
+
       if (!username || !password) {
         throw new Error('Invalid username or password');
       }
 
       const response = await axios.post(`${ apiUrl }/auth/login`, {
         username,
-        password
+        password,
       });
 
       setToken(response.data.token);
@@ -110,9 +118,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem('user', JSON.stringify(response.data));
 
       setIsLoading(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsLoading(false);
-      throw new Error(error?.response?.data?.error || 'Unable to login. Please try again.');
+
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error.response?.data?.error || 'Unable to login. Please try again.',
+        );
+      }
+
+      throw new Error('Unable to login. Please try again.');
     }
   };
 
@@ -123,8 +138,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
       clearUser();
       setIsLoading(false);
-    } catch (error: any) {
-      throw new Error(error?.response?.data?.error || 'Unable to logout. Please try again.');
+    } catch (error: unknown) {
+      setIsLoading(false);
+
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error?.response?.data?.error || 'Unable to logout. Please try again.',
+        );
+      }
+
+      throw new Error('Unable to logout. Please try again.');
     }
   };
 
@@ -132,12 +155,19 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const response = await axios.put(`${ apiUrl }/auth/update`, {
         username,
-        password
+        password,
       });
 
       setUser(response.data);
-    } catch (error: any) {
-      throw new Error(error?.response?.data?.error || 'Unable to update profile. Please try again.');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error?.response?.data?.error ||
+            'Unable to update profile. Please try again.',
+        );
+      }
+
+      throw new Error('Unable to update profile. Please try again.');
     }
   };
 
@@ -146,23 +176,32 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       await axios.delete(`${ apiUrl }/auth/delete`);
 
       setUser(null);
-    } catch (error: any) {
-      throw new Error(error?.response?.data?.error || 'Unable to delete user. Please try again.');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error?.response?.data?.error ||
+            'Unable to delete user. Please try again.',
+        );
+      }
+
+      throw new Error('Unable to delete user. Please try again.');
     }
   };
 
   return (
-    <AuthContext.Provider value={{
-      isLoading,
-      authenticated,
-      token,
-      user,
-      login,
-      logout,
-      register,
-      updateProfile,
-      deleteUser
-    }}>
+    <AuthContext.Provider
+      value={{
+        isLoading,
+        authenticated,
+        token,
+        user,
+        login,
+        logout,
+        register,
+        updateProfile,
+        deleteUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

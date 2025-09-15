@@ -1,10 +1,10 @@
-import { DataTypes, Model } from '@sequelize/core';
+import { DataTypes, Model, sql } from '@sequelize/core';
 import type { PartialBy } from '@sequelize/utils';
 
 import sequelize from '@server/config/database';
 
 interface UserAttributes {
-  id: string;
+  id:       string;
   Username: string;
   Password: string;
 }
@@ -12,7 +12,7 @@ interface UserAttributes {
 interface UserCreationAttributes extends PartialBy<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id!: string;
+  public id!:       string;
   public Username!: string;
   public Password!: string;
 }
@@ -21,7 +21,7 @@ User.init(
   {
     id: {
       type:          DataTypes.UUID,
-      defaultValue:  DataTypes.UUIDV4,
+      defaultValue:  sql.uuidV4,
       primaryKey:    true,
       allowNull:     false,
     },

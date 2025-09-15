@@ -27,8 +27,8 @@ class ExpenseController extends BaseController {
 
       broadcast('new_expense', { data: expense });
       res.status(201).json(expense);
-    } catch (error) {
-      this.handleError(res, error, 'Error creating expense');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error creating expense');
     }
   }
 
@@ -39,8 +39,8 @@ class ExpenseController extends BaseController {
       const expenses = await Expense.findAll({ where: { userID: user?.id } });
 
       res.status(200).json(expenses);
-    } catch (error) {
-      this.handleError(res, error, 'Error getting expenses');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error getting expenses');
     }
   }
 
@@ -76,8 +76,8 @@ class ExpenseController extends BaseController {
       } else {
         res.status(404).json({ error: 'Expense not found' });
       }
-    } catch (error) {
-      this.handleError(res, error, 'Error updating expense');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error updating expense');
     }
   }
 
@@ -94,8 +94,8 @@ class ExpenseController extends BaseController {
       });
 
       res.status(204).send();
-    } catch (error) {
-      this.handleError(res, error, 'Error deleting expense');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Error deleting expense');
     }
   }
 }

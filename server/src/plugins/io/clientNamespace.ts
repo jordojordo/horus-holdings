@@ -31,7 +31,7 @@ export function attachClientNamespace(clientNs: Namespace) {
  * @param event
  * @param payload
  */
-export function broadcast(event: string, payload: any) {
+export function broadcast(event: string, payload: unknown) {
   connectedClients.forEach((socketId) => {
     clientNsRef?.to(socketId).emit(event, payload);
   });

@@ -1,0 +1,29 @@
+FROM node:24-alpine AS base
+RUN corepack enable
+WORKDIR /workspace
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY server/package.json server/package.json
+
+RUN pnpm install --frozen-lockfile --filter ./server
+
+COPY server ./server
+RUN pnpm --filter ./server run build
+
+FROM node:24-alpine AS runner
+RUN corepack enable
+WORKDIR /workspace
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY server/package.json server/package.json
+
+RUN pnpm --filter ./server deploy --prod /app
+
+COPY --from=base /workspace/server/dist /app/dist
+
+RUN adduser -D appuser && chown -R appuser:appuser /app
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=5000
+EXPOSE 5000
+CMD ["node", "dist/server.js"]

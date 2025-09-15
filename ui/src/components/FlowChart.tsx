@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 import '@/utils/chartConfig';
 import DateRange from '@/components/DateRange';
 import IncomeExpenseStats from '@/components/IncomeExpenseStats';
 import CashFlowCharts from '@/components/CashFlowCharts';
 import { useFinancialData } from '@/hooks/useFinancialData';
-import { processChartData, ChartData } from '@/utils/processChartData';
+import type { ChartData } from '@/utils/processChartData';
+import { processChartData } from '@/utils/processChartData';
 
 import '@/assets/style/FlowChart.css';
 

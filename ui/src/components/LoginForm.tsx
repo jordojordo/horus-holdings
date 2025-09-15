@@ -1,5 +1,7 @@
-import React, { useState, FormEvent } from 'react';
+import type { FormEvent } from 'react';
+import React, { useState } from 'react';
 import { message } from 'antd';
+import type { AxiosError } from 'axios';
 
 import useAuth from '@/hooks/useAuth';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -21,9 +23,11 @@ const LoginForm: React.FC = () => {
 
     try {
       await login(username, password);
-    } catch (error: any) {
-      if (error?.message as string) {
-        message.error(error.message);
+    } catch (error: unknown) {
+      const err = error as AxiosError;
+
+      if (err?.message as string) {
+        message.error(err.message);
       }
     }
   };

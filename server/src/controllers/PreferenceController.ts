@@ -35,8 +35,8 @@ class PreferenceController extends BaseController {
       });
 
       res.json(preference);
-    } catch (error) {
-      this.handleError(res, error, 'Failed to get preference');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Failed to get preference');
     }
   }
 
@@ -56,8 +56,8 @@ class PreferenceController extends BaseController {
       broadcast('new_preference', { data: preference });
 
       res.status(201).json(preference);
-    } catch (error) {
-      this.handleError(res, error, 'Failed to create preference');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Failed to create preference');
     }
   }
 
@@ -66,8 +66,8 @@ class PreferenceController extends BaseController {
       const preference = await this.getPreferenceByID(req);
 
       res.json(preference);
-    } catch (error) {
-      this.handleError(res, error, 'Failed to get preference');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Failed to get preference');
     }
   }
 
@@ -86,8 +86,8 @@ class PreferenceController extends BaseController {
       broadcast('update_preference', { data: preference });
 
       res.json(preference);
-    } catch (error) {
-      this.handleError(res, error, 'Failed to update preference');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Failed to update preference');
     }
   }
 
@@ -106,8 +106,8 @@ class PreferenceController extends BaseController {
       broadcast('delete_preference', { data: preference });
 
       res.json({ message: 'Preference deleted successfully' });
-    } catch (error) {
-      this.handleError(res, error, 'Failed to delete preference');
+    } catch(error) {
+      this.handleError(res, (error as Error), 'Failed to delete preference');
     }
   }
 }
