@@ -1,4 +1,4 @@
-name: CI & Build checks
+name: Build test
 
 on:
   workflow_dispatch:
