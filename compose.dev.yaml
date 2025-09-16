@@ -11,7 +11,8 @@ services:
     command: ["mysqld", "--log_bin_trust_function_creators=1"]
     volumes:
       - db_data:/var/lib/mysql
-      - ./scripts/init.dev.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/01-init.dev.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./scripts/02-schema.dev.sql:/docker-entrypoint-initdb.d/02-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 10s

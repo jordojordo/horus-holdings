@@ -1,4 +1,4 @@
-name: horus-dev
+name: horus-prod
 
 services:
   db:
@@ -11,7 +11,8 @@ services:
     command: ["mysqld", "--log_bin_trust_function_creators=1"]
     volumes:
       - db_data:/var/lib/mysql
-      - ./scripts/init.prod.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/01-init.prod.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./scripts/02-schema.prod.sql:/docker-entrypoint-initdb.d/02-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 10s
@@ -38,12 +39,11 @@ services:
     ports:
       - "6379:6379"
 
+
   server:
     image: ghcr.io/jordojordo/horus-server:master
     env_file:
       - server/.env.production
-    environment:
-      MYSQL_HOST: db
     depends_on:
       db:
         condition: service_healthy
@@ -54,16 +54,13 @@ services:
 
   ui:
     image: ghcr.io/jordojordo/horus-ui:master
-    env_file:
-      - ui/.env.production
     environment:
-      CLIENT_API_SCHEME: ${VITE_API_SCHEME:-http}
-      CLIENT_PROXY_SCHEME: ${VITE_WS_SCHEME:-ws}
-      CLIENT_PROXY_HOST: ${VITE_WS_HOST:-localhost}
-      CLIENT_PROXY_PORT: ${VITE_WS_PORT:-80}
-      CLIENT_PROXY_PATH: ${VITE_WS_PATH:-/ws}
+      CLIENT_API_SCHEME: https
+      CLIENT_PROXY_SCHEME: wss
+      CLIENT_PROXY_HOST: my.website.org
+      CLIENT_PROXY_PATH: /ws
     ports:
-      - "80:80"
+      - "8081:80"
     depends_on:
       - server
     volumes:
