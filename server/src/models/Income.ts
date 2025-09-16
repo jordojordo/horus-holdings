@@ -87,7 +87,6 @@ Income.init(
     customRecurrenceDays: {
       type:      DataTypes.JSON,
       allowNull: true,
-      // Optionally, add getters/setters if you need to ensure the value is always parsed or stringified:
       get() {
         const value = this.getDataValue('customRecurrenceDays');
 
