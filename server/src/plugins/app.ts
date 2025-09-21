@@ -15,6 +15,7 @@ import authRoutes from '@server/routes/api/v1/auth';
 import preferenceRoutes from '@server/routes/api/v1/preference';
 import incomeRoutes from '@server/routes/api/v1/income';
 import expenseRoutes from '@server/routes/api/v1/expense';
+import recurrenceRoutes from '@server/routes/api/v1/recurrence';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenvFlow.config();
@@ -90,5 +91,6 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/preference', preferenceRoutes);
 app.use('/api/v1/income', incomeRoutes);
 app.use('/api/v1/expense', expenseRoutes);
+app.use('/api/v1/recurrence', recurrenceRoutes);
 
 export default app;

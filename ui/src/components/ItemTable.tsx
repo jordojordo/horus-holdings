@@ -1,11 +1,3 @@
-import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-import {
- Table, Input, Button, Space, Dropdown, ConfigProvider
-} from 'antd';
-import Highlighter from 'react-highlight-words';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
-
 import type { InputRef, TableColumnType } from 'antd';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import type {
@@ -14,6 +6,15 @@ import type {
   SorterResult,
   SortOrder,
 } from 'antd/es/table/interface';
+import type { FinancialItem } from '@/types';
+
+import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import {
+ Table, Input, Button, Space, Dropdown, ConfigProvider
+} from 'antd';
+import Highlighter from 'react-highlight-words';
+import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 
 import { useSocketContext } from '@/context/SocketContext';
 import { getServiceConfig } from '@/utils/service';
@@ -22,17 +23,7 @@ import FinancialForm from '@/components/FinancialForm';
 
 import '@/assets/style/ItemTable.css';
 
-export interface Item {
-  id: number;
-  description: string;
-  amount: number;
-  category: string | null;
-  date: string | null;
-  recurring: boolean;
-  recurrenceType: string | null;
-  recurrenceEndDate: string | null;
-  customRecurrenceDays: number[] | null;
-}
+type Item = FinancialItem;
 
 interface ItemTableProps {
   itemType: 'expense' | 'income';
@@ -99,7 +90,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   // ----------------------------------
   // 2) Delete and Update handlers
   // ----------------------------------
-  const handleDelete = async(id: number) => {
+  const handleDelete = async(id: string | number) => {
     try {
       await axios.delete(`${ apiUrl }/${ itemType }/${ id }`);
       setItems((prev) => prev.filter((item) => item.id !== id));
@@ -144,9 +135,8 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
   ): TableColumnType<Item> => ({
     filterDropdown: (props: FilterDropdownProps) => {
       const {
- setSelectedKeys, selectedKeys, confirm, clearFilters, close
-} =
-        props;
+        setSelectedKeys, selectedKeys, confirm, clearFilters, close
+      } = props;
 
       return (
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
@@ -244,6 +234,9 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       ),
   });
 
+  const isRecurring = (item: Item) => typeof item.isRecurring === 'boolean' ? item.isRecurring : (item.recurrenceKind ?? 'none') !== 'none';
+  const filters = Array.isArray(items) ? new Set(items?.map((item) => item?.category || 'Uncategorized')) : [];
+
   // ----------------------------------
   // 4) Table columns
   // ----------------------------------
@@ -268,9 +261,7 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       dataIndex: 'category',
       key:       'category',
       filters:   [
-        ...Array.from(
-          new Set(items.map((item) => item.category || 'Uncategorized')),
-        ).map((cat) => ({
+        ...Array.from(filters).map((cat) => ({
           text:  cat,
           value: cat,
         })),
@@ -282,25 +273,46 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       title:          'Date',
       dataIndex:      'date',
       key:            'date',
-      sorter:         (a, b) => new Date(a.date || '').getTime() - new Date(b.date || '').getTime(),
+      sorter:         (a, b) => {
+        const ad = a.date ?? a.anchorDate ?? '';
+        const bd = b.date ?? b.anchorDate ?? '';
+
+        return new Date(ad || '').getTime() - new Date(bd || '').getTime();
+      },
       sortDirections: ['descend', 'ascend'],
+      render:         (_value, record) => (record.date ?? record.anchorDate ?? '—'),
     },
     {
-      title:     'Recurring?',
-      dataIndex: 'recurring',
-      key:       'recurring',
-      filters:   [
+      title:  'Schedule',
+      key:    'schedule',
+      render: (_, r) => {
+        if ((r.recurrenceKind ?? 'none') === 'none') {
+          return 'One-off';
+        }
+
+        if (r.rrule) {
+          return 'Custom (RRULE)';
+        }
+
+        return 'Recurring';
+      },
+      responsive: ['lg'],
+    },
+    {
+      title:   'Recurring?',
+      key:     'recurring',
+      filters: [
         {
           text:  'Recurring',
-          value: true,
+          value: 'recurring'
         },
         {
           text:  'Not Recurring',
-          value: false,
+          value: 'not'
         },
       ],
-      onFilter: (value, record) => record.recurring === value,
-      render:   (recurring) => (recurring ? 'Yes' : 'No'),
+      onFilter: (value, record) => value === 'recurring' ? isRecurring(record) : !isRecurring(record),
+      render:   (_, record) => (isRecurring(record) ? 'Yes' : 'No'),
       width:    '10%',
     },
     {
@@ -409,11 +421,11 @@ const ItemTable: React.FC<ItemTableProps> = ({ itemType }) => {
       {itemToUpdate && (
         <FinancialForm
           key={updateKey}
-          formType={itemType.slice(0, -1) as 'income' | 'expense'}
-          apiUrl={`${ apiUrl }/${ itemType }`}
-          itemType={itemType}
+          apiUrl={apiUrl}
+          kind={itemType}
           itemToUpdate={itemToUpdate}
-          closeModal={closeUpdateModal}
+          onClose={closeUpdateModal}
+          visible={!!itemToUpdate}
         />
       )}
     </>

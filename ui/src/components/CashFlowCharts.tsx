@@ -1,15 +1,15 @@
+import type { ChartData } from '@/types';
+
 import React from 'react';
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 import { Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
-import type { ChartData } from '@/utils/processChartData';
-
 import '@/assets/style/CashFlowCharts.css';
 
 interface CashFlowChartsProps {
   chartData: ChartData;
-  options: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  options: any;
 }
 
 const CashFlowCharts: React.FC<CashFlowChartsProps> = ({

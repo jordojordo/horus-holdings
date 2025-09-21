@@ -1,40 +1,55 @@
-import React, { useState, useMemo } from 'react';
 import type { Dayjs } from 'dayjs';
+import type { ChartData } from '@/types';
+
+import React, { useState, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
+import { Filler } from 'chart.js';
 
 import '@/utils/chartConfig';
+import { useFinancialData } from '@/hooks/useFinancialData';
+import { buildChartData } from '@/utils/buildChartData';
+
 import DateRange from '@/components/DateRange';
 import IncomeExpenseStats from '@/components/IncomeExpenseStats';
 import CashFlowCharts from '@/components/CashFlowCharts';
-import { useFinancialData } from '@/hooks/useFinancialData';
-import type { ChartData } from '@/utils/processChartData';
-import { processChartData } from '@/utils/processChartData';
 
 import '@/assets/style/FlowChart.css';
 
 const FlowChart: React.FC = () => {
-  const { incomes, expenses } = useFinancialData();
-
   const today = dayjs();
-  const oneMonthAgo = dayjs().subtract(1, 'month');
+  const defaultStart = today.startOf('month');
+  const defaultEnd = today.endOf('month');
 
-  const [startDate, setStartDate] = useState<Dayjs>(oneMonthAgo);
-  const [endDate, setEndDate] = useState<Dayjs>(today);
+  const [startDate, setStartDate] = useState<Dayjs>(defaultStart);
+  const [endDate, setEndDate] = useState<Dayjs>(defaultEnd);
 
-  const chartData: ChartData = useMemo(
-    () => processChartData(incomes, expenses, startDate, endDate),
-    [incomes, expenses, startDate, endDate]
+  const { incomes, expenses } = useFinancialData({
+    rangeStartISO: startDate.format('YYYY-MM-DD'),
+    rangeEndISO:   endDate.format('YYYY-MM-DD'),
+  });
+
+  const chartData: ChartData = useMemo(() => {
+    return buildChartData(
+      incomes ?? [],
+      expenses ?? [],
+      startDate.format('YYYY-MM-DD'),
+      endDate.format('YYYY-MM-DD')
+    );
+  }, [incomes, expenses, startDate, endDate]);
+
+  const options = useMemo(
+    () => ({
+      responsive:          true,
+      maintainAspectRatio: false,
+      plugins:             { ...Filler }
+    }),
+    []
   );
 
-  const options = {
-    responsive: true,
-    plugins:    { legend: { position: 'top' as const } },
-  };
-
-  const handleDateRangeChange = (start: Dayjs, end: Dayjs) => {
+  const handleDateRangeChange = useCallback((start: Dayjs, end: Dayjs) => {
     setStartDate(start);
     setEndDate(end);
-  };
+  }, []);
 
   return (
     <div className="flow-chart-container">
