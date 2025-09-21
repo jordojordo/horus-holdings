@@ -1,5 +1,6 @@
-import type { FormEvent } from 'react';
-import React, { useState, useCallback, useEffect } from 'react';
+import type { FinancialItem, RecurrencePayload } from '@/types';
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Modal,
@@ -14,110 +15,25 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 
-import type { DatePickerProps } from 'antd';
-import type { Dayjs } from 'dayjs';
-import type { Item } from '@/components/ItemTable';
-
 import { useTheme, THEME } from '@/context/ThemeContext';
-import type { Expense } from '@/types/Expense';
-import type { Income } from '@/types/Income';
 
-import '@/assets/style/FinancialForm.css';
+import RecurrenceBuilder from '@/components/RecurrenceBuilder';
 
-const { Option } = Select;
-
-// A separate component to handle the recurrence fields
-interface RecurringSectionProps {
-  recurrenceType: string | null;
-  onRecurrenceTypeChange: (value: string) => void;
-  recurrenceEndDate: Dayjs | null;
-  onRecurrenceEndDateChange: DatePickerProps['onChange'];
-  customRecurrenceDays: string;
-  onCustomRecurrenceDaysChange: (value: string) => void;
-}
-
-const RecurringSection: React.FC<RecurringSectionProps> = ({
-  recurrenceType,
-  onRecurrenceTypeChange,
-  recurrenceEndDate,
-  onRecurrenceEndDateChange,
-  customRecurrenceDays,
-  onCustomRecurrenceDaysChange,
-}) => {
-  return (
-    <>
-      <Form.Item
-        name="recurrenceType"
-        label="Recurrence Type"
-        rules={[
-          {
-            required: true,
-            message:  'Please select a recurrence type',
-          },
-        ]}
-      >
-        <Select
-          value={recurrenceType || undefined}
-          onChange={onRecurrenceTypeChange}
-        >
-          <Option value="bi-weekly">Bi-Weekly</Option>
-          <Option value="monthly">Monthly</Option>
-          <Option value="bi-monthly">Bi-Monthly</Option>
-          <Option value="custom">Custom</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item name="recurrenceEndDate" label="Recurrence End Date">
-        <DatePicker
-          value={recurrenceEndDate}
-          onChange={onRecurrenceEndDateChange}
-        />
-      </Form.Item>
-      {recurrenceType === 'custom' && (
-        <Form.Item
-          name="customRecurrenceDays"
-          label="Custom Recurrence Days (comma-separated)"
-        >
-          <Input
-            placeholder="e.g., 1,15"
-            value={customRecurrenceDays}
-            onChange={(e) => onCustomRecurrenceDaysChange(e.target.value)}
-          />
-        </Form.Item>
-      )}
-    </>
-  );
-};
+type ItemKind = 'income' | 'expense';
 
 interface FinancialFormProps {
-  formType: 'income' | 'expense';
   apiUrl: string;
-  itemType?: 'expense' | 'income';
+  visible: boolean;
+  onClose: () => void;
+  itemToUpdate?: FinancialItem;
+  kind: ItemKind;
   additionalFields?: React.JSX.Element;
-  itemToUpdate?: Item;
-  closeModal?: () => void;
 }
 
 const FinancialForm: React.FC<FinancialFormProps> = ({
-  formType,
-  apiUrl,
-  additionalFields,
-  itemToUpdate,
-  closeModal,
+  apiUrl, visible, onClose, itemToUpdate, kind, additionalFields
 }) => {
   const { currentTheme } = useTheme();
-
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState<number>(0);
-  const [date, setDate] = useState<Dayjs | null>(null);
-  const [category, setCategory] = useState<string | null>(null);
-  const [recurring, setRecurring] = useState(false);
-  const [recurrenceType, setRecurrenceType] = useState<string | null>(null);
-  const [recurrenceEndDate, setRecurrenceEndDate] = useState<Dayjs | null>(
-    null,
-  );
-  const [customRecurrenceDays, setCustomRecurrenceDays] = useState<string>('');
 
   const colors = {
     backgroundColor: currentTheme === THEME.LIGHT ? '#CFC5BF' : '#594a4e',
@@ -130,225 +46,181 @@ const FinancialForm: React.FC<FinancialFormProps> = ({
     content: { backgroundColor: colors.backgroundColor },
   };
 
-  const resetForm = useCallback(() => {
-    setDescription('');
-    setAmount(0);
-    setDate(null);
-    setCategory(null);
-    setRecurring(false);
-    setRecurrenceType(null);
-    setRecurrenceEndDate(null);
-    setCustomRecurrenceDays('');
-  }, []);
+  const isUpdate = Boolean(itemToUpdate?.id);
+  const [recurring, setRecurring] = useState(false);
+
+  const [form] = Form.useForm();
+
+  const [recurrence, setRecurrence] = useState<RecurrencePayload>({
+    recurrenceKind:    'none',
+    anchorDate:        dayjs().format('YYYY-MM-DD'),
+    timezone:          Intl.DateTimeFormat().resolvedOptions().timeZone,
+    weekendAdjustment: 'none',
+    includeDates:      [],
+    excludeDates:      [],
+  });
 
   useEffect(() => {
-    if (itemToUpdate) {
-      const itemDate = dayjs(itemToUpdate.date);
-      const itemRecurrenceEndDate = dayjs(itemToUpdate.recurrenceEndDate);
-
-      setDescription(itemToUpdate.description);
-      setAmount(itemToUpdate.amount);
-      setDate(itemDate.isValid() ? itemDate : null);
-      setCategory(itemToUpdate.category);
-      setRecurring(itemToUpdate.recurring);
-      setRecurrenceType(itemToUpdate.recurrenceType);
-      setRecurrenceEndDate(
-        itemRecurrenceEndDate.isValid() ? itemRecurrenceEndDate : null,
-      );
-      if (
-        itemToUpdate.customRecurrenceDays &&
-        Array.isArray(itemToUpdate.customRecurrenceDays)
-      ) {
-        setCustomRecurrenceDays(itemToUpdate.customRecurrenceDays.join(','));
-      } else {
-        setCustomRecurrenceDays('');
-      }
-      setModalVisible(true);
+    if (isUpdate && itemToUpdate) {
+      form.setFieldsValue({
+        description: itemToUpdate.description,
+        amount:      itemToUpdate.amount,
+        category:    itemToUpdate.category || undefined,
+        date:        itemToUpdate.date ? dayjs(itemToUpdate.date) : undefined,
+      });
+      setRecurrence({
+        recurrenceKind:    itemToUpdate.recurrenceKind || 'none',
+        rrule:             itemToUpdate.rrule || undefined,
+        anchorDate:        itemToUpdate.anchorDate || dayjs().format('YYYY-MM-DD'),
+        endDate:           itemToUpdate.endDate || null,
+        count:             itemToUpdate.count || null,
+        timezone:          itemToUpdate.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        weekendAdjustment: itemToUpdate.weekendAdjustment || 'none',
+        includeDates:      itemToUpdate.includeDates || [],
+        excludeDates:      itemToUpdate.excludeDates || [],
+      });
     } else {
-      resetForm();
+      form.resetFields();
+      setRecurrence({
+        recurrenceKind:    'none',
+        anchorDate:        dayjs().format('YYYY-MM-DD'),
+        timezone:          Intl.DateTimeFormat().resolvedOptions().timeZone,
+        weekendAdjustment: 'none',
+        includeDates:      [],
+        excludeDates:      [],
+      });
     }
-  }, [itemToUpdate, resetForm]);
+  }, [isUpdate, itemToUpdate, form]);
 
-  const handleModalVisible = (e: FormEvent) => {
-    e.preventDefault();
-    resetForm();
-    setModalVisible(false);
-  };
+  async function handleSubmit() {
+    const values = await form.validateFields();
+    const payload = {
+      description: values.description,
+      amount:      Number(values.amount),
+      category:    values.category || null,
+      date:        values.date ? values.date.format('YYYY-MM-DD') : null,
+      recurrence,
+    };
 
-  const handleSubmit = async() => {
     try {
-      // If "custom" recurrence is selected, parse the custom days string into an array of numbers.
-      let parsedCustomRecurrenceDays: number[] | undefined = undefined;
+      if (isUpdate) {
+        const id = itemToUpdate?.id;
 
-      if (recurrenceType === 'custom' && customRecurrenceDays) {
-        parsedCustomRecurrenceDays = customRecurrenceDays
-          .split(',')
-          .map((day) => parseInt(day.trim()))
-          .filter((day) => !isNaN(day));
-      }
-
-      const data: Income | Expense = {
-        description,
-        amount,
-        category,
-        date,
-        recurring,
-        recurrenceType,
-        recurrenceEndDate,
-        ...(recurrenceType === 'custom' && { customRecurrenceDays: parsedCustomRecurrenceDays }),
-      };
-
-      if (itemToUpdate) {
-        data.id = itemToUpdate.id;
-        await axios.put(`${ apiUrl }/${ data.id }`, data);
-      } else {
-        await axios.post(apiUrl, data);
-      }
-
-      resetForm();
-      setModalVisible(false);
-
-      if (itemToUpdate && closeModal) {
-        closeModal();
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        if (error.response.status === 400) {
-          message.error(error.response.data.error);
-        } else if (error.response.status === 401) {
-          message.error('You are not authorized to perform this action');
+        if (kind === 'income') {
+          await axios.put(`${ apiUrl }/income/${ id }`, payload);
         } else {
-          message.error('An unexpected error occurred');
+          await axios.put(`${ apiUrl }/expense/${ id }`, payload);
         }
+
+        message.success('Updated successfully');
       } else {
-        message.error('An unexpected error occurred');
+        if (kind === 'income') {
+          await axios.post(`${ apiUrl }/income`, payload);
+        } else {
+          await axios.post(`${ apiUrl }/expense`, payload);
+        }
+
+        message.success('Created successfully');
+      }
+
+      onClose();
+    } catch (error: any) {
+      console.warn('Save failed: ', error);
+
+      if (error?.response?.data?.error) {
+        message.error(error.response.data.error);
+      } else {
+        message.error('Save failed');
       }
     }
-  };
-
-  const handleDateChange: DatePickerProps['onChange'] = (date) => {
-    setDate(date || null);
-  };
-
-  const handleRecurrenceEndDateChange: DatePickerProps['onChange'] = (date) => {
-    setRecurrenceEndDate(date || null);
-  };
+  }
 
   return (
-    <>
-      {!itemToUpdate && (
-        <button
-          className="btn text-bold mt-5 mb-5"
-          onClick={() => setModalVisible(true)}
-        >
-          Add {formType.charAt(0).toUpperCase() + formType.slice(1)}
-        </button>
+    <Modal
+      open={visible}
+      title={isUpdate ? 'Update Item' : 'Add Item'}
+      styles={modalStyles}
+      centered
+      onCancel={onClose}
+      onOk={handleSubmit}
+      destroyOnHidden
+      footer={() => (
+        <Form.Item>
+          <button
+            className="btn text-bold mr-4"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn text-bold mt-5 mb-5"
+            onClick={() => handleSubmit()}
+          >
+            {itemToUpdate ? 'Save' : 'Add'}
+          </button>
+        </Form.Item>
       )}
-      <Modal
-        open={modalVisible}
-        title={itemToUpdate ? `Update ${ formType }` : `Add ${ formType }`}
-        onCancel={(e) => handleModalVisible(e)}
-        destroyOnHidden
-        centered
-        styles={modalStyles}
-        footer={() => (
-          <Form.Item>
-            <button
-              className="btn text-bold mr-4"
-              onClick={(e) => handleModalVisible(e)}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn text-bold mt-5 mb-5"
-              onClick={() => handleSubmit()}
-            >
-              {itemToUpdate ? 'Save' : 'Add'}
-            </button>
-          </Form.Item>
-        )}
-      >
+      modalRender={(dom) => (
         <Form
-          onFinish={handleSubmit}
           layout="vertical"
-          initialValues={{
-            description,
-            amount,
-            date,
-            recurring,
-            recurrenceType,
-            recurrenceEndDate,
-            category,
-            customRecurrenceDays,
-          }}
+          form={form}
+          name="form_in_modal"
+          initialValues={{ modifier: 'public' }}
+          clearOnDestroy
         >
-          <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[
-                {
-                  required: true,
-                  message:  'Please enter a description',
-                },
-              ]}
-            >
-              <Input
-                onChange={(e) => setDescription(e.target.value)}
-                value={description}
-              />
-            </Form.Item>
-            <Form.Item
-              name="amount"
-              label="Amount"
-              rules={[
-                {
-                  required: true,
-                  message:  'Please enter an amount',
-                },
-              ]}
-            >
-              <InputNumber
-                onChange={(e) => setAmount(e as number)}
-                value={amount}
-              />
-            </Form.Item>
-            <Form.Item name="date" label="Date">
-              <DatePicker value={date} onChange={handleDateChange} />
-            </Form.Item>
-            <Form.Item
-              name="category"
-              label="Category"
-              rules={[{ message: 'Please enter a category' }]}
-            >
-              <Input
-                onChange={(e) => setCategory(e.target.value)}
-                value={category || undefined}
-              />
-            </Form.Item>
-            <Form.Item name="recurring" valuePropName="checked">
-              <Checkbox
-                checked={recurring}
-                onChange={(e) => setRecurring(e.target.checked)}
-              >
-                Recurring
-              </Checkbox>
-            </Form.Item>
-            {recurring && (
-              <RecurringSection
-                recurrenceType={recurrenceType}
-                onRecurrenceTypeChange={setRecurrenceType}
-                recurrenceEndDate={recurrenceEndDate}
-                onRecurrenceEndDateChange={handleRecurrenceEndDateChange}
-                customRecurrenceDays={customRecurrenceDays}
-                onCustomRecurrenceDaysChange={setCustomRecurrenceDays}
-              />
-            )}
-            {additionalFields}
-          </Space>
+          {dom}
         </Form>
-      </Modal>
-    </>
+      )}
+    >
+      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="amount" label="Amount" rules={[{ required: true }]}>
+          <InputNumber style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item name="category" label="Category">
+          <Select allowClear options={[
+            {
+              label: 'General',
+              value: 'general'
+            },
+            {
+              label: 'Housing',
+              value: 'housing'
+            },
+            {
+              label: 'Food',
+              value: 'food'
+            },
+          ]} />
+        </Form.Item>
+        <Form.Item name="date" label="One-off date (when not recurring)">
+          <DatePicker />
+        </Form.Item>
+
+        <Form.Item name="recurring" valuePropName="checked">
+          <Checkbox
+            checked={recurring}
+            onChange={(e) => setRecurring(e.target.checked)}
+          >
+            Recurring
+          </Checkbox>
+        </Form.Item>
+
+        <Space direction="vertical" style={{ width: '100%' }}>
+          {recurring && (
+
+            <RecurrenceBuilder
+              value={recurrence}
+              onChange={setRecurrence}
+              previewApiBase={apiUrl}
+            />
+          )}
+          {additionalFields}
+        </Space>
+      </Space>
+    </Modal>
   );
 };
 

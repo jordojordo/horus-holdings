@@ -7,6 +7,7 @@ export default {
   'react-hooks/rules-of-hooks': 'error',
   'react-hooks/exhaustive-deps': 'warn',
 
+  '@typescript-eslint/no-explicit-any': 'off',
   '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
   '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
 
@@ -91,7 +92,7 @@ export default {
     {
       ObjectExpression: {
         multiline:     true,
-        minProperties: 3,
+        minProperties: 4,
       },
       ObjectPattern: {
         multiline:     true,
@@ -103,7 +104,7 @@ export default {
       },
       ExportDeclaration: {
         multiline:     true,
-        minProperties: 3,
+        minProperties: 4,
       },
     },
   ],

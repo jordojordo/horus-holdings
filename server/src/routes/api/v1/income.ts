@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
-import IncomeController from '@server/controllers/IncomeController';
+import FinancialItemController from '@server/controllers/FinancialItemController';
 import { isAuthenticated } from '@server/middleware/auth';
-import { validateIncome } from '@server/middleware/validation';
+import { validateIncomeCreate, validateIncomeUpdate } from '@server/middleware/validation';
 
 const router = Router();
 
-router.get('/', isAuthenticated, IncomeController.getIncomes.bind(IncomeController));
-router.post('/', isAuthenticated, validateIncome, IncomeController.createIncome.bind(IncomeController));
-router.put('/:id', isAuthenticated, validateIncome, IncomeController.updateIncome.bind(IncomeController));
-router.delete('/:id', isAuthenticated, IncomeController.deleteIncome.bind(IncomeController));
+router.get('/', isAuthenticated, FinancialItemController.getItems.bind(FinancialItemController));
+router.post('/', isAuthenticated, validateIncomeCreate, FinancialItemController.createItem.bind(FinancialItemController));
+router.put('/:id', isAuthenticated, validateIncomeUpdate, FinancialItemController.updateItem.bind(FinancialItemController));
+router.delete('/:id', isAuthenticated, FinancialItemController.deleteItem.bind(FinancialItemController));
 
 export default router;

@@ -55,5 +55,6 @@ export default {
 
   'no-cond-assign': ['warn', 'except-parens'],
 
+  '@typescript-eslint/no-explicit-any':      'off',
   '@typescript-eslint/no-empty-object-type': 'off',
 }

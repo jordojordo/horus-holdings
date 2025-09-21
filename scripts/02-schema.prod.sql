@@ -32,20 +32,27 @@ CREATE TABLE IF NOT EXISTS `preferences` (
 
 -- INCOMES
 CREATE TABLE IF NOT EXISTS `incomes` (
-  `id`                    CHAR(36)      NOT NULL,
-  `description`           VARCHAR(255)  NOT NULL,
-  `amount`                DOUBLE        NOT NULL,
-  `category`              VARCHAR(255)  NULL,
-  `date`                  DATE          NULL,
-  `recurring`             TINYINT(1)    NOT NULL,
-  `recurrenceType`        VARCHAR(255)  NULL,
-  `recurrenceEndDate`     DATE          NULL,
-  `customRecurrenceDays`  JSON          NULL,
-  `userID`                CHAR(36)      NOT NULL,
-  `createdAt`             DATETIME      NOT NULL,
-  `updatedAt`             DATETIME      NOT NULL,
+  `id`          CHAR(36)      NOT NULL,
+  `description` VARCHAR(255)  NOT NULL,
+  `amount`      DECIMAL(12,2) NOT NULL,
+  `category`    VARCHAR(255)  NULL,
+  `date`        DATE          NULL,          -- for one-off items when recurrenceKind='none'
+  `recurrenceKind`       VARCHAR(16) NOT NULL DEFAULT 'none',  -- 'none' | 'simple' | 'rrule'
+  `rrule`                MEDIUMTEXT  NULL,                     -- iCal text: DTSTART + RRULE lines
+  `simple`               JSON        NULL,
+  `anchorDate`           DATE        NULL,                     -- start date for recurrence generation
+  `endDate`              DATE        NULL,                     -- optional end date for convenience
+  `count`                INT         NULL,                     -- optional cap
+  `timezone`             VARCHAR(64) NULL,                     -- IANA tz, e.g. America/New_York
+  `weekendAdjustment`    VARCHAR(8)  NOT NULL DEFAULT 'none',  -- none|next|prev|nearest
+  `includeDates`         JSON        NULL,                     -- array of ISO dates (YYYY-MM-DD)
+  `excludeDates`         JSON        NULL,                     -- array of ISO dates (YYYY-MM-DD)
+  `userID`      CHAR(36)      NOT NULL,
+  `createdAt`   DATETIME      NOT NULL,
+  `updatedAt`   DATETIME      NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_incomes_userID` (`userID`),
+  KEY `ix_incomes_anchor` (`anchorDate`),
   KEY `ix_incomes_date` (`date`),
   CONSTRAINT `fk_incomes_user`
     FOREIGN KEY (`userID`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -53,20 +60,27 @@ CREATE TABLE IF NOT EXISTS `incomes` (
 
 -- EXPENSES
 CREATE TABLE IF NOT EXISTS `expenses` (
-  `id`                    CHAR(36)      NOT NULL,
-  `description`           VARCHAR(255)  NOT NULL,
-  `amount`                DOUBLE        NOT NULL,
-  `category`              VARCHAR(255)  NULL,
-  `date`                  DATE          NULL,
-  `recurring`             TINYINT(1)    NOT NULL,
-  `recurrenceType`        VARCHAR(255)  NULL,
-  `recurrenceEndDate`     DATE          NULL,
-  `customRecurrenceDays`  JSON          NULL,
-  `userID`                CHAR(36)      NOT NULL,
-  `createdAt`             DATETIME      NOT NULL,
-  `updatedAt`             DATETIME      NOT NULL,
+  `id`          CHAR(36)      NOT NULL,
+  `description` VARCHAR(255)  NOT NULL,
+  `amount`      DECIMAL(12,2) NOT NULL,
+  `category`    VARCHAR(255)  NULL,
+  `date`        DATE          NULL,
+  `recurrenceKind`       VARCHAR(16) NOT NULL DEFAULT 'none',
+  `rrule`                MEDIUMTEXT  NULL,
+  `simple`               JSON        NULL,
+  `anchorDate`           DATE        NULL,
+  `endDate`              DATE        NULL,
+  `count`                INT         NULL,
+  `timezone`             VARCHAR(64) NULL,
+  `weekendAdjustment`    VARCHAR(8)  NOT NULL DEFAULT 'none',
+  `includeDates`         JSON        NULL,
+  `excludeDates`         JSON        NULL,
+  `userID`      CHAR(36)      NOT NULL,
+  `createdAt`   DATETIME      NOT NULL,
+  `updatedAt`   DATETIME      NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_expenses_userID` (`userID`),
+  KEY `ix_expenses_anchor` (`anchorDate`),
   KEY `ix_expenses_date` (`date`),
   CONSTRAINT `fk_expenses_user`
     FOREIGN KEY (`userID`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE

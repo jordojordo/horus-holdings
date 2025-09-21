@@ -1,35 +1,54 @@
 import { DataTypes, Model, sql } from '@sequelize/core';
+import type { RecurrenceKind, SimpleRecurrence, WeekendAdjustment } from '@server/types';
+
 import type { PartialBy } from '@sequelize/utils';
 
 import sequelize from '@server/config/database';
 import User from '@server/models/User';
 
-interface ExpenseAttributes {
-  id:                    string;
-  description:           string;
-  amount:                number;
-  category:              string;
-  date:                  string | null;
-  recurring:             boolean;
-  recurrenceType?:       string;
-  recurrenceEndDate?:    string | null;
-  customRecurrenceDays?: number[];
-  userID:                string;
+export interface ExpenseAttributes {
+  id:                 string;
+  description:        string;
+  amount:             number;
+  category:           string | null;
+  date:               string | null;            // one-off date when recurrenceKind='none'
+  recurrenceKind:     RecurrenceKind;           // 'none' | 'simple' | 'rrule'
+  rrule?:             string | null;            // multi-line iCal (optional for 'simple')
+  simple?:            SimpleRecurrence | null;
+  anchorDate?:        string | null;
+  endDate?:           string | null;
+  count?:             number | null;
+  timezone?:          string | null;
+  weekendAdjustment?: WeekendAdjustment;
+  includeDates?:      string[] | null;
+  excludeDates?:      string[] | null;
+  userID:             string;
+  createdAt?:         Date;
+  updatedAt?:         Date;
 }
 
-interface ExpenseCreationAttributes extends PartialBy<ExpenseAttributes, 'id'> {}
+// interface ExpenseCreationAttributes extends PartialBy<ExpenseAttributes, 'id'> {}
+export type ExpenseCreationAttributes = PartialBy<ExpenseAttributes, 'id' | 'date' | 'category' | 'recurrenceKind' | 'rrule' | 'anchorDate' | 'endDate' | 'count' | 'timezone' | 'weekendAdjustment' | 'includeDates' | 'excludeDates' | 'createdAt' | 'updatedAt'>;
 
 class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes> implements ExpenseAttributes {
-  public id!:                   string;
-  public description!:          string;
-  public amount!:               number;
-  public category!:             string;
-  public date!:                 string | null;
-  public recurring!:            boolean;
-  public recurrenceType?:       string;
-  public recurrenceEndDate?:    string | null;
-  public customRecurrenceDays?: number[];
-  public userID!:               string;
+  declare id:                 string;
+  declare description:        string;
+  declare amount:             number;
+  declare category:           string | null;
+  declare date:               string | null;
+  declare recurrenceKind:     RecurrenceKind;
+  declare rrule:              string | null;
+  declare simple:             SimpleRecurrence | null;
+  declare anchorDate:         string | null;
+  declare endDate:            string | null;
+  declare count:              number | null;
+  declare timezone:           string | null;
+  declare weekendAdjustment:  WeekendAdjustment;
+  declare includeDates:       string[] | null;
+  declare excludeDates:       string[] | null;
+  declare userID:             string;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 }
 
 Expense.init(
@@ -40,19 +59,10 @@ Expense.init(
       primaryKey:    true,
       allowNull:     false,
     },
-    description: {
-      type:      DataTypes.STRING(255),
-      allowNull: false,
-    },
-    amount: {
-      type:      DataTypes.FLOAT,
-      allowNull: false,
-    },
-    category: {
-      type:      DataTypes.STRING,
-      allowNull: true,
-    },
-    date: {
+    description: { type: DataTypes.STRING(255), allowNull: false },
+    amount:      { type: DataTypes.DECIMAL(12,2), allowNull: false },
+    category:    { type: DataTypes.STRING, allowNull: true },
+    date:        {
       type:      DataTypes.DATEONLY,
       allowNull: true,
       get() {
@@ -64,40 +74,25 @@ Expense.init(
         this.setDataValue('date', value);
       },
     },
-    recurring: {
-      type:      DataTypes.BOOLEAN,
-      allowNull: false,
+    recurrenceKind: {
+      type:         DataTypes.STRING,
+      allowNull:    false,
+      defaultValue: 'none' 
     },
-    recurrenceType: {
-      type:      DataTypes.STRING,
-      allowNull: true,
+    rrule:             { type: DataTypes.TEXT, allowNull: true },
+    simple:            { type: DataTypes.JSON, allowNull: true },
+    anchorDate:        { type: DataTypes.DATEONLY, allowNull: true },
+    endDate:           { type: DataTypes.DATEONLY, allowNull: true },
+    count:             { type: DataTypes.INTEGER, allowNull: true },
+    timezone:          { type: DataTypes.STRING, allowNull: true },
+    weekendAdjustment: {
+      type:         DataTypes.STRING,
+      allowNull:    false,
+      defaultValue: 'none' 
     },
-    recurrenceEndDate: {
-      type:      DataTypes.DATEONLY,
-      allowNull: true,
-      get() {
-        const rawDate = this.getDataValue('recurrenceEndDate');
-
-        return rawDate ? new Date(rawDate).toISOString().split('T')[0] : null;
-      },
-      set(value: string) {
-        this.setDataValue('recurrenceEndDate', value);
-      },
-    },
-    customRecurrenceDays: {
-      type:      DataTypes.JSON,
-      allowNull: true,
-      get() {
-        const value = this.getDataValue('customRecurrenceDays');
-
-        return typeof value === 'string' ? JSON.parse(value) : value;
-      },
-      set(value: number[]) {
-        this.setDataValue('customRecurrenceDays', value);
-      }
-    },
-
-    userID: {
+    includeDates: { type: DataTypes.JSON, allowNull: true },
+    excludeDates: { type: DataTypes.JSON, allowNull: true },
+    userID:       {
       type:      DataTypes.UUID,
       allowNull: false,
     },

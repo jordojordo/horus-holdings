@@ -1,6 +1,7 @@
+import type { ChartData } from '@/types';
+
 import React from 'react';
 import { Col, Row, Statistic } from 'antd';
-import type { ChartData } from '@/utils/processChartData';
 
 interface IncomeExpenseStatsProps {
   chartData: ChartData;
