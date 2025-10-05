@@ -1,7 +1,8 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import pluginVue from 'eslint-plugin-vue'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 import globals from 'globals';
 import stylistic from '@stylistic/eslint-plugin';
 
@@ -25,7 +26,6 @@ export default [
     ],
   },
 
-  js.configs.recommended,
   ...tseslint.configs.recommended,
 
   // Server
@@ -41,29 +41,38 @@ export default [
     },
     plugins: { '@stylistic': stylistic },
     rules: {
+      ...js.configs.recommended.rules,
       ...serverRules,
     },
   },
 
   // UI
-  {
-    name: 'ui',
-    files: ['ui/**/*.{ts,tsx,js,jsx}'],
-    languageOptions: {
-      parserOptions: {
-        project: ['./ui/tsconfig.eslint.json'],
-        tsconfigRootDir: import.meta.dirname,
-        ecmaFeatures: { jsx: true },
+  ...defineConfigWithVueTs([
+    ...pluginVue.configs['flat/recommended'],
+    vueTsConfigs.recommended,
+
+    {
+      name: 'ui',
+      files: ['ui/**/*.{vue,ts,tsx,js,mjs,cjs}'],
+      ignores: ['**/dist/**', '**/node_modules/**', '**/ui/postcss.config.js'],
+      languageOptions: {
+        parserOptions: {
+          parser: tseslint.parser,
+          projectService: true,
+          tsconfigRootDir: import.meta.dirname,
+          project: ['./ui/tsconfig.eslint.json'],
+          extraFileExtensions: ['.vue'],
+        },
+        globals: { ...globals.browser },
       },
-      globals: { ...globals.browser },
+      plugins: {
+        '@stylistic': stylistic,
+      },
+      rules: {
+        ...uiRules,
+      },
     },
-    plugins: {
-      react,
-      'react-hooks': reactHooks
-    },
-    settings: { react: { version: 'detect' } },
-    rules: {
-      ...uiRules,
-    },
-  }
+
+    skipFormatting,
+  ]),
 ];

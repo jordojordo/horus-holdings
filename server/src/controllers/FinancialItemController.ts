@@ -51,17 +51,17 @@ class FinancialItemController extends BaseController {
       const user = req?.user as User;
 
       const {
-        description, amount, category, date 
+        name, amount, category, date 
       } = req.body;
 
       const created = await Model.create({
         userID:               user?.id,
-        description:          description || '',
+        name:          name || '',
         amount:               amount || 0,
-        category:             category ?? null,
-        date:                 date ?? null,
+        category:             category,
+        date:                 date,
         ...pickRecurrence(req.body),
-      } as any);
+      });
 
       broadcast(`new_${ kind }`, { data: created });
       res.status(201).json({ data: created });
@@ -77,14 +77,14 @@ class FinancialItemController extends BaseController {
       const user = req?.user as User;
       const { id } = req.params;
       const {
-        description, amount, category, date 
+        name, amount, category, date 
       } = req.body;
 
       const [count] = await Model.update({
-        description,
+        name,
         amount,
-        category: category ?? null,
-        date:     date ?? null,
+        category: category,
+        date:     date,
         ...pickRecurrence(req.body),
       }, { where: { id, userID: user.id } });
 

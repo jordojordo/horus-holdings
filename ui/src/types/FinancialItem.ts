@@ -1,21 +1,23 @@
 import type { RecurrenceKind, SimpleRecurrence, WeekendAdjustment } from './Recurrence';
 
+export type FinanceItemKind = 'income' | 'expense';
+
 export interface FinancialItem {
-  id: string | number;
-  description: string;
+  id?: string | number;
+  name: string;
   amount: number;
-  category?: string | null;
+  category?: string;
 
   // one-off date when recurrenceKind === 'none'
-  date?: string | null;
+  date?: string;
 
   // recurrence (new model)
   recurrenceKind?: RecurrenceKind;
-  rrule?: string | null;
-  anchorDate?: string | null;
-  endDate?: string | null;
-  count?: number | null;
-  timezone?: string | null;
+  rrule?: string;
+  anchorDate?: string;
+  endDate?: string;
+  count?: number;
+  timezone?: string;
   weekendAdjustment?: WeekendAdjustment;
   includeDates?: string[];
   excludeDates?: string[];
@@ -25,27 +27,14 @@ export interface FinancialItem {
 
   // optional classification from server (overrides heuristic)
   isRecurring?: boolean;
+
+  simple?: SimpleRecurrence | null;
 }
 
-export type ItemForExpand = {
-  // one-off / legacy
-  date?: string | null;
+export interface Income extends FinancialItem {
+  kind: 'income'
+}
 
-  // recurrence
-  recurrenceKind?: RecurrenceKind;
-  // advanced
-  rrule?: string | null;
-  // simple
-  simple?: SimpleRecurrence;
-
-  anchorDate?: string | null;
-  endDate?: string | null;
-  count?: number | null;
-
-  // tz is treated as “floating” on UI; the server is the source of truth for tz-sensitive runs
-  timezone?: string | null;
-
-  weekendAdjustment?: WeekendAdjustment;
-  includeDates?: string[];
-  excludeDates?: string[];
-};
+export interface Expense extends FinancialItem {
+  kind: 'expense'
+}

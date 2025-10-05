@@ -1,8 +1,8 @@
 import type { Dayjs } from 'dayjs';
 import type {
+  FinancialItem,
   WeekendAdjustment,
   SimpleRecurrence,
-  ItemForExpand,
 } from '@/types';
 
 import dayjs from 'dayjs';
@@ -40,7 +40,7 @@ function weekdayFromISO(iso: string | null | undefined): number {
   return d.day();
 }
 
-function bydayString(wd: number): string {
+function bydayString(wd: number): string | undefined {
   // rrule weekday codes: SU,MO,TU,WE,TH,FR,SA
   return ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'][((wd % 7) + 7) % 7];
 }
@@ -89,9 +89,9 @@ function adjustWeekend(iso: string, policy: WeekendAdjustment | undefined): stri
 
 /**
  * Builds a minimal iCal text for RRULE parsing.
- * - We write DTSTART as “floating” local midnight (no Z) for UI preview/aggregation.
- * - We append one or more RRULE lines.
- * - We append UNTIL/COUNT when provided.
+ * - Write DTSTART as “floating” local midnight (no Z) for UI preview/aggregation.
+ * - Append one or more RRULE lines.
+ * - Append UNTIL/COUNT when provided.
  */
 function compileSimpleToICal(
   simple: SimpleRecurrence,
@@ -106,7 +106,7 @@ function compileSimpleToICal(
     const parts: string[] = [];
 
     if (endDate) {
-      // RFC UNTIL is UTC—here we fake by using end-of-day local tagged as 'Z' (good enough for UI bucketing).
+      // RFC UNTIL is UTC—here, fake by using end-of-day local tagged as 'Z' (good enough for UI bucketing).
       const until = dayjs(endDate)
         .endOf('day')
         // .utc()
@@ -201,11 +201,11 @@ function compileSimpleToICal(
   return lines.join('\n');
 }
 
-function ensureICalForItem(item: ItemForExpand): string {
+function ensureICalForItem(item: FinancialItem): string {
   const kind = item.recurrenceKind ?? 'none';
 
   if (kind === 'rrule') {
-    // If RRULE string already includes DTSTART, use as-is; otherwise prepend a DTSTART built from anchor.
+    // If RRULE string already includes DTSTART, use as-is, otherwise prepend a DTSTART built from anchor.
     const trimmed = (item.rrule || '').trim();
 
     if (!trimmed) {
@@ -244,7 +244,7 @@ function ensureICalForItem(item: ItemForExpand): string {
 }
 
 export function expandOccurrencesFromItem(
-  item: ItemForExpand,
+  item: FinancialItem,
   windowStartISO: string,
   windowEndISO: string
 ): string[] {
@@ -288,8 +288,7 @@ export function expandOccurrencesFromItem(
   const betweenRaw = set.between(start, end, true, (_d, len) => len < hardCap);
 
   // Adjust weekends and filter excludes
-  const adjusted = betweenRaw.map((jsDate) => adjustWeekend(dayjs(jsDate).format('YYYY-MM-DD'), item.weekendAdjustment)
-  );
+  const adjusted = betweenRaw.map((jsDate) => adjustWeekend(dayjs(jsDate).format('YYYY-MM-DD'), item.weekendAdjustment));
 
   return adjusted.filter((d) => !excludeSet.has(d));
 }

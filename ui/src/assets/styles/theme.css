@@ -1,0 +1,90 @@
+/* Light Theme */
+:root {
+  --white: #fffffe;
+  --black: #16161a;
+
+  /* GREEN (minty, fresh) */
+  --green-lightest: #f5fef7;
+  --green-lighter:  #e0f8e6;
+  --green-light:    #c3f0ca;
+  --green-medium:   #2cb67d;
+  --green-mediumer: #23a06f;
+  --green-mediumist:#1e8f63;
+  --green-dark:     #425244;
+  --green-darker:   #324235;
+  --green-darkist:  #212b23;
+
+  /* PINK (creamy beige-pink neutrals) */
+  --pink-lightest:  #fefbf4;
+  --pink-lighter:   #fdf7ed;
+  --pink-light:     #faf3e6;
+  --pink-medium:    #f1e5de;
+  --pink-mediumer:  #e9d3ca;
+  --pink-mediumist: #dcc6bd;
+  --pink-dark:      #cfc5bf;
+  --pink-darker:    #b8afaa;
+  --pink-darkist:   #978f8a;
+
+  /* PURPLE (brand-y violet) */
+  --purple-lightest:#f6f3fe;
+  --purple-lighter: #d8cef9;
+  --purple-light:   #ebe6fa;
+  --purple-medium:  #8965f6;
+  --purple-mediumer:#6d5aa5;
+  --purple-mediumist:#744de2;
+  --purple-dark:    #5e45a8;
+  --purple-darker:  #412f7a;
+  --purple-darkist: #2e2158;
+
+  /* BLUE (calm, slightly desaturated) */
+  --blue-lightest:  #eff4ff;
+  --blue-lighter:   #e6eeff;
+  --blue-light:     #d6e4ff;
+  --blue-medium:    #4a90e2;
+  --blue-mediumer:  #3c7bc1;
+  --blue-mediumist: #2f66a0;
+  --blue-dark:      #1c3c7a;
+  --blue-darker:    #162f61;
+  --blue-darkist:   #0f2146;
+
+  /* ORANGE (peach -> coral -> rust) */
+  --orange-lightest:#fff1e3;
+  --orange-lighter: #ffead4;
+  --orange-light:   #ffe3c6;
+  --orange-medium:  #ff7f50;
+  --orange-mediumer:#ff6a33;
+  --orange-mediumist:#e95f2e;
+  --orange-dark:    #a6441d;
+  --orange-darker:  #7d3417;
+  --orange-darkist: #5a240f;
+
+  /* Semantic backgrounds/foregrounds (unchanged, but now you can swap in new steps) */
+  --background-primary: var(--pink-light);
+  --background-secondary: var(--pink-medium);
+  --background-tertiary: var(--pink-dark);
+  --background-button: var(--purple-dark);
+  --background-highlight: var(--orange-dark);
+
+  --foreground-primary: #33272a;
+  --foreground-secondary: #594a4e;
+  --foreground-tertiary: #94a1b2;
+  --foreground-highlight: var(--orange-dark);
+  --foreground-link: var(--purple-medium);
+  --foreground-button: var(--purple-light);
+  --foreground-nav: var(--purple-darker);
+}
+
+/* Dark Theme */
+:root.dark {
+  --background-primary: #33272a;
+  --background-secondary: #594a4e;
+  --background-tertiary: var(--pink-dark);
+  --background-button: var(--purple-light);
+  --background-highlight: var(--orange-light);
+
+  --foreground-primary: var(--white);
+  --foreground-secondary: var(--pink-dark);
+  --foreground-tertiary: var(--green-medium);
+  --foreground-highlight: var(--orange-light);
+  --foreground-button: var(--purple-dark);
+}

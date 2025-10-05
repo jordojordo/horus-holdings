@@ -1,12 +1,5 @@
 /** @type {import('eslint').Linter.RulesRecord} */
 export default {
-  'react/jsx-uses-react': 'off',
-  'react/react-in-jsx-scope': 'off',
-  'react/prop-types': 'off',
-
-  'react-hooks/rules-of-hooks': 'error',
-  'react-hooks/exhaustive-deps': 'warn',
-
   '@typescript-eslint/no-explicit-any': 'off',
   '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
   '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],

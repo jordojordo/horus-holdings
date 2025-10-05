@@ -1,0 +1,136 @@
+/* ---------------------------
+   CHART COLOR RAMPS (Light)
+----------------------------*/
+:root {
+  --chart-income: var(--green-medium);
+  --chart-expense: var(--orange-medium);
+  --chart-net-cash-flow: var(--blue-medium);
+  --chart-forecasted-cash-flow: var(--purple-medium);
+  --chart-saving: var(--blue-dark);
+  --chart-investment: var(--purple-darker);
+
+  /* Income = GREEN */
+  --chart-income-lightest: var(--green-lightest);
+  --chart-income-lighter:  var(--green-lighter);
+  --chart-income-light:    var(--green-light);
+  --chart-income-medium:   var(--green-medium);
+  --chart-income-mediumer: var(--green-mediumer);
+  --chart-income-mediumist:var(--green-mediumist);
+  --chart-income-dark:     var(--green-dark);
+  --chart-income-darker:   var(--green-darker);
+  --chart-income-darkist:  var(--green-darkist);
+
+  /* Expense = ORANGE */
+  --chart-expense-lightest: var(--orange-lightest);
+  --chart-expense-lighter:  var(--orange-lighter);
+  --chart-expense-light:    var(--orange-light);
+  --chart-expense-medium:   var(--orange-medium);
+  --chart-expense-mediumer: var(--orange-mediumer);
+  --chart-expense-mediumist:var(--orange-mediumist);
+  --chart-expense-dark:     var(--orange-dark);
+  --chart-expense-darker:   var(--orange-darker);
+  --chart-expense-darkist:  var(--orange-darkist);
+
+  /* Net Cash Flow = BLUE */
+  --chart-net-lightest: var(--blue-lightest);
+  --chart-net-lighter:  var(--blue-lighter);
+  --chart-net-light:    var(--blue-light);
+  --chart-net-medium:   var(--blue-medium);
+  --chart-net-mediumer: var(--blue-mediumer);
+  --chart-net-mediumist:var(--blue-mediumist);
+  --chart-net-dark:     var(--blue-dark);
+  --chart-net-darker:   var(--blue-darker);
+  --chart-net-darkist:  var(--blue-darkist);
+
+  /* Forecasted Cash Flow = PURPLE */
+  --chart-forecast-lightest: var(--purple-lightest);
+  --chart-forecast-lighter:  var(--purple-lighter);
+  --chart-forecast-light:    var(--purple-light);
+  --chart-forecast-medium:   var(--purple-medium);
+  --chart-forecast-mediumer: var(--purple-mediumer);
+  --chart-forecast-mediumist:var(--purple-mediumist);
+  --chart-forecast-dark:     var(--purple-dark);
+  --chart-forecast-darker:   var(--purple-darker);
+  --chart-forecast-darkist:  var(--purple-darkist);
+
+  /* Savings = BLUE (darker bias) */
+  --chart-saving-lightest: var(--blue-lightest);
+  --chart-saving-lighter:  var(--blue-lighter);
+  --chart-saving-light:    var(--blue-light);
+  --chart-saving-medium:   var(--blue-medium);
+  --chart-saving-mediumer: var(--blue-mediumer);
+  --chart-saving-mediumist:var(--blue-mediumist);
+  --chart-saving-dark:     var(--blue-dark);
+  --chart-saving-darker:   var(--blue-darker);
+  --chart-saving-darkist:  var(--blue-darkist);
+
+  /* Investment = PURPLE (darker bias) */
+  --chart-investment-lightest: var(--purple-lightest);
+  --chart-investment-lighter:  var(--purple-lighter);
+  --chart-investment-light:    var(--purple-light);
+  --chart-investment-medium:   var(--purple-medium);
+  --chart-investment-mediumer: var(--purple-mediumer);
+  --chart-investment-mediumist:var(--purple-mediumist);
+  --chart-investment-dark:     var(--purple-dark);
+  --chart-investment-darker:   var(--purple-darker);
+  --chart-investment-darkist:  var(--purple-darkist);
+
+  /* Suggested defaults (stroke/fill) */
+  --chart-income-stroke:   var(--chart-income-medium);
+  --chart-expense-stroke:  var(--chart-expense-medium);
+  --chart-net-stroke:      var(--chart-net-medium);
+  --chart-forecast-stroke: var(--chart-forecast-medium);
+  --chart-saving-stroke:   var(--chart-saving-dark);
+  --chart-investment-stroke: var(--chart-investment-darker);
+
+  /* Transparent fills using color-mix for soft areas */
+  --chart-income-fill:     color-mix(in oklab, var(--chart-income-medium) 20%, transparent);
+  --chart-expense-fill:    color-mix(in oklab, var(--chart-expense-medium) 20%, transparent);
+  --chart-net-fill:        color-mix(in oklab, var(--chart-net-medium) 20%, transparent);
+  --chart-forecast-fill:   color-mix(in oklab, var(--chart-forecast-medium) 20%, transparent);
+  --chart-saving-fill:     color-mix(in oklab, var(--chart-saving-dark) 20%, transparent);
+  --chart-investment-fill: color-mix(in oklab, var(--chart-investment-darker) 20%, transparent);
+
+  /* Optional categorical palette for multi-series charts */
+  --chart-series-1: var(--purple-medium);
+  --chart-series-2: var(--blue-medium);
+  --chart-series-3: var(--green-medium);
+  --chart-series-4: var(--orange-medium);
+  --chart-series-5: var(--purple-mediumist);
+  --chart-series-6: var(--blue-mediumer);
+}
+
+/* ---------------------------
+   CHART COLOR RAMPS (Dark)
+   – lighter strokes for contrast
+   – slightly stronger fills
+----------------------------*/
+:root.dark {
+  --chart-income: var(--green-light);
+  --chart-expense: var(--orange-light);
+  --chart-net-cash-flow: var(--blue-light);
+  --chart-forecasted-cash-flow: var(--purple-light);
+  --chart-saving: var(--blue-medium);
+  --chart-investment: var(--purple-mediumer);
+
+  --chart-income-stroke:   var(--green-light);
+  --chart-expense-stroke:  var(--orange-light);
+  --chart-net-stroke:      var(--blue-light);
+  --chart-forecast-stroke: var(--purple-light);
+  --chart-saving-stroke:   var(--blue-lighter);
+  --chart-investment-stroke: var(--purple-lighter);
+
+  --chart-income-fill:     color-mix(in oklab, var(--green-light) 28%, transparent);
+  --chart-expense-fill:    color-mix(in oklab, var(--orange-light) 28%, transparent);
+  --chart-net-fill:        color-mix(in oklab, var(--blue-light) 28%, transparent);
+  --chart-forecast-fill:   color-mix(in oklab, var(--purple-light) 28%, transparent);
+  --chart-saving-fill:     color-mix(in oklab, var(--blue-lighter) 28%, transparent);
+  --chart-investment-fill: color-mix(in oklab, var(--purple-lighter) 28%, transparent);
+
+  --chart-series-1: var(--purple-light);
+  --chart-series-2: var(--blue-light);
+  --chart-series-3: var(--green-light);
+  --chart-series-4: var(--orange-light);
+  --chart-series-5: var(--purple-lighter);
+  --chart-series-6: var(--blue-lighter);
+}

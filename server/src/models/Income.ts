@@ -8,7 +8,7 @@ import User from '@server/models/User';
 
 export interface IncomeAttributes {
   id:                 string;
-  description:        string;
+  name:               string;
   amount:             number;
   category:           string | null;
   date:               string | null;            // one-off date when recurrenceKind='none'
@@ -31,7 +31,7 @@ export type IncomeCreationAttributes = PartialBy<IncomeAttributes, 'id' | 'date'
 
 class Income extends Model<IncomeAttributes, IncomeCreationAttributes> implements IncomeAttributes {
   declare id:                 string;
-  declare description:        string;
+  declare name:               string;
   declare amount:             number;
   declare category:           string | null;
   declare date:               string | null;
@@ -56,7 +56,7 @@ Income.init({
     defaultValue: sql.uuidV4,
     primaryKey:   true,
   },
-  description: { type: DataTypes.STRING, allowNull: false },
+  name:        { type: DataTypes.STRING, allowNull: false },
   amount:      { type: DataTypes.DECIMAL(12,2), allowNull: false },
   category:    { type: DataTypes.STRING, allowNull: true },
   date:        {
