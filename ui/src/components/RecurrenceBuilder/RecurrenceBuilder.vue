@@ -5,12 +5,12 @@ import type {
   WeekendAdjustment,
 } from '@/types/Recurrence'
 
-import { ToastManager } from '@kong/kongponents'
-import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import { computed, ref, watch } from 'vue'
 import dayjs from 'dayjs'
 import axios from 'axios'
 
 import { getServiceConfig } from '@/utils/service'
+import { useToaster } from '@/composables'
 
 import SimpleEditor from '@/components/RecurrenceBuilder/SimpleEditor.vue'
 
@@ -30,11 +30,7 @@ const model = defineModel<RecurrencePayload>({
 
 const { apiUrl } = getServiceConfig()
 
-const toaster = new ToastManager()
-
-onBeforeUnmount(() => {
-  toaster.destroy()
-})
+const { toaster } = useToaster();
 
 // weekday from current anchorDate (0=Sun..6=Sat). Falls back to today.
 function anchorWeekday(): number {

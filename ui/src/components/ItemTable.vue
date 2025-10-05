@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import type { FinancialItem, FinanceItemKind, RecurrenceKind } from '@/types'
+import type { Toast } from '@kong/kongponents'
 
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import dayjs from 'dayjs'
 import axios from 'axios'
-import { ToastManager } from '@kong/kongponents'
 
 import { getServiceConfig } from '@/utils/service'
 import { useSocketStore } from '@/stores/socket'
 import { useThemeStore } from '@/stores/theme'
+import { useToaster } from '@/composables'
 
 import FinancialForm from '@/components/FinancialForm.vue'
 import { AddIcon, EditIcon, TrashIcon } from '@kong/icons'
@@ -27,6 +28,7 @@ const { itemKind } = defineProps<{ itemKind: FinanceItemKind }>()
 const { apiUrl } = getServiceConfig()
 const socket = useSocketStore()
 const themeStore = useThemeStore()
+const { toaster } = useToaster();
 
 const loading = ref(false)
 const items = ref<FinancialItem[]>([])
@@ -43,14 +45,6 @@ const itemToUpdate = ref<FinancialItem | undefined>(undefined)
 // Prompt state
 const promptVisible = ref(false)
 const itemToDelete = ref<FinancialItem | undefined>(undefined)
-
-// Initialize a ToastManager instance to show success/error messages.  The
-// toaster instance must be destroyed when the component unmounts.
-const toaster = new ToastManager()
-
-onBeforeUnmount(() => {
-  toaster.destroy()
-})
 
 function formatDate(iso?: string | null): string {
   return iso ? dayjs(iso).format('YYYY-MM-DD') : ''
@@ -192,7 +186,8 @@ function closeEdit(): void {
   itemToUpdate.value = undefined
 }
 
-async function handleSaved(): Promise<void> {
+async function handleSaved(e: Toast): Promise<void> {
+  toaster.open(e)
   await fetchItems()
 }
 
@@ -215,11 +210,12 @@ async function proceedDelete(): Promise<void> {
 
   try {
     await axios.delete(`${apiUrl}/${itemKind}/${item.id}`)
-    toaster.open({ title: 'Deleted', appearance: 'success' })
+
+    toaster.open({ message: 'Deleted', appearance: 'success' })
     items.value = items.value.filter(i => i.id !== item.id)
   } catch (err) {
     console.error(err)
-    toaster.open({ title: 'Failed to delete', appearance: 'danger' })
+    toaster.open({ appearance: 'danger', title: 'Failed to delete', message: err || 'Request failed' })
   } finally {
     promptVisible.value = false
     itemToDelete.value = undefined
@@ -230,13 +226,10 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
   switch (recurrence) {
     case 'simple':
       return 'info'
-      break;
     case 'rrule':
       return 'decorative'
-      break;
     default:
       return 'neutral'
-      break;
   }
 }
 </script>

@@ -1,8 +1,12 @@
-import { defineStore } from 'pinia';
-import { io, type Socket } from 'socket.io-client';
-import { getServiceConfig } from '@/utils/service';
-import { useAuthStore } from '@/stores/auth';
 import type { Router } from 'vue-router';
+import type { Socket } from 'socket.io-client';
+
+import { defineStore } from 'pinia';
+import { io } from 'socket.io-client';
+
+import { useAuthStore } from '@/stores/auth';
+import { getServiceConfig } from '@/utils/service';
+import { useToaster } from '@/composables';
 
 const CLIENT_NAMESPACE = '/client';
 
@@ -78,6 +82,7 @@ export const useSocketStore = defineStore('socket', {
       }
 
       const { wsScheme, wsUrl, wsPath } = getServiceConfig();
+      const { toaster } = useToaster();
 
       console.log(`[ws] establishing socket connection with: ${ wsUrl }${ wsPath }${ CLIENT_NAMESPACE }`);
 
@@ -102,11 +107,14 @@ export const useSocketStore = defineStore('socket', {
         console.log(`[${ wsScheme }] socket connection error:`, error);
       });
 
-      // Session expiry event — mirror React behavior
       this.socket.on('token_expired', async() => {
         console.log(`[${ wsScheme }] token expired event received`);
 
-        console.log('Your session has expired. Please log in again.'); // TODO: replace with toaster
+        toaster.open({
+          appearance: "danger",
+          title: "Session Expired",
+          message: "Your session has expired. Please log in again.",
+        });
         this.sessionExpired = true;
 
         const auth = useAuthStore();
