@@ -8,7 +8,7 @@ import User from '@server/models/User';
 
 export interface ExpenseAttributes {
   id:                 string;
-  description:        string;
+  name:               string;
   amount:             number;
   category:           string | null;
   date:               string | null;            // one-off date when recurrenceKind='none'
@@ -32,7 +32,7 @@ export type ExpenseCreationAttributes = PartialBy<ExpenseAttributes, 'id' | 'dat
 
 class Expense extends Model<ExpenseAttributes, ExpenseCreationAttributes> implements ExpenseAttributes {
   declare id:                 string;
-  declare description:        string;
+  declare name:               string;
   declare amount:             number;
   declare category:           string | null;
   declare date:               string | null;
@@ -59,7 +59,7 @@ Expense.init(
       primaryKey:    true,
       allowNull:     false,
     },
-    description: { type: DataTypes.STRING(255), allowNull: false },
+    name:        { type: DataTypes.STRING(255), allowNull: false },
     amount:      { type: DataTypes.DECIMAL(12,2), allowNull: false },
     category:    { type: DataTypes.STRING, allowNull: true },
     date:        {

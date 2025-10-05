@@ -68,7 +68,7 @@ class AuthController extends BaseController {
     if (req.user) {
       const user = req.user as User;
 
-      res.json({ id: user.id });
+      res.json({ id: user.id, username: user.Username });
     } else {
       res.status(401).send('Unauthorized');
     }

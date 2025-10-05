@@ -1,44 +1,12 @@
 import type { Dayjs } from 'dayjs';
-import type { ChartData, Income, Expense, ItemBase } from '@/types';
+import type {
+ ChartData, FinancialItem, Income, Expense, ItemBase
+} from '@/types';
 
 import dayjs from 'dayjs';
 
+import { colorConfig } from '@/config/ChartColors';
 import { expandOccurrencesFromItem } from './expandOccurrence';
-
-const colorConfig = {
-  inflow: {
-    background: 'rgba(44, 182, 125, 0.4)',
-    border:     'rgba(44, 182, 125, 1)',
-  },
-  outflow: {
-    background: 'rgba(255, 127, 80, 0.4)',
-    border:     'rgba(255, 127, 80, 1)',
-  },
-  forecast: {
-    background: 'rgba(137, 101, 246, 0.4)',
-    border:     'rgba(137, 101, 246, 1)',
-  },
-  net: {
-    background: 'rgba(74, 144, 226, 0.4)',
-    border:     'rgba(74, 144, 226, 1)',
-  },
-  recurringIncome: {
-    background: 'rgba(44, 182, 125, 0.4)',
-    border:     'rgba(44, 182, 125, 1)',
-  },
-  oneTimeIncome: {
-    background: 'rgba(44, 182, 125, 0.2)',
-    border:     'rgba(44, 182, 125, 0.6)',
-  },
-  recurringExpense: {
-    background: 'rgba(255, 127, 80, 0.4)',
-    border:     'rgba(255, 127, 80, 1)',
-  },
-  oneTimeExpense: {
-    background: 'rgba(255, 127, 80, 0.2)',
-    border:     'rgba(255, 127, 80, 0.6)',
-  },
-};
 
 function emptyDayBuckets(start: Dayjs, end: Dayjs) {
   const m = new Map<string, number>();
@@ -88,7 +56,7 @@ function isRecurring(item: ItemBase): boolean {
 
 /**
  * Build all charts using server-expanded occurrences.
- * If occurrences are missing, we fallback to single `date` for one-offs.
+ * If occurrences are missing, fallback to single `date` for one-offs.
  */
 export function buildChartData(
   incomes: Income[],
@@ -102,11 +70,9 @@ export function buildChartData(
   const incomeOcc = new Map<ItemBase, string[]>();
   const expenseOcc = new Map<ItemBase, string[]>();
 
-  // Cache occurrences so we don't expand the same item multiple times
-  const getOcc = (map: Map<ItemBase, string[]>, it: ItemBase) => {
+  // Cache occurrences to not expand the same item multiple times
+  const getOcc = (map: Map<FinancialItem, string[]>, it: FinancialItem) => {
     let occ = map.get(it);
-
-    console.log('# getOcc: ', occ);
 
     if (!occ) {
       occ = expandOccurrencesFromItem(it, rangeStartISO, rangeEndISO);
@@ -122,15 +88,13 @@ export function buildChartData(
     return occ;
   };
 
-  // 1) Daily buckets → net per day and running totals
+  // 1) Daily buckets -> net per day and running totals
   const dayBuckets = emptyDayBuckets(start, end);
   const addDaily = (iso: string, amt: number) => {
     if (iso >= rangeStartISO && iso <= rangeEndISO && dayBuckets.has(iso)) {
       dayBuckets.set(iso, (dayBuckets.get(iso) || 0) + amt);
     }
   };
-
-  console.log('# buildChart incomes: ', incomes);
 
   incomes?.forEach((it) => getOcc(incomeOcc, it).forEach((d) => addDaily(d, +it.amount)));
   expenses?.forEach((it) => getOcc(expenseOcc, it).forEach((d) => addDaily(d, -Math.abs(+it.amount))));
@@ -151,9 +115,8 @@ export function buildChartData(
   const oneTimeExpenseMonthly = new Array(labels.length).fill(0);
 
   const bump = (arr: number[], idx: number, amt: number) => {
-    console.log(' bump: ', arr, idx, amt);
     if (idx >= 0 && idx < arr.length) {
-      arr[idx] += amt;
+      arr[idx]! += amt;
     }
   };
 
@@ -161,8 +124,6 @@ export function buildChartData(
     const occ = getOcc(incomeOcc, it);
     const recurring = isRecurring(it);
     const amt = Math.abs(+((it as any).amount));
-
-    // console.log('income foreach, occ, recurring, amt', occ, recurring, amt);
 
     occ.forEach((iso) => {
       const idx = monthIndex(start, iso);
@@ -195,8 +156,6 @@ export function buildChartData(
     });
   });
 
-  // console.log('# recurringIncomeMonthly: ', recurringIncomeMonthly)
-
   // 3) KPI calculations
   const totalIncome  = sum(incomeMonthly);
   const totalExpenses = sum(expenseMonthly);
@@ -215,9 +174,6 @@ export function buildChartData(
   // 4) First-half vs second-half comparison (by day range)
   const halfPoint = start.add(end.diff(start, 'day') / 2, 'day');
   let firstHalfIncome = 0, secondHalfIncome = 0, firstHalfExpenses = 0, secondHalfExpenses = 0;
-
-  // console.log('incomeMonthly:', incomeMonthly);
-  // console.log('expenseMonthly:', expenseMonthly);
 
   incomes.forEach((it) => {
     const amt = +((it as any).amount);
@@ -273,8 +229,9 @@ export function buildChartData(
         borderColor:     colorConfig.net.border,
         borderWidth:     2,
         data:            running,
-        // fill:            true,
+        // fill:            true, // Need to register the plugin to use this
         tension:         0.25,
+        pointStyle:      false
       },
     ],
   };

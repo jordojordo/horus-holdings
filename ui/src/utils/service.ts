@@ -1,4 +1,5 @@
 export interface ServiceConfig {
+  wsScheme: string;
   wsUrl: string;
   wsPath: string;
   apiUrl: string;
@@ -34,8 +35,9 @@ export function getServiceConfig(): ServiceConfig {
   const apiUrl = `${ apiScheme }://${ host }${ port }/api/v1`;
 
   return {
+    wsScheme,
     wsUrl,
     wsPath,
-    apiUrl,
+    apiUrl
   };
 }

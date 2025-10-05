@@ -5,8 +5,8 @@
   },
   "include": [
     "src",
-    "server",
+    "env.d.ts",
     "vite.config.ts",
-    "eslint.config.js"
+    "../eslint.config.mjs"
   ]
 }

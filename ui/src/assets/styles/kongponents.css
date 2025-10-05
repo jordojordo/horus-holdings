@@ -1,0 +1,322 @@
+/* Light Theme */
+:root {
+  /* Base surfaces */
+  --kui-color-background: var(--background-primary);
+  --kui-color-background-inverse: var(--foreground-nav); /* deep purple/nav */
+  --kui-color-background-overlay: rgba(0, 0, 0, 0.48);
+
+  /* Neutral surfaces */
+  --kui-color-background-neutral-weakest: var(--pink-lightest);
+  --kui-color-background-neutral-weaker:  var(--pink-lighter);
+  --kui-color-background-neutral-weak:    var(--pink-light);
+  --kui-color-background-neutral:         var(--pink-medium);
+  --kui-color-background-neutral-strong:  var(--pink-mediumer);
+  --kui-color-background-neutral-stronger:var(--pink-mediumist);
+  --kui-color-background-neutral-strongest: var(--pink-dark);
+
+  --kui-color-border: var(--pink-light);
+  --kui-color-border-neutral-weakest: var(--pink-lightest);
+  --kui-color-border-neutral-weaker:  var(--pink-lighter);
+  --kui-color-border-neutral-weak:    var(--pink-light);
+  --kui-color-border-neutral:         var(--pink-medium);
+  --kui-color-border-neutral-strong:  var(--pink-mediumer);
+  --kui-color-border-neutral-stronger:var(--pink-mediumist);
+  --kui-color-border-neutral-strongest: var(--pink-dark);
+  --kui-color-border-inverse: rgba(255,255,255,0.2);
+
+  --kui-color-text: var(--foreground-primary);
+  --kui-color-text-neutral-weakest: var(--pink-lightest);
+  --kui-color-text-neutral-weaker:  var(--foreground-tertiary);
+  --kui-color-text-neutral-weak:    var(--foreground-secondary);
+  --kui-color-text-neutral:         var(--foreground-primary);
+  --kui-color-text-neutral-strong:  var(--foreground-primary);
+  --kui-color-text-neutral-stronger:var(--foreground-primary);
+  --kui-color-text-neutral-strongest: var(--black);
+  --kui-color-text-inverse: var(--white);
+
+  /* PRIMARY = PURPLE */
+  --kui-color-background-primary-weakest: var(--purple-lightest);
+  --kui-color-background-primary-weaker:  var(--purple-lighter);
+  --kui-color-background-primary-weak:    var(--purple-light);
+  --kui-color-background-primary:         var(--purple-medium);
+  --kui-color-background-primary-strong:  var(--purple-mediumist);
+  --kui-color-background-primary-stronger:var(--purple-dark);
+  --kui-color-background-primary-strongest: var(--purple-darker);
+
+  --kui-color-border-primary-weakest: var(--purple-lightest);
+  --kui-color-border-primary-weaker:  var(--purple-lighter);
+  --kui-color-border-primary-weak:    var(--purple-light);
+  --kui-color-border-primary:         var(--purple-medium);
+  --kui-color-border-primary-strong:  var(--purple-mediumist);
+  --kui-color-border-primary-stronger:var(--purple-dark);
+  --kui-color-border-primary-strongest: var(--purple-darker);
+
+  --kui-color-text-primary-weakest: var(--purple-lightest);
+  --kui-color-text-primary-weaker:  var(--purple-lighter);
+  --kui-color-text-primary-weak:    var(--purple-light);
+  --kui-color-text-primary:         var(--purple-medium);
+  --kui-color-text-primary-strong:  var(--purple-mediumist);
+  --kui-color-text-primary-stronger:var(--purple-dark);
+  --kui-color-text-primary-strongest: var(--purple-darker);
+
+  /* INFO = BLUE */
+  --kui-color-background-info-weakest: var(--blue-lightest);
+  --kui-color-background-info-weaker:  var(--blue-lighter);
+  --kui-color-background-info-weak:    var(--blue-light);
+  --kui-color-background-info:         var(--blue-medium);
+  --kui-color-background-info-strong:  var(--blue-mediumer);
+  --kui-color-background-info-stronger:var(--blue-mediumist);
+  --kui-color-background-info-strongest: var(--blue-dark);
+
+  --kui-color-border-info-weakest: var(--blue-lightest);
+  --kui-color-border-info-weaker:  var(--blue-lighter);
+  --kui-color-border-info-weak:    var(--blue-light);
+  --kui-color-border-info:         var(--blue-medium);
+  --kui-color-border-info-strong:  var(--blue-mediumer);
+  --kui-color-border-info-stronger:var(--blue-mediumist);
+  --kui-color-border-info-strongest: var(--blue-dark);
+
+  --kui-color-text-info-weakest: var(--blue-lightest);
+  --kui-color-text-info-weaker:  var(--blue-lighter);
+  --kui-color-text-info-weak:    var(--blue-light);
+  --kui-color-text-info:         var(--blue-medium);
+  --kui-color-text-info-strong:  var(--blue-mediumer);
+  --kui-color-text-info-stronger:var(--blue-mediumist);
+  --kui-color-text-info-strongest: var(--blue-dark);
+
+  /* SUCCESS = GREEN */
+  --kui-color-background-success-weakest: var(--green-lightest);
+  --kui-color-background-success-weaker:  var(--green-lighter);
+  --kui-color-background-success-weak:    var(--green-light);
+  --kui-color-background-success:         var(--green-medium);
+  --kui-color-background-success-strong:  var(--green-mediumer);
+  --kui-color-background-success-stronger:var(--green-mediumist);
+  --kui-color-background-success-strongest: var(--green-dark);
+
+  --kui-color-border-success-weakest: var(--green-lightest);
+  --kui-color-border-success-weaker:  var(--green-lighter);
+  --kui-color-border-success-weak:    var(--green-light);
+  --kui-color-border-success:         var(--green-medium);
+  --kui-color-border-success-strong:  var(--green-mediumer);
+  --kui-color-border-success-stronger:var(--green-mediumist);
+  --kui-color-border-success-strongest: var(--green-dark);
+
+  --kui-color-text-success-weakest: var(--green-lightest);
+  --kui-color-text-success-weaker:  var(--green-lighter);
+  --kui-color-text-success-weak:    var(--green-light);
+  --kui-color-text-success:         var(--green-medium);
+  --kui-color-text-success-strong:  var(--green-mediumer);
+  --kui-color-text-success-stronger:var(--green-mediumist);
+  --kui-color-text-success-strongest: var(--green-dark);
+
+  /* WARNING + DANGER = ORANGE (since no red ramp in palette) */
+  --kui-color-background-warning-weakest: var(--orange-lightest);
+  --kui-color-background-warning-weaker:  var(--orange-lighter);
+  --kui-color-background-warning-weak:    var(--orange-light);
+  --kui-color-background-warning:         var(--orange-medium);
+  --kui-color-background-warning-strong:  var(--orange-mediumer);
+  --kui-color-background-warning-stronger:var(--orange-mediumist);
+  --kui-color-background-warning-strongest: var(--orange-dark);
+
+  --kui-color-text-warning-weakest: var(--orange-lightest);
+  --kui-color-text-warning-weaker:  var(--orange-lighter);
+  --kui-color-text-warning-weak:    var(--orange-light);
+  --kui-color-text-warning:         var(--orange-medium);
+  --kui-color-text-warning-strong:  var(--orange-mediumer);
+  --kui-color-text-warning-stronger:var(--orange-mediumist);
+  --kui-color-text-warning-strongest: var(--orange-dark);
+
+  --kui-color-background-danger-weakest: var(--orange-lightest);
+  --kui-color-background-danger-weaker:  var(--orange-lighter);
+  --kui-color-background-danger-weak:    var(--orange-light);
+  --kui-color-background-danger:         var(--orange-mediumer);
+  --kui-color-background-danger-strong:  var(--orange-mediumist);
+  --kui-color-background-danger-stronger:var(--orange-dark);
+  --kui-color-background-danger-strongest: var(--orange-darker);
+
+  --kui-color-border-danger-weakest: var(--orange-lightest);
+  --kui-color-border-danger-weaker:  var(--orange-lighter);
+  --kui-color-border-danger-weak:    var(--orange-light);
+  --kui-color-border-danger:         var(--orange-mediumer);
+  --kui-color-border-danger-strong:  var(--orange-mediumist);
+  --kui-color-border-danger-stronger:var(--orange-dark);
+  --kui-color-border-danger-strongest: var(--orange-darker);
+
+  --kui-color-text-danger-weakest: var(--orange-lightest);
+  --kui-color-text-danger-weaker:  var(--orange-lighter);
+  --kui-color-text-danger-weak:    var(--orange-light);
+  --kui-color-text-danger:         var(--orange-mediumer);
+  --kui-color-text-danger-strong:  var(--orange-mediumist);
+  --kui-color-text-danger-stronger:var(--orange-dark);
+  --kui-color-text-danger-strongest: var(--orange-darkist);
+
+  /* Navigation */
+  --kui-navigation-color-background: var(--foreground-nav);
+  --kui-navigation-color-text: var(--blue-lighter);
+  --kui-navigation-color-text-hover: var(--blue-lightest);
+  --kui-navigation-color-text-focus: var(--white);
+  --kui-navigation-color-text-selected: var(--green-medium);
+  --kui-navigation-color-background-selected: rgba(255,255,255,0.12);
+  --kui-navigation-color-border: rgba(255,255,255,0.12);
+  --kui-navigation-color-border-child: var(--green-medium);
+  --kui-navigation-color-border-divider: rgba(255,255,255,0.24);
+  --kui-navigation-shadow-border: 0 0 0 1px rgba(255,255,255,0.12) inset;
+  --kui-navigation-shadow-border-child: 4px 0 0 0 var(--green-medium) inset;
+  --kui-navigation-shadow-focus: 0 0 0 1px rgba(255,255,255,0.6) inset;
+
+  /* HTTP */
+  --kui-method-color-background-get:   var(--blue-lightest);
+  --kui-method-color-text-get:         var(--blue-medium);
+  --kui-method-color-text-get-strong:  var(--blue-mediumist);
+
+  --kui-method-color-background-post:  var(--green-lightest);
+  --kui-method-color-text-post:        var(--green-medium);
+  --kui-method-color-text-post-strong: var(--green-mediumist);
+
+  --kui-method-color-background-put:   var(--orange-lightest);
+  --kui-method-color-text-put:         var(--orange-medium);
+  --kui-method-color-text-put-strong:  var(--orange-mediumist);
+
+  --kui-method-color-background-delete: var(--orange-lightest);
+  --kui-method-color-text-delete:       var(--orange-mediumer);
+  --kui-method-color-text-delete-strong:var(--orange-dark);
+
+  --kui-method-color-background-patch: var(--blue-lightest);
+  --kui-method-color-text-patch:       var(--blue-mediumer);
+  --kui-method-color-text-patch-strong:var(--blue-mediumist);
+
+  --kui-method-color-background-connect: var(--purple-lightest);
+  --kui-method-color-text-connect:       var(--purple-medium);
+  --kui-method-color-text-connect-strong:var(--purple-dark);
+
+  --kui-method-color-background-options: var(--pink-lighter);
+  --kui-method-color-text-options:       var(--foreground-secondary);
+  --kui-method-color-text-options-strong:var(--foreground-primary);
+
+  --kui-method-color-background-trace:   var(--pink-lightest);
+  --kui-method-color-text-trace:         var(--purple-medium);
+  --kui-method-color-text-trace-strong:  var(--purple-dark);
+
+  /* Status palettes (groups) */
+  --kui-status-color-100s: var(--blue-medium);   /* info */
+  --kui-status-color-200s: var(--green-medium);  /* success */
+  --kui-status-color-300s: var(--orange-medium); /* warning */
+  --kui-status-color-400s: var(--orange-mediumer); /* client error */
+  --kui-status-color-500s: var(--orange-dark);   /* server error */
+
+  /* “na” backgrounds by class */
+  --kui-status-color-1na: var(--blue-lightest);
+  --kui-status-color-2na: var(--green-lightest);
+  --kui-status-color-3na: var(--orange-lightest);
+  --kui-status-color-4na: var(--orange-lighter);
+  --kui-status-color-5na: var(--orange-lighter);
+
+  /* Shadows/Focus (tinted to primary/info families) */
+  --kui-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  --kui-shadow-border: 0 0 0 1px var(--pink-light) inset;
+  --kui-shadow-border-primary: 0 0 0 1px var(--purple-medium) inset;
+  --kui-shadow-border-primary-weak: 0 0 0 1px var(--purple-light) inset;
+  --kui-shadow-border-primary-strongest: 0 0 0 1px var(--purple-darker) inset;
+  --kui-shadow-focus: 0 0 0 4px color-mix(in oklab, var(--purple-medium) 20%, transparent);
+}
+
+/* Dark Theme */
+:root.dark {
+  /* Surfaces */
+  --kui-color-background: var(--background-primary);
+  --kui-color-background-inverse: var(--white);
+  --kui-color-background-overlay: rgba(0,0,0,0.6);
+
+  /* Neutral surfaces */
+  --kui-color-background-neutral-weakest: var(--pink-dark);
+  --kui-color-background-neutral-weaker:  var(--background-secondary);
+  --kui-color-background-neutral-weak:    var(--background-tertiary);
+  --kui-color-background-neutral:         var(--foreground-secondary);
+  --kui-color-background-neutral-strong:  var(--foreground-tertiary);
+  --kui-color-background-neutral-stronger:var(--foreground-primary);
+  --kui-color-background-neutral-strongest: var(--black);
+
+  --kui-color-border: var(--background-tertiary);
+  --kui-color-border-neutral-weakest: var(--background-tertiary);
+  --kui-color-border-neutral-weaker:  var(--foreground-secondary);
+  --kui-color-border-neutral-weak:    var(--foreground-tertiary);
+  --kui-color-border-neutral:         var(--foreground-primary);
+  --kui-color-border-neutral-strong:  var(--purple-darker);
+  --kui-color-border-neutral-stronger:var(--purple-dark);
+  --kui-color-border-neutral-strongest: var(--purple-mediumer);
+  --kui-color-border-inverse: rgba(255,255,255,0.24);
+
+  --kui-color-text: var(--foreground-primary);
+  --kui-color-text-inverse: var(--black);
+
+  /* PRIMARY = PURPLE (lighter tints for dark) */
+  --kui-color-background-primary-weakest: var(--background-tertiary);
+  --kui-color-background-primary-weaker:  var(--purple-lighter);
+  --kui-color-background-primary-weak:    var(--purple-light);
+  --kui-color-background-primary:         var(--purple-medium);
+  --kui-color-background-primary-strong:  var(--purple-mediumist);
+  --kui-color-background-primary-stronger:var(--purple-dark);
+  --kui-color-background-primary-strongest: var(--purple-darker);
+
+  --kui-color-text-primary: var(--purple-light);
+
+  /* INFO = BLUE */
+  --kui-color-background-info-weakest: var(--blue-lightest);
+  --kui-color-background-info-weaker:  var(--blue-lighter);
+  --kui-color-background-info-weak:    var(--blue-light);
+  --kui-color-background-info:         var(--blue-medium);
+  --kui-color-background-info-strong:  var(--blue-mediumer);
+  --kui-color-background-info-stronger:var(--blue-mediumist);
+  --kui-color-background-info-strongest: var(--blue-dark);
+  --kui-color-text-info: var(--blue-light);
+
+  /* SUCCESS = GREEN */
+  --kui-color-background-success-weakest: var(--green-lightest);
+  --kui-color-background-success-weaker:  var(--green-lighter);
+  --kui-color-background-success-weak:    var(--green-light);
+  --kui-color-background-success:         var(--green-medium);
+  --kui-color-background-success-strong:  var(--green-mediumer);
+  --kui-color-background-success-stronger:var(--green-mediumist);
+  --kui-color-background-success-strongest: var(--green-dark);
+  --kui-color-text-success: var(--green-light);
+
+  /* WARNING + DANGER = ORANGE */
+  --kui-color-background-warning-weakest: var(--orange-lightest);
+  --kui-color-background-warning-weaker:  var(--orange-lighter);
+  --kui-color-background-warning-weak:    var(--orange-light);
+  --kui-color-background-warning:         var(--orange-medium);
+  --kui-color-background-warning-strong:  var(--orange-mediumer);
+  --kui-color-background-warning-stronger:var(--orange-mediumist);
+  --kui-color-background-warning-strongest: var(--orange-dark);
+  --kui-color-text-warning: var(--orange-light);
+
+  --kui-color-background-danger-weakest: var(--orange-lightest);
+  --kui-color-background-danger-weaker:  var(--orange-lighter);
+  --kui-color-background-danger-weak:    var(--orange-light);
+  --kui-color-background-danger:         var(--orange-mediumer);
+  --kui-color-background-danger-strong:  var(--orange-mediumist);
+  --kui-color-background-danger-stronger:var(--orange-dark);
+  --kui-color-background-danger-strongest: var(--orange-darker);
+  --kui-color-text-danger: var(--orange-light);
+
+  /* Navigation */
+  --kui-navigation-color-background: var(--foreground-nav);
+  --kui-navigation-color-text: var(--blue-lighter);
+  --kui-navigation-color-text-hover: var(--blue-lightest);
+  --kui-navigation-color-text-focus: var(--white);
+  --kui-navigation-color-text-selected: var(--green-medium);
+  --kui-navigation-color-background-selected: rgba(255,255,255,0.12);
+  --kui-navigation-color-border: rgba(255,255,255,0.12);
+  --kui-navigation-color-border-child: var(--green-medium);
+  --kui-navigation-color-border-divider: rgba(255,255,255,0.24);
+  --kui-navigation-shadow-border: 0 0 0 1px rgba(255,255,255,0.12) inset;
+  --kui-navigation-shadow-border-child: 4px 0 0 0 var(--green-medium) inset;
+  --kui-navigation-shadow-focus: 0 0 0 1px rgba(255,255,255,0.6) inset;
+
+  /* Shadows/Focus */
+  --kui-shadow-border: 0 0 0 1px var(--background-tertiary) inset;
+  --kui-shadow-border-primary: 0 0 0 1px var(--purple-light) inset;
+  --kui-shadow-border-primary-weak: 0 0 0 1px var(--purple-lighter) inset;
+  --kui-shadow-border-primary-strongest: 0 0 0 1px var(--purple-medium) inset;
+  --kui-shadow-focus: 0 0 0 4px color-mix(in oklab, var(--purple-light) 25%, transparent);
+}

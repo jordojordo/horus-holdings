@@ -1,0 +1,51 @@
+[class*="text-"] {
+  font-family: 'OpenSans';
+}
+
+.text-small {
+  font-size: 1rem;
+}
+
+.text-medium {
+  font-size: 1.11;
+}
+
+.text-large {
+  font-size: 1.22rem;
+}
+
+.text-xl {
+  font-size: 1.33rem;
+}
+
+.text-bold {
+  font-family: 'OpenSansBold';
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.text-primary {
+  color: var(--foreground-primary);
+}
+
+.text-secondary {
+  color: var(--foreground-secondary)
+}
+
+.text-tertiary {
+  color: var(--foreground-tertiary);
+}
+
+.text-highlight {
+  color: var(--foreground-highlight);
+}
+
+.text-link {
+  color: var(--foreground-link);
+}
+
+.text-button {
+  color: var(--foreground-button);
+}

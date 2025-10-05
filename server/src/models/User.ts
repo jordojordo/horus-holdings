@@ -9,6 +9,7 @@ interface UserAttributes {
   Password: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface UserCreationAttributes extends PartialBy<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {

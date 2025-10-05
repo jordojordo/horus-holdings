@@ -5,15 +5,15 @@ import { RRuleSet, rrulestr } from 'rrule';
 
 export const pickRecurrence = (body: { recurrence: RecurrencePayload | undefined } | undefined) => ({
   recurrenceKind:    body?.recurrence?.recurrenceKind ?? 'none',
-  rrule:             body?.recurrence?.rrule ?? null,
-  anchorDate:        body?.recurrence?.anchorDate ?? null,
-  endDate:           body?.recurrence?.endDate ?? null,
-  count:             body?.recurrence?.count ?? null,
-  timezone:          body?.recurrence?.timezone ?? null,
+  rrule:             body?.recurrence?.rrule,
+  anchorDate:        body?.recurrence?.anchorDate,
+  endDate:           body?.recurrence?.endDate,
+  count:             body?.recurrence?.count,
+  timezone:          body?.recurrence?.timezone,
   weekendAdjustment: body?.recurrence?.weekendAdjustment ?? 'none',
-  includeDates:      body?.recurrence?.includeDates ?? null,
-  excludeDates:      body?.recurrence?.excludeDates ?? null,
-  simple:            body?.recurrence?.simple ?? null
+  includeDates:      body?.recurrence?.includeDates,
+  excludeDates:      body?.recurrence?.excludeDates,
+  simple:            body?.recurrence?.simple
 });
 
 // function toLocalMidnight(dateISO: string, tz: string): Date {

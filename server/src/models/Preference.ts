@@ -12,6 +12,7 @@ interface PreferenceAttributes {
   updatedAt?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface PreferenceCreationAttributes extends PartialBy<PreferenceAttributes, 'id'> {}
 
 class Preference extends Model<PreferenceAttributes, PreferenceCreationAttributes> implements PreferenceAttributes {
