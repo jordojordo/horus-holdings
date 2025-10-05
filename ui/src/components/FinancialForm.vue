@@ -5,13 +5,14 @@ import type {
   RecurrencePayload,
   RecurrenceKind,
 } from "@/types";
+import type { Toast } from '@kong/kongponents'
 
-import { ref, watch, computed, onBeforeUnmount } from "vue";
+import { ref, watch, computed } from "vue";
 import dayjs from "dayjs";
 import axios from "axios";
 
-import { ToastManager } from '@kong/kongponents'
-import { useThemeStore } from '@/stores/theme'
+import { useToaster } from '@/composables';
+import { useThemeStore } from '@/stores/theme';
 import { getServiceConfig } from "@/utils/service";
 
 import RecurrenceBuilder from "@/components/RecurrenceBuilder/RecurrenceBuilder.vue";
@@ -26,12 +27,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "saved"): void;
+  (e: 'saved', toast: Toast): void
 }>();
 
 const { apiUrl } = getServiceConfig();
 const themeStore = useThemeStore();
-const toaster = new ToastManager();
+const { toaster } = useToaster();
 
 const isEdit = computed(() => !!props.itemToUpdate?.id);
 const kindLabel = computed(() => props.kind === "income" ? "Income" : "Expense");
@@ -60,10 +61,6 @@ const recurrence = ref<RecurrencePayload>({
 });
 
 const submitting = ref(false);
-
-onBeforeUnmount(() => {
-  toaster.destroy();
-});
 
 const canSubmit = computed(() => {
   return !!form.value.name && !!form.value.amount
@@ -187,27 +184,32 @@ async function onSubmit() {
         `${apiUrl}/${props.kind}/${props.itemToUpdate.id}`,
         payload
       );
+
       toaster.open({
+        appearance: 'success',
         title: `${kindLabel.value} updated`,
-        appearance: 'success'
+        message: 'tst'
       });
     } else {
       await axios.post(`${apiUrl}/${props.kind}`, payload);
+
       toaster.open({
+        appearance: 'success',
         title: `${kindLabel.value} created`,
-        appearance: 'success'
+        message: 'tst'
+
       });
     }
 
-    emit("saved");
+    emit("saved", { appearance: 'success', message: `${kindLabel.value} ${isEdit.value ? 'updated' : 'created'}` });
     onClose();
   } catch (e: any) {
     const msg = e?.response?.data?.error || e?.message || "Request failed";
 
     toaster.open({
-      title: 'Error',
+      appearance: 'danger',
       message: msg,
-      appearance: 'danger'
+      title: 'Error',
     });
   } finally {
     submitting.value = false;

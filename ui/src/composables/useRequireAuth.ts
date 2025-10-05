@@ -1,6 +1,6 @@
-import { nextTick } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
+import { nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 /**
  * Call inside setup() of any component that must be authed.
@@ -32,13 +32,13 @@ export async function useRequireAuth({ redirectIfGuest = true } = {}) {
 
   if (!auth.authenticated && redirectIfGuest) {
     router.replace({
- name:  'login',
-query: { redirect: route.fullPath }
-});
+      name: "login",
+      query: { redirect: route.fullPath },
+    });
   }
 
   return {
- auth,
-ready: auth.authenticated && !auth.isLoading
-};
+    auth,
+    ready: auth.authenticated && !auth.isLoading,
+  };
 }

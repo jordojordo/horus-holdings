@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { ToastManager } from "@kong/kongponents";
 
 import { useAuthStore } from "@/stores/auth";
+import { useToaster } from '@/composables';
 
 const router = useRouter();
 const { isLoading, user, fetchUser, updateProfile, deleteUser } = useAuthStore();
-const toaster = new ToastManager();
+const { toaster } = useToaster();
 
 const username = ref<string | undefined>(user?.Username || undefined);
 const newPassword = ref<string>();
@@ -20,8 +20,6 @@ onMounted(async () => {
     username.value = res?.data?.username;
   }
 })
-
-onBeforeUnmount(() => toaster.destroy());
 
 const handleUpdate = async () => {
   if (!user) {

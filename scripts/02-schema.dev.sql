@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `preferences` (
 -- INCOMES
 CREATE TABLE IF NOT EXISTS `incomes` (
   `id`          CHAR(36)      NOT NULL,
-  `name` VARCHAR(255)  NOT NULL,
+  `name`        VARCHAR(255)  NOT NULL,
   `amount`      DECIMAL(12,2) NOT NULL,
   `category`    VARCHAR(255)  NULL,
   `date`        DATE          NULL,          -- for one-off items when recurrenceKind='none'
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `incomes` (
 -- EXPENSES
 CREATE TABLE IF NOT EXISTS `expenses` (
   `id`          CHAR(36)      NOT NULL,
-  `name` VARCHAR(255)  NOT NULL,
+  `name`        VARCHAR(255)  NOT NULL,
   `amount`      DECIMAL(12,2) NOT NULL,
   `category`    VARCHAR(255)  NULL,
   `date`        DATE          NULL,

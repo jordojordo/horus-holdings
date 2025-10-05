@@ -4,10 +4,13 @@ import type { AxiosError } from 'axios';
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from '@/stores/auth';
+import { useToaster } from '@/composables';
+
 import AuthForm from '@/components/AuthForm.vue';
 
 const { isLoading, login, register } = useAuthStore();
 const router = useRouter();
+const { toaster } = useToaster();
 
 const handleSubmit = async(e: { username: string, password: string }) => {
   try {
@@ -21,7 +24,11 @@ const handleSubmit = async(e: { username: string, password: string }) => {
     const err = error as AxiosError;
 
     if (err?.message as string) {
-      console.log(err.message); // TODO: replace with toaster
+      toaster.open({
+        appearance: 'danger',
+        title: 'Registration failed',
+        message: err.message,
+      });
     }
   }
 }
