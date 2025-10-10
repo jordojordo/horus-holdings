@@ -1,36 +1,39 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from '@/stores/auth';
 import { useToaster } from '@/composables';
 
 const router = useRouter();
-const { isLoading, user, fetchUser, updateProfile, deleteUser } = useAuthStore();
+const {
+  isLoading, user, fetchUser, updateProfile, deleteUser
+} = useAuthStore();
 const { toaster } = useToaster();
 
 const username = ref<string | undefined>(user?.Username || undefined);
 const newPassword = ref<string>();
 const confirmedPassword = ref<string>();
+const promptVisible = ref(false);
 
-onMounted(async () => {
+onMounted(async() => {
   if (!user?.Username) {
-    const res = await fetchUser()
+    const res = await fetchUser();
 
     username.value = res?.data?.username;
   }
-})
+});
 
-const handleUpdate = async () => {
+const handleUpdate = async() => {
   if (!user) {
     return;
   }
 
   if (!username.value || !newPassword.value) {
     toaster.open({
-      appearance: "warning",
-      title: "Missing fields",
-      message: "Username and password are required."
+      appearance: 'warning',
+      title:      'Missing fields',
+      message:    'Username and password are required.'
     });
 
     return;
@@ -38,9 +41,9 @@ const handleUpdate = async () => {
 
   if (newPassword.value !== confirmedPassword.value) {
     toaster.open({
-      appearance: "danger",
-      title: "Passwords do not match",
-      message: "Please ensure both password fields are identical."
+      appearance: 'danger',
+      title:      'Passwords do not match',
+      message:    'Please ensure both password fields are identical.'
     });
 
     return;
@@ -50,23 +53,27 @@ const handleUpdate = async () => {
     await updateProfile(username.value, newPassword.value);
 
     toaster.open({
-      appearance: "success",
-      title: "Profile updated",
-      message: "Your profile changes have been saved."
+      appearance: 'success',
+      title:      'Profile updated',
+      message:    'Your profile changes have been saved.'
     });
 
     newPassword.value = undefined;
     confirmedPassword.value = undefined;
-  } catch (error: any) {
+  } catch(error: any) {
     toaster.open({
-      appearance: "danger",
-      title: "Unable to update profile",
-      message: error ?? "Please try again."
+      appearance: 'danger',
+      title:      'Unable to update profile',
+      message:    error ?? 'Please try again.'
     });
   }
 };
 
-const handleDelete = async () => {
+const confirmDelete = () => {
+  promptVisible.value = true;
+};
+
+const handleDelete = async() => {
   try {
     if (!user) {
       return;
@@ -75,17 +82,17 @@ const handleDelete = async () => {
     await deleteUser();
 
     toaster.open({
-      appearance: "success",
-      title: "Account deleted",
-      message: "Your account has been removed."
+      appearance: 'success',
+      title:      'Account deleted',
+      message:    'Your account has been removed.'
     });
 
-    router.push({ name: "home" });
-  } catch (error: any) {
+    router.push({ name: 'home' });
+  } catch(error: any) {
     toaster.open({
-      appearance: "danger",
-      title: "Unable to delete account",
-      message: error ?? "Please try again."
+      appearance: 'danger',
+      title:      'Unable to delete account',
+      message:    error ?? 'Please try again.'
     });
   }
 };
@@ -97,15 +104,58 @@ const handleDelete = async () => {
     <div v-if="isLoading">
       <KSkeleton type="form" />
     </div>
-    <div v-else class="settings-form">
-      <KInput v-model="username" type="string" label="Username" required />
-      <KInput v-model="newPassword" type="password" label="New password" required />
-      <KInput v-model="confirmedPassword" type="password" label="Confirm password" required />
-      <KButton class="btn text-bold mt-6" :disabled="!username || !newPassword || !confirmedPassword" @click="handleUpdate">Update Profile</KButton>
+    <div
+      v-else
+      class="settings-form"
+    >
+      <KInput
+        v-model="username"
+        type="string"
+        label="Username"
+        required
+      />
+      <KInput
+        v-model="newPassword"
+        type="password"
+        label="New password"
+        required
+      />
+      <KInput
+        v-model="confirmedPassword"
+        type="password"
+        label="Confirm password"
+        required
+      />
+      <KButton
+        class="btn text-bold mt-6"
+        :disabled="!username || !newPassword || !confirmedPassword"
+        @click="handleUpdate"
+      >
+        Update Profile
+      </KButton>
 
       <div class="divider" />
 
-      <KButton class="btn btn-danger text-bold" @click="handleDelete"> Delete Account </KButton>
+      <KButton
+        class="btn btn-danger text-bold"
+        @click="confirmDelete"
+      >
+        Delete Account
+      </KButton>
+
+      <KPrompt
+        v-if="promptVisible"
+        :visible="promptVisible"
+        title="Delete your account?"
+        action-button-appearance="danger"
+        @cancel="promptVisible = false"
+        @proceed="handleDelete"
+      >
+        <template #default>
+          Are you sure you want to delete your account?
+          <br>This action cannot be undone.
+        </template>
+      </KPrompt>
     </div>
   </div>
 </template>

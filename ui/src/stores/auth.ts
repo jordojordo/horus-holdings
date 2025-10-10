@@ -1,27 +1,27 @@
-import type { User } from "@/types";
+import type { User } from '@/types';
 
-import { defineStore } from "pinia";
-import type { AxiosError } from "axios";
-import axios from "axios";
+import { defineStore } from 'pinia';
+import type { AxiosError } from 'axios';
+import axios from 'axios';
 
-import { getServiceConfig } from "@/utils/service";
+import { getServiceConfig } from '@/utils/service';
 
 axios.defaults.withCredentials = true;
 
 type State = {
-  isLoading: boolean;
+  isLoading:     boolean;
   authenticated: boolean;
-  token: string | null;
-  user: User | null;
+  token:         string | null;
+  user:          User | null;
 };
 
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore('auth', {
   state: (): State => ({
-    isLoading: true,
-    authenticated: !!localStorage.getItem("token"),
-    token: localStorage.getItem("token"),
-    user: (() => {
-      const raw = localStorage.getItem("user");
+    isLoading:     true,
+    authenticated: !!localStorage.getItem('token'),
+    token:         localStorage.getItem('token'),
+    user:          (() => {
+      const raw = localStorage.getItem('user');
 
       return raw ? (JSON.parse(raw) as User) : null;
     })(),
@@ -34,14 +34,14 @@ export const useAuthStore = defineStore("auth", {
       this.token = null;
       this.user = null;
       this.authenticated = false;
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
 
     bootFromStorage() {
       // sets state from localStorage and flips isLoading.
-      const t = localStorage.getItem("token");
-      const u = localStorage.getItem("user");
+      const t = localStorage.getItem('token');
+      const u = localStorage.getItem('user');
 
       if (t && u) {
         this.token = t;
@@ -60,7 +60,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         this.isLoading = true;
 
-        const res = await axios.post(`${apiUrl}/auth/register`, {
+        const res = await axios.post(`${ apiUrl }/auth/register`, {
           username,
           password,
         });
@@ -68,10 +68,10 @@ export const useAuthStore = defineStore("auth", {
         if (res.status === 201) {
           await this.login(username, password);
         }
-      } catch (err) {
+      } catch(err) {
         const e = err as AxiosError<any>;
 
-        throw new Error(e?.response?.data?.error ?? "Unable to register. Please try again.");
+        throw new Error(e?.response?.data?.error ?? 'Unable to register. Please try again.');
       } finally {
         this.isLoading = false;
       }
@@ -85,10 +85,10 @@ export const useAuthStore = defineStore("auth", {
         this._clearUser();
 
         if (!username || !password) {
-          throw new Error("Invalid username or password");
+          throw new Error('Invalid username or password');
         }
 
-        const res = await axios.post(`${apiUrl}/auth/login`, {
+        const res = await axios.post(`${ apiUrl }/auth/login`, {
           username,
           password,
         });
@@ -97,12 +97,12 @@ export const useAuthStore = defineStore("auth", {
         this.user = res.data as User;
         this.authenticated = true;
 
-        localStorage.setItem("token", this.token ?? "");
-        localStorage.setItem("user", JSON.stringify(this.user));
-      } catch (err) {
+        localStorage.setItem('token', this.token ?? '');
+        localStorage.setItem('user', JSON.stringify(this.user));
+      } catch(err) {
         const e = err as AxiosError<any>;
 
-        throw new Error(e?.response?.data?.error ?? "Unable to login. Please try again.");
+        throw new Error(e?.response?.data?.error ?? 'Unable to login. Please try again.');
       } finally {
         this.isLoading = false;
       }
@@ -113,28 +113,28 @@ export const useAuthStore = defineStore("auth", {
 
       try {
         this.isLoading = true;
-        await axios.post(`${apiUrl}/auth/logout`);
+        await axios.post(`${ apiUrl }/auth/logout`);
         this._clearUser();
-      } catch (err) {
+      } catch(err) {
         const e = err as AxiosError<any>;
 
-        throw new Error(e?.response?.data?.error ?? "Unable to logout. Please try again.");
+        throw new Error(e?.response?.data?.error ?? 'Unable to logout. Please try again.');
       } finally {
         this.isLoading = false;
       }
     },
 
     async fetchUser() {
-      const { apiUrl } = getServiceConfig()
+      const { apiUrl } = getServiceConfig();
 
       try {
-        this.isLoading = true
+        this.isLoading = true;
 
-        return await axios.get(`${apiUrl}/auth/user`)
-      } catch (err) {
-        console.error(err)
+        return await axios.get(`${ apiUrl }/auth/user`);
+      } catch(err) {
+        console.error(err);
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
 
@@ -142,17 +142,17 @@ export const useAuthStore = defineStore("auth", {
       const { apiUrl } = getServiceConfig();
 
       try {
-        const res = await axios.put(`${apiUrl}/auth/update`, {
+        const res = await axios.put(`${ apiUrl }/auth/update`, {
           username,
           password,
         });
 
         this.user = res.data as User;
-        localStorage.setItem("user", JSON.stringify(this.user));
-      } catch (err) {
+        localStorage.setItem('user', JSON.stringify(this.user));
+      } catch(err) {
         const e = err as AxiosError<any>;
 
-        throw new Error(e?.response?.data?.error ?? "Unable to update profile. Please try again.");
+        throw new Error(e?.response?.data?.error ?? 'Unable to update profile. Please try again.');
       }
     },
 
@@ -160,17 +160,17 @@ export const useAuthStore = defineStore("auth", {
       const { apiUrl } = getServiceConfig();
 
       try {
-        await axios.delete(`${apiUrl}/auth/delete`);
+        await axios.delete(`${ apiUrl }/auth/delete`);
 
         this.user = null;
         this.token = null;
         this.authenticated = false;
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-      } catch (err) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      } catch(err) {
         const e = err as AxiosError<any>;
 
-        throw new Error(e?.response?.data?.error ?? "Unable to delete user. Please try again.");
+        throw new Error(e?.response?.data?.error ?? 'Unable to delete user. Please try again.');
       }
     },
   },

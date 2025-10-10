@@ -15,13 +15,13 @@ passport.use(
         const user = await User.findOne({ where: { Username: username } });
 
         if (!user) {
-          return done(null, false, { message: 'Incorrect username.' });
+          return done(null, false, { message: 'Invalid credentials' });
         }
 
         const match = await bcrypt.compare(password, user.Password);
 
         if (!match) {
-          return done(null, false, { message: 'Incorrect password.' });
+          return done(null, false, { message: 'Invalid credentials' });
         }
 
         return done(null, user);

@@ -1,12 +1,12 @@
-import { onBeforeUnmount } from 'vue'
-import { ToastManager } from '@kong/kongponents'
+import { onBeforeUnmount } from 'vue';
+import { ToastManager } from '@kong/kongponents';
 
 export function useToaster() {
-  const toaster = new ToastManager()
+  const toaster = new ToastManager();
 
   onBeforeUnmount(() => {
-    toaster.destroy()
-  })
+    toaster.destroy();
+  });
 
-  return { toaster }
+  return { toaster };
 }

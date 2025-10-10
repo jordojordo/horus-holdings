@@ -1,76 +1,94 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRoute, useRouter, RouterLink } from 'vue-router'
+import {
+  ref, computed, onMounted, onBeforeUnmount, watch
+} from 'vue';
+import { useRoute, useRouter, RouterLink } from 'vue-router';
 
-import { useAuthStore } from '@/stores/auth'
-import { useViewport } from '@/composables/useViewport'
+import { useAuthStore } from '@/stores/auth';
+import { useViewport } from '@/composables/useViewport';
 
-import ToggleTheme from '@/components/ToggleTheme.vue'
-import { KButton } from '@kong/kongponents'
+import ToggleTheme from '@/components/ToggleTheme.vue';
+import { KButton } from '@kong/kongponents';
 
-const auth = useAuthStore()
-const router = useRouter()
-const route = useRoute()
+const auth = useAuthStore();
+const router = useRouter();
+const route = useRoute();
 
-const { width } = useViewport()
+const { width } = useViewport();
 
-const isMenuOpen = ref(false)
-const menuRef = ref<HTMLElement | null>(null)
+const isMenuOpen = ref(false);
+const menuRef = ref<HTMLElement | null>(null);
 
-const isMobile = computed(() => width.value < 768)
+const isMobile = computed(() => width.value < 768);
 
 function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value
+  isMenuOpen.value = !isMenuOpen.value;
 }
 
 function handleClickOutside(e: MouseEvent) {
   if (!isMobile.value) {
-    return
+    return;
   }
 
-  const el = menuRef.value
+  const el = menuRef.value;
 
   if (el && !el.contains(e.target as Node)) {
-    isMenuOpen.value = false
+    isMenuOpen.value = false;
   }
 }
 
 function onNavClick() {
   if (isMobile.value) {
-    isMenuOpen.value = false
+    isMenuOpen.value = false;
   }
 }
 
 async function logout() {
   try {
-    await auth.logout()
+    await auth.logout();
 
-    router.push('/login')
-  } catch (e) {
-
-    console.log('[Navbar]: Error logging out', e)
+    router.push('/login');
+  } catch(e) {
+    console.log('[Navbar]: Error logging out', e);
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
+onMounted(() => document.addEventListener('click', handleClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside));
 
 watch(() => route.fullPath, () => {
   if (isMobile.value) {
-    isMenuOpen.value = false
+    isMenuOpen.value = false;
   }
-})
+});
 </script>
 
 <template>
-  <nav ref="menuRef" class="navbar">
+  <nav
+    ref="menuRef"
+    class="navbar"
+  >
     <div class="navbar-container">
       <header class="navbar-header">
-        <img src="@/assets/images/horus.png" alt="Logo" rel="preload" />
-        <RouterLink class="brand text-bold" to="/">Horus Holdings</RouterLink>
+        <img
+          src="@/assets/images/horus.png"
+          alt="Logo"
+          rel="preload"
+        >
+        <RouterLink
+          class="brand text-bold"
+          to="/"
+        >
+          Horus Holdings
+        </RouterLink>
 
         <!-- Mobile menu toggle -->
-        <KButton v-if="isMobile" class="menu-toggle" aria-label="Menu" @click.prevent="toggleMenu">
+        <KButton
+          v-if="isMobile"
+          class="menu-toggle"
+          aria-label="Menu"
+          @click.prevent="toggleMenu"
+        >
           <span class="menu-icon">☰</span>
         </KButton>
       </header>
@@ -80,11 +98,35 @@ watch(() => route.fullPath, () => {
         :class="{ active: isMobile && isMenuOpen }"
         @click.capture="onNavClick"
       >
-        <div v-if="auth.authenticated" class="authenticated-group">
-          <RouterLink class="nav-link text-bold" to="/dashboard">Dashboard</RouterLink>
-          <RouterLink class="nav-link text-bold" to="/incomes">Incomes</RouterLink>
-          <RouterLink class="nav-link text-bold" to="/expenses">Expenses</RouterLink>
-          <RouterLink v-if="auth.authenticated" class="nav-link text-bold" to="/settings">Settings</RouterLink>
+        <div
+          v-if="auth.authenticated"
+          class="authenticated-group"
+        >
+          <RouterLink
+            class="nav-link text-bold"
+            to="/dashboard"
+          >
+            Dashboard
+          </RouterLink>
+          <RouterLink
+            class="nav-link text-bold"
+            to="/incomes"
+          >
+            Incomes
+          </RouterLink>
+          <RouterLink
+            class="nav-link text-bold"
+            to="/expenses"
+          >
+            Expenses
+          </RouterLink>
+          <RouterLink
+            v-if="auth.authenticated"
+            class="nav-link text-bold"
+            to="/settings"
+          >
+            Settings
+          </RouterLink>
 
           <div class="divider" />
         </div>
@@ -92,15 +134,35 @@ watch(() => route.fullPath, () => {
 
         <div class="navbar-auth mt-5">
           <template v-if="!auth.authenticated">
-            <RouterLink class="nav-link text-bold" to="/login">Login</RouterLink>
-            <RouterLink class="nav-link text-bold" to="/register">Register</RouterLink>
+            <div class="flex flex-col">
+              <RouterLink
+                class="nav-link text-bold"
+                to="/login"
+              >
+                Login
+              </RouterLink>
+              <RouterLink
+                class="nav-link text-bold"
+                to="/register"
+              >
+                Register
+              </RouterLink>
+            </div>
           </template>
           <template v-else>
-            <KButton class="btn text-bold" @click="logout">Logout</KButton>
+            <KButton
+              class="btn text-bold"
+              @click="logout"
+            >
+              Logout
+            </KButton>
           </template>
         </div>
 
-        <div v-if="!isMobile" class="theme-button">
+        <div
+          v-if="!isMobile"
+          class="theme-button"
+        >
           <ToggleTheme />
         </div>
       </div>

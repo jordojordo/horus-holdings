@@ -3,144 +3,59 @@ export default {
   '@typescript-eslint/no-explicit-any': 'off',
   '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
   '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+  '@typescript-eslint/no-empty-object-type': 'off',
 
-  'dot-notation':          'off',
-  'guard-for-in':          'off',
-  'new-cap':               'off',
-  'no-empty':              'off',
-  'no-extra-boolean-cast': 'off',
-  'no-new':                'off',
-  'no-plusplus':           'off',
-  'no-useless-escape':     'off',
-  strict:                  'off',
-
-  'array-bracket-spacing': 'warn',
-  'arrow-parens':          'warn',
-  'arrow-spacing':         [
-    'warn',
+  '@stylistic/indent':                ['warn', 2],
+  '@stylistic/quotes':                ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: 'always' }],
+  '@stylistic/semi':                  ['warn', 'always'],
+  '@stylistic/comma-dangle':          ['warn', 'only-multiline'],
+  '@stylistic/key-spacing':           ['warn', {
+    align:     {
+      beforeColon: false, afterColon: true, on: 'value', mode: 'minimum'
+    },
+    multiLine: { beforeColon: false, afterColon: true },
+  }],
+  '@stylistic/object-curly-spacing': ['warn', 'always'],
+  '@stylistic/object-curly-newline': ['warn', {
+    ObjectExpression:  { multiline: true, minProperties: 3 },
+    ObjectPattern:     { multiline: true, minProperties: 4 },
+    ImportDeclaration: { multiline: true, minProperties: 5 },
+    ExportDeclaration: { multiline: true, minProperties: 3 },
+  }],
+  '@stylistic/arrow-spacing':                   ['warn', { before: true, after: true }],
+  '@stylistic/brace-style':                     ['warn', '1tbs'],
+  '@stylistic/block-spacing':                   ['warn', 'always'],
+  '@stylistic/space-in-parens':                 ['warn', 'never'],
+  '@stylistic/newline-per-chained-call':        ['warn', { ignoreChainWithDepth: 4 }],
+  '@stylistic/multiline-ternary':               ['warn', 'never'],
+  '@stylistic/padded-blocks':                   ['warn', 'never'],
+  '@stylistic/padding-line-between-statements': ['warn',
     {
-      before: true,
-      after:  true,
+      blankLine: 'always', prev: '*', next: 'return'
+    },
+    {
+      blankLine: 'always', prev: 'function', next: 'function'
+    },
+    // keep the “blank line after a declaration block, but not between consecutive declarations” pattern
+    {
+      blankLine: 'always', prev: ['const', 'let', 'var'], next: '*'
+    },
+    {
+      blankLine: 'any',    prev: ['const', 'let', 'var'], next: ['const', 'let', 'var']
     },
   ],
-  'block-spacing':               ['warn', 'always'],
-  'brace-style':                 ['warn', '1tbs'],
-  'comma-dangle':                ['warn', 'only-multiline'],
-  'comma-spacing':               'warn',
-  curly:                         'warn',
-  eqeqeq:                        'warn',
-  'func-call-spacing':           ['warn', 'never'],
-  'implicit-arrow-linebreak':    'warn',
-  'keyword-spacing':             'warn',
-  'lines-between-class-members': [
-    'warn',
-    'always',
-    { exceptAfterSingleLine: true },
-  ],
-  'multiline-ternary':             ['warn', 'never'],
-  'newline-per-chained-call':      ['warn', { ignoreChainWithDepth: 4 }],
-  'no-caller':                     'warn',
-  'no-cond-assign':                ['warn', 'except-parens'],
-  'no-console':                    'off',
-  'no-debugger':                   'warn',
-  'no-eq-null':                    'warn',
-  'no-eval':                       'warn',
-  'no-trailing-spaces':            'warn',
-  'no-undef':                      'warn',
-  'no-unused-vars':                'off',
-  'no-whitespace-before-property': 'warn',
-  'object-curly-spacing':          ['warn', 'always'],
-  'object-property-newline':       'warn',
-  'object-shorthand':              'warn',
-  'padded-blocks':                 ['warn', 'never'],
-  'prefer-arrow-callback':         'warn',
-  'prefer-template':               'warn',
-  'rest-spread-spacing':           'warn',
-  semi:                            ['warn', 'always'],
-  'space-before-function-paren':   ['warn', 'never'],
-  'space-infix-ops':               'warn',
-  'spaced-comment':                'warn',
-  'switch-colon-spacing':          'warn',
-  'template-curly-spacing':        ['warn', 'always'],
-  'yield-star-spacing':            ['warn', 'both'],
+  '@stylistic/template-curly-spacing':      ['warn', 'always'],
+  '@stylistic/space-unary-ops':             ['warn', { words: true, nonwords: false }],
+  '@stylistic/yield-star-spacing':          ['warn', 'both'],
+  '@stylistic/lines-between-class-members': ['warn', 'always', { exceptAfterSingleLine: true }],
+  '@stylistic/space-before-function-paren': ['warn', 'never'],
+  '@stylistic/member-delimiter-style':      ['warn', {
+    multiline:  { delimiter: 'semi', requireLast: true },
+    singleline: { delimiter: 'semi', requireLast: false },
+  }],
+  '@stylistic/type-annotation-spacing': ['warn', {
+    before: false, after: true, overrides: { arrow: { before: true, after: true } }
+  }],
 
-  'key-spacing': [
-    'warn',
-    {
-      align: {
-        beforeColon: false,
-        afterColon:  true,
-        on:          'value',
-        mode:        'minimum',
-      },
-      multiLine: {
-        beforeColon: false,
-        afterColon:  true,
-      },
-    },
-  ],
-
-  'object-curly-newline': [
-    'warn',
-    {
-      ObjectExpression: {
-        multiline:     true,
-        minProperties: 4,
-      },
-      ObjectPattern: {
-        multiline:     true,
-        minProperties: 4,
-      },
-      ImportDeclaration: {
-        multiline:     true,
-        minProperties: 5,
-      },
-      ExportDeclaration: {
-        multiline:     true,
-        minProperties: 4,
-      },
-    },
-  ],
-
-  'padding-line-between-statements': [
-    'warn',
-    {
-      blankLine: 'always',
-      prev:      '*',
-      next:      'return',
-    },
-    {
-      blankLine: 'always',
-      prev:      'function',
-      next:      'function',
-    },
-    // This configuration would require blank lines after every sequence of variable declarations
-    {
-      blankLine: 'always',
-      prev:      ['const', 'let', 'var'],
-      next:      '*',
-    },
-    {
-      blankLine: 'any',
-      prev:      ['const', 'let', 'var'],
-      next:      ['const', 'let', 'var'],
-    },
-  ],
-
-  quotes: [
-    'warn',
-    'single',
-    {
-      avoidEscape:           true,
-      allowTemplateLiterals: true,
-    },
-  ],
-
-  'space-unary-ops': [
-    'warn',
-    {
-      words:    true,
-      nonwords: false,
-    },
-  ],
+  'no-cond-assign': ['warn', 'except-parens'],
 };

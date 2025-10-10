@@ -57,9 +57,9 @@ router.beforeEach(async(to) => {
   // Private route -> require login
   if (wantsAuth(to) && !auth.authenticated) {
     return {
- name:  'login',
-query: { redirect: to.fullPath }
-};
+      name:  'login',
+      query: { redirect: to.fullPath }
+    };
   }
 
   // Guest route -> bounce logged-in users

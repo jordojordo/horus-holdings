@@ -2,12 +2,14 @@ import type { Expense, Income } from '@/types';
 import type { ComputedRef } from 'vue';
 
 import {
- ref, watch, onMounted, onBeforeUnmount, toValue
+  ref, watch, onMounted, onBeforeUnmount, toValue
 } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 import { getServiceConfig } from '@/utils/service';
 import { useSocketStore } from '@/stores/socket';
+import { useAuthStore } from '@/stores/auth';
 
 export type NewItemMessage =
   | { type: 'new_expense'; data: Expense }
@@ -15,7 +17,7 @@ export type NewItemMessage =
 
 type Args = {
   rangeStartRef: ComputedRef<Date | null>; // 'YYYY-MM-DD'
-  rangeEndRef: ComputedRef<Date | null>; // 'YYYY-MM-DD'
+  rangeEndRef:   ComputedRef<Date | null>; // 'YYYY-MM-DD'
 };
 
 export function useFinancialData({ rangeStartRef, rangeEndRef }: Args) {
@@ -24,6 +26,8 @@ export function useFinancialData({ rangeStartRef, rangeEndRef }: Args) {
 
   const { apiUrl } = getServiceConfig();
   const socket = useSocketStore();
+  const auth = useAuthStore();
+  const router = useRouter();
 
   // Abort in-flight requests when the window changes quickly
   let controller: AbortController | null = null;
@@ -51,8 +55,13 @@ export function useFinancialData({ rangeStartRef, rangeEndRef }: Args) {
 
       incomes.value = Array.isArray(incRes.data) ? incRes.data : [];
       expenses.value = Array.isArray(expRes.data) ? expRes.data : [];
-    } catch (e) {
-      console.log('[useFinancialData]: error fetching finances', e);
+    } catch(e) {
+      console.log('[useFinancialData]: error fetching finances', (e as any)?.message);
+
+      if ((e as any).response?.status === 401) {
+        auth.logout();
+        router.push({ name: 'home' });
+      }
     }
   };
 

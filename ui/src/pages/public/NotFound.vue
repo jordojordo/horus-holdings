@@ -4,9 +4,18 @@ import { RouterLink } from 'vue-router';
 
 <template>
   <div className="not-found-container">
-    <h1 className="text-bold mb-5">404</h1>
-    <h2 className="mb-10">The page you visited does not exist.</h2>
-    <RouterLink class="btn text-bold" to="/dashboard">Go home</RouterLink>
+    <h1 className="text-bold mb-5">
+      404
+    </h1>
+    <h2 className="mb-10">
+      The page you visited does not exist.
+    </h2>
+    <RouterLink
+      class="btn text-bold"
+      to="/dashboard"
+    >
+      Go home
+    </RouterLink>
   </div>
 </template>
 

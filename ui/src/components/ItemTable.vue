@@ -1,148 +1,184 @@
 <script setup lang="ts">
-import type { FinancialItem, FinanceItemKind, RecurrenceKind } from '@/types'
-import type { Toast } from '@kong/kongponents'
+import type { FinancialItem, FinanceItemKind, RecurrenceKind } from '@/types';
+import type { Toast } from '@kong/kongponents';
 
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import dayjs from 'dayjs'
-import axios from 'axios'
+import {
+  ref, computed, onMounted, onBeforeUnmount, watch
+} from 'vue';
+import dayjs from 'dayjs';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-import { getServiceConfig } from '@/utils/service'
-import { useSocketStore } from '@/stores/socket'
-import { useThemeStore } from '@/stores/theme'
-import { useToaster } from '@/composables'
+import { getServiceConfig } from '@/utils/service';
+import { useAuthStore } from '@/stores/auth';
+import { useSocketStore } from '@/stores/socket';
+import { useThemeStore } from '@/stores/theme';
+import { useToaster } from '@/composables';
 
-import FinancialForm from '@/components/FinancialForm.vue'
-import { AddIcon, EditIcon, TrashIcon } from '@kong/icons'
+import FinancialForm from '@/components/FinancialForm.vue';
+import { AddIcon, EditIcon, TrashIcon } from '@kong/icons';
+
+const { itemKind } = defineProps<{ itemKind: FinanceItemKind }>();
 
 const headers = [
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'category', label: 'Category', sortable: true },
-  { key: 'amount', label: 'Amount', sortable: true },
-  { key: 'date', label: 'Date', sortable: true },
-  { key: 'recurrenceKind', label: 'Recurrence' },
-  { key: 'actions', label: 'Actions' }
-]
+  {
+    key:      'name',
+    label:    'Name',
+    sortable: true
+  },
+  {
+    key:      'category',
+    label:    'Category',
+    sortable: true
+  },
+  {
+    key:      'amount',
+    label:    'Amount',
+    sortable: true
+  },
+  {
+    key:      'date',
+    label:    'Date',
+    sortable: true
+  },
+  {
+    key:   'recurrenceKind',
+    label: 'Recurrence'
+  },
+  {
+    key:   'actions',
+    label: 'Actions'
+  }
+];
 
-const { itemKind } = defineProps<{ itemKind: FinanceItemKind }>()
+const emptyStateProps = {
+  title:   `No ${ itemKind }s found`,
+  message: `Create a new ${ itemKind } to get started`,
+};
 
-const { apiUrl } = getServiceConfig()
-const socket = useSocketStore()
-const themeStore = useThemeStore()
+const { apiUrl } = getServiceConfig();
+const auth = useAuthStore();
+const router = useRouter();
+const socket = useSocketStore();
+const themeStore = useThemeStore();
 const { toaster } = useToaster();
 
-const loading = ref(false)
-const items = ref<FinancialItem[]>([])
-const searchField = ref('')
-const sortField = ref<string | null>(null)
-const sortOrder = ref<'asc' | 'desc' | null>(null)
-const currentPage = ref(1)
-const pageSize = ref(10)
+const loading = ref(false);
+const items = ref<FinancialItem[]>([]);
+const searchField = ref('');
+const sortField = ref<string | null>(null);
+const sortOrder = ref<'asc' | 'desc' | null>(null);
+const currentPage = ref(1);
 
 // Modal state
-const showEdit = ref(false)
-const itemToUpdate = ref<FinancialItem | undefined>(undefined)
+const showEdit = ref(false);
+const itemToUpdate = ref<FinancialItem | undefined>(undefined);
 
 // Prompt state
-const promptVisible = ref(false)
-const itemToDelete = ref<FinancialItem | undefined>(undefined)
+const promptVisible = ref(false);
+const itemToDelete = ref<FinancialItem | undefined>(undefined);
 
 function formatDate(iso?: string | null): string {
-  return iso ? dayjs(iso).format('YYYY-MM-DD') : ''
+  return iso ? dayjs(iso).format('YYYY-MM-DD') : '';
 }
 
 function formatCurrency(v: number | string): string {
-  const n = typeof v === 'string' ? Number(v) : v
+  const n = typeof v === 'string' ? Number(v) : v;
 
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(n || 0)
+  return new Intl.NumberFormat(undefined, {
+    style:    'currency',
+    currency: 'USD'
+  }).format(n || 0);
 }
 
 async function fetchItems(): Promise<void> {
   try {
-    loading.value = true
-    const { data } = await axios.get(`${apiUrl}/${itemKind}`)
+    loading.value = true;
+    const { data } = await axios.get(`${ apiUrl }/${ itemKind }`);
 
-    items.value = Array.isArray(data) ? data : []
-  } catch (err) {
-    console.error(err)
-    toaster.open({ title: 'Failed to load items', appearance: 'danger' })
+    items.value = Array.isArray(data) ? data : [];
+  } catch(err) {
+    toaster.open({
+      title:      'Failed to load items',
+      message:    (err as any)?.message,
+      appearance: 'danger'
+    });
+
+    if ((err as any).response?.status === 401) {
+      auth.logout();
+      router.push({ name: 'home' });
+    }
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 onMounted(() => {
-  fetchItems()
-  socket.setOnMessage(`new_${itemKind}`, (payload: any) => {
-    const data = payload?.data
+  fetchItems();
+  socket.setOnMessage(`new_${ itemKind }`, (payload: any) => {
+    const data = payload?.data;
 
     if (data) {
-      items.value = [data, ...items.value]
+      items.value = [data, ...items.value];
     }
-  })
-})
+  });
+});
 
 onBeforeUnmount(() => {
-  socket.off(`new_${itemKind}`)
-})
+  socket.off(`new_${ itemKind }`);
+});
 
 watch(() => itemKind, () => {
-  fetchItems()
-})
+  fetchItems();
+});
 
 const filteredItems = computed(() => {
-  return items.value.filter(item => {
-    const field = searchField.value.toLowerCase()
-    const matchName = !searchField.value || item.name?.toLowerCase().includes(field)
-    const matchCategory = !searchField.value || (item.category ?? '').toLowerCase().includes(field)
+  return items.value.filter((item) => {
+    const field = searchField.value.toLowerCase();
+    const matchName = !searchField.value || item.name?.toLowerCase().includes(field);
+    const matchCategory = !searchField.value || (item.category ?? '').toLowerCase().includes(field);
 
-    return matchName || matchCategory
-  })
-})
+    return matchName || matchCategory;
+  });
+});
 
 const sortedItems = computed(() => {
-  const filtered = [...filteredItems.value]
+  const filtered = [...filteredItems.value];
 
   if (!sortField.value || !sortOrder.value) {
-    return filtered
+    return filtered;
   }
 
   filtered.sort((a: any, b: any) => {
-    const field = sortField.value as string
-    let aVal: any = a[field]
-    let bVal: any = b[field]
+    const field = sortField.value as string;
+    let aVal: any = a[field];
+    let bVal: any = b[field];
 
     if (field === 'amount') {
-      aVal = Number(aVal)
-      bVal = Number(bVal)
+      aVal = Number(aVal);
+      bVal = Number(bVal);
     } else if (field === 'date') {
-      aVal = aVal ? new Date(aVal).getTime() : 0
-      bVal = bVal ? new Date(bVal).getTime() : 0
+      aVal = aVal ? new Date(aVal).getTime() : 0;
+      bVal = bVal ? new Date(bVal).getTime() : 0;
     } else {
       // compare strings (name, category, recurrenceKind)
-      aVal = (aVal ?? '').toString().toLowerCase()
-      bVal = (bVal ?? '').toString().toLowerCase()
+      aVal = (aVal ?? '').toString().toLowerCase();
+      bVal = (bVal ?? '').toString().toLowerCase();
     }
 
     if (aVal > bVal) {
-      return sortOrder.value === 'asc' ? 1 : -1
+      return sortOrder.value === 'asc' ? 1 : -1;
     }
 
     if (aVal < bVal) {
-      return sortOrder.value === 'asc' ? -1 : 1
+      return sortOrder.value === 'asc' ? -1 : 1;
     }
 
-    return 0
-  })
+    return 0;
+  });
 
-  return filtered
-})
-
-const paginatedItems = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-
-  return sortedItems.value.slice(start, end)
-})
+  return filtered;
+});
 
 /**
  * Handle the sort event emitted by KTableView.  The payload contains
@@ -151,100 +187,102 @@ const paginatedItems = computed(() => {
  * page if the new sort reduces the number of pages.
  */
 function onSort({ sortColumnKey, sortColumnOrder }: { sortColumnKey?: string; sortColumnOrder?: 'asc' | 'desc' }): void {
-  sortField.value = sortColumnKey || null
-  sortOrder.value = sortColumnOrder || null
-  currentPage.value = 1
-}
-
-/**
- * Update the current page when KPagination emits a page-change event.  The
- * event payload includes the new page number (1-indexed). Rely on
- * computed pagination rather than using the `visibleItems` returned by the
- * event.
- */
-function onPageChange({ page }: { page: number }): void {
-  currentPage.value = page
-}
-
-function onPageSizeChange({ pageSize: newSize }: { pageSize: number }): void {
-  pageSize.value = newSize
-  currentPage.value = 1
+  sortField.value = sortColumnKey || null;
+  sortOrder.value = sortColumnOrder || null;
+  currentPage.value = 1;
 }
 
 function openAdd(): void {
-  itemToUpdate.value = undefined
-  showEdit.value = true
+  itemToUpdate.value = undefined;
+  showEdit.value = true;
 }
 
 function onEdit(item: FinancialItem): void {
-  itemToUpdate.value = item
-  showEdit.value = true
+  itemToUpdate.value = item;
+  showEdit.value = true;
 }
 
 function closeEdit(): void {
-  showEdit.value = false
-  itemToUpdate.value = undefined
+  showEdit.value = false;
+  itemToUpdate.value = undefined;
 }
 
 async function handleSaved(e: Toast): Promise<void> {
-  toaster.open(e)
-  await fetchItems()
+  toaster.open(e);
+  await fetchItems();
 }
 
 function confirmDelete(item: FinancialItem): void {
-  itemToDelete.value = item
-  promptVisible.value = true
+  itemToDelete.value = item;
+  promptVisible.value = true;
 }
 
 function cancelDelete(): void {
-  promptVisible.value = false
-  itemToDelete.value = undefined
+  promptVisible.value = false;
+  itemToDelete.value = undefined;
 }
 
 async function proceedDelete(): Promise<void> {
-  const item = itemToDelete.value
+  const item = itemToDelete.value;
 
   if (!item) {
-    return
+    return;
   }
 
   try {
-    await axios.delete(`${apiUrl}/${itemKind}/${item.id}`)
+    await axios.delete(`${ apiUrl }/${ itemKind }/${ item.id }`);
 
-    toaster.open({ message: 'Deleted', appearance: 'success' })
-    items.value = items.value.filter(i => i.id !== item.id)
-  } catch (err) {
-    console.error(err)
-    toaster.open({ appearance: 'danger', title: 'Failed to delete', message: err || 'Request failed' })
+    toaster.open({
+      message:    `Deleted ${ itemKind }: ${ item.name }`,
+      appearance: 'success'
+    });
+    items.value = items.value.filter((i) => i.id !== item.id);
+  } catch(err) {
+    console.error(err);
+    toaster.open({
+      appearance: 'danger',
+      title:      'Failed to delete',
+      message:    err || 'Request failed'
+    });
   } finally {
-    promptVisible.value = false
-    itemToDelete.value = undefined
+    promptVisible.value = false;
+    itemToDelete.value = undefined;
   }
 }
 
 function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
   switch (recurrence) {
     case 'simple':
-      return 'info'
+      return 'info';
     case 'rrule':
-      return 'decorative'
+      return 'decorative';
     default:
-      return 'neutral'
+      return 'neutral';
   }
 }
 </script>
 
 <template>
-  <KSkeleton v-if="loading" type="table" />
-  <div v-else class="item-table">
+  <KSkeleton
+    v-if="loading"
+    type="table"
+  />
+  <div
+    v-else
+    class="item-table"
+  >
     <div class="toolbar">
       <div class="search-fields">
         <KInput
           v-model="searchField"
-          placeholder="Search..."
+          placeholder="Filter..."
+          :disabled="!sortedItems.length"
         />
       </div>
-      <KButton appearance="primary" @click="openAdd">
+      <KButton
+        appearance="primary"
+        @click="openAdd"
+      >
         <template #default>
           <AddIcon />
           Add {{ itemKind }}
@@ -253,10 +291,11 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
     </div>
 
     <KTableView
-      :data="paginatedItems"
+      :data="sortedItems"
+      :empty-state-title="emptyStateProps.title"
+      :empty-state-message="emptyStateProps.message"
       :headers="headers"
       :loading="loading"
-      hide-pagination
       :style="themeStore.isDark ? { '--kui-color-background-primary-weakest': 'var(--purple-medium)' } : {}"
       @sort="onSort"
     >
@@ -281,7 +320,11 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
             Edit
           </template>
         </KDropdownItem>
-        <KDropdownItem danger has-divider @click="confirmDelete(row as FinancialItem)">
+        <KDropdownItem
+          danger
+          has-divider
+          @click="confirmDelete(row as FinancialItem)"
+        >
           <template #default>
             <TrashIcon />
             Delete
@@ -289,18 +332,6 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
         </KDropdownItem>
       </template>
     </KTableView>
-
-    <div class="pagination-container">
-      <KPagination
-        :total-count="sortedItems.length"
-        :page-sizes="[5, 10, 20, 50]"
-        :current-page="currentPage"
-        :initial-page-size="pageSize"
-        :style="themeStore.isDark ? { '--kui-color-background-primary-weakest': 'var(--purple-medium)' } : {}"
-        @page-change="onPageChange"
-        @page-size-change="onPageSizeChange"
-      />
-    </div>
 
     <FinancialForm
       v-if="showEdit"
@@ -323,7 +354,7 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
     >
       <template #default>
         Are you sure you want to delete {{ `"${itemToDelete?.name}"` }}?
-        <br/>This action cannot be undone.
+        <br>This action cannot be undone.
       </template>
     </KPrompt>
   </div>
