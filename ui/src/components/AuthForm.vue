@@ -1,27 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { KInput, KButton } from '@kong/kongponents'
+import { KInput, KButton } from '@kong/kongponents';
 
 const { type = 'login' } = defineProps<{
   type?: 'login' | 'register';
-}>()
+}>();
 
 const emit = defineEmits<{
-  (e: 'submit', payload: { username: string, password: string }): void
-}>()
+  (e: 'submit', payload: { username: string; password: string }): void;
+}>();
 
 const username = ref<string>('');
 const password = ref<string>('');
 
 const handleSubmit = () => {
-  emit('submit', { username: username.value, password: password.value });
-}
+  emit('submit', {
+    username: username.value,
+    password: password.value
+  });
+};
+
+const sentenceCase = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 </script>
 
 <template>
-  <form class="auth-form" @submit.prevent="handleSubmit">
-    <h1>{{ type }}</h1>
+  <form
+    class="auth-form"
+    @submit.prevent="handleSubmit"
+  >
+    <h1>{{ sentenceCase(type) }}</h1>
     <KInput
       v-model="username"
       type="text"
@@ -32,8 +42,12 @@ const handleSubmit = () => {
       type="password"
       placeholder="Password"
     />
-    <KButton appearance="primary" type="submit" class="w-full">
-      {{ type }}
+    <KButton
+      appearance="primary"
+      type="submit"
+      class="w-full"
+    >
+      {{ sentenceCase(type) }}
     </KButton>
   </form>
 </template>
@@ -54,7 +68,7 @@ const handleSubmit = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--background-secondary);
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);

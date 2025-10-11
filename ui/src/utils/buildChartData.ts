@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs';
 import type {
- ChartData, FinancialItem, Income, Expense, ItemBase
+  ChartData, FinancialItem, Income, Expense, ItemBase
 } from '@/types';
 
 import dayjs from 'dayjs';

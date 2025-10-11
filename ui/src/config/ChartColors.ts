@@ -8,14 +8,14 @@ type RGBA = { r: number; g: number; b: number; a?: number };
 
 const FALLBACKS = {
   // your existing hard-coded colors as fallbacks
-  inflowBg:   'rgba(44, 182, 125, 0.4)',
-  inflowBor:  'rgba(44, 182, 125, 1)',
-  outflowBg:  'rgba(255, 127, 80, 0.4)',
-  outflowBor: 'rgba(255, 127, 80, 1)',
-  forecastBg: 'rgba(137, 101, 246, 0.4)',
-  forecastBor:'rgba(137, 101, 246, 1)',
-  netBg:      'rgba(74, 144, 226, 0.4)',
-  netBor:     'rgba(74, 144, 226, 1)',
+  inflowBg:    'rgba(44, 182, 125, 0.4)',
+  inflowBor:   'rgba(44, 182, 125, 1)',
+  outflowBg:   'rgba(255, 127, 80, 0.4)',
+  outflowBor:  'rgba(255, 127, 80, 1)',
+  forecastBg:  'rgba(137, 101, 246, 0.4)',
+  forecastBor: 'rgba(137, 101, 246, 1)',
+  netBg:       'rgba(74, 144, 226, 0.4)',
+  netBor:      'rgba(74, 144, 226, 1)',
 
   recIncBg:   'rgba(44, 182, 125, 0.4)',
   recIncBor:  'rgba(44, 182, 125, 1)',
@@ -28,7 +28,9 @@ const FALLBACKS = {
 };
 
 function cssVar(name: string): string | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    return null;
+  }
   const v = getComputedStyle(document.documentElement).getPropertyValue(name);
 
   return v ? v.trim() : null;
@@ -46,14 +48,24 @@ function parseColor(input: string): RGBA | null {
       const g = parseInt(hex[1]! + hex[1], 16);
       const b = parseInt(hex[2]! + hex[2], 16);
 
-      return { r, g, b, a: 1 };
+      return {
+        r,
+        g,
+        b,
+        a: 1
+      };
     }
     if (hex.length === 6) {
       const r = parseInt(hex.slice(0, 2), 16);
       const g = parseInt(hex.slice(2, 4), 16);
       const b = parseInt(hex.slice(4, 6), 16);
 
-      return { r, g, b, a: 1 };
+      return {
+        r,
+        g,
+        b,
+        a: 1
+      };
     }
     if (hex.length === 8) {
       const r = parseInt(hex.slice(0, 2), 16);
@@ -61,7 +73,12 @@ function parseColor(input: string): RGBA | null {
       const b = parseInt(hex.slice(4, 6), 16);
       const a = parseInt(hex.slice(6, 8), 16) / 255;
 
-      return { r, g, b, a };
+      return {
+        r,
+        g,
+        b,
+        a
+      };
     }
 
     return null;
@@ -70,14 +87,19 @@ function parseColor(input: string): RGBA | null {
   const m = s.match(/rgba?\(([^)]+)\)/i);
 
   if (m) {
-    const parts = m[1]!.split(',').map(p => p.trim());
+    const parts = m[1]!.split(',').map((p) => p.trim());
 
     if (parts.length >= 3) {
-      const [r, g, b] = parts.slice(0, 3).map(v => parseFloat(v));
+      const [r, g, b] = parts.slice(0, 3).map((v) => parseFloat(v));
       const a = parts[3] !== undefined ? parseFloat(parts[3]) : 1;
 
       if (r && g && b && a) {
-        return { r, g, b, a };
+        return {
+          r,
+          g,
+          b,
+          a
+        };
       }
     }
   }
@@ -90,7 +112,7 @@ function withAlpha(base: string, alpha: number): string {
   const parsed = parseColor(base);
 
   if (parsed) {
-    return `rgba(${parsed.r}, ${parsed.g}, ${parsed.b}, ${alpha})`;
+    return `rgba(${ parsed.r }, ${ parsed.g }, ${ parsed.b }, ${ alpha })`;
   }
 
   // If base is a computed color-mix or unsupported format, just return as-is (Chart.js can handle computed rgb strings)
@@ -110,14 +132,14 @@ export function getChartTokenAlpha(tokenName: string, fallback: string, alpha: n
 
 /** Mappings from your palette tokens */
 const TOKENS = {
-  incomeFill:  '--chart-income-fill',
-  incomeStroke:'--chart-income-stroke',
-  expenseFill: '--chart-expense-fill',
-  expenseStroke:'--chart-expense-stroke',
-  forecastFill:'--chart-forecast-fill',
-  forecastStroke:'--chart-forecast-stroke',
-  netFill:     '--chart-net-fill',
-  netStroke:   '--chart-net-stroke',
+  incomeFill:     '--chart-income-fill',
+  incomeStroke:   '--chart-income-stroke',
+  expenseFill:    '--chart-expense-fill',
+  expenseStroke:  '--chart-expense-stroke',
+  forecastFill:   '--chart-forecast-fill',
+  forecastStroke: '--chart-forecast-stroke',
+  netFill:        '--chart-net-fill',
+  netStroke:      '--chart-net-stroke',
 
   // Category ramps if needed
   series1: '--chart-series-1',
@@ -135,26 +157,46 @@ const TOKENS = {
  */
 export const colorConfig = {
   inflow: {
-    get background() { return getChartToken(TOKENS.incomeFill,  FALLBACKS.inflowBg); },
-    get border()     { return getChartToken(TOKENS.incomeStroke, FALLBACKS.inflowBor); },
+    get background() {
+      return getChartToken(TOKENS.incomeFill,  FALLBACKS.inflowBg);
+    },
+    get border()     {
+      return getChartToken(TOKENS.incomeStroke, FALLBACKS.inflowBor);
+    },
   },
   outflow: {
-    get background() { return getChartToken(TOKENS.expenseFill,  FALLBACKS.outflowBg); },
-    get border()     { return getChartToken(TOKENS.expenseStroke, FALLBACKS.outflowBor); },
+    get background() {
+      return getChartToken(TOKENS.expenseFill,  FALLBACKS.outflowBg);
+    },
+    get border()     {
+      return getChartToken(TOKENS.expenseStroke, FALLBACKS.outflowBor);
+    },
   },
   forecast: {
-    get background() { return getChartToken(TOKENS.forecastFill, FALLBACKS.forecastBg); },
-    get border()     { return getChartToken(TOKENS.forecastStroke,FALLBACKS.forecastBor); },
+    get background() {
+      return getChartToken(TOKENS.forecastFill, FALLBACKS.forecastBg);
+    },
+    get border()     {
+      return getChartToken(TOKENS.forecastStroke, FALLBACKS.forecastBor);
+    },
   },
   net: {
-    get background() { return getChartToken(TOKENS.netFill,      FALLBACKS.netBg); },
-    get border()     { return getChartToken(TOKENS.netStroke,    FALLBACKS.netBor); },
+    get background() {
+      return getChartToken(TOKENS.netFill,      FALLBACKS.netBg);
+    },
+    get border()     {
+      return getChartToken(TOKENS.netStroke,    FALLBACKS.netBor);
+    },
   },
 
   // Detailed categories (if your UI uses them)
   recurringIncome: {
-    get background() { return getChartToken(TOKENS.incomeFill,  FALLBACKS.recIncBg); },
-    get border()     { return getChartToken(TOKENS.incomeStroke,FALLBACKS.recIncBor); },
+    get background() {
+      return getChartToken(TOKENS.incomeFill,  FALLBACKS.recIncBg);
+    },
+    get border()     {
+      return getChartToken(TOKENS.incomeStroke, FALLBACKS.recIncBor);
+    },
   },
   oneTimeIncome: {
     // slightly softer alpha than recurring
@@ -170,8 +212,12 @@ export const colorConfig = {
     },
   },
   recurringExpense: {
-    get background() { return getChartToken(TOKENS.expenseFill,  FALLBACKS.recExpBg); },
-    get border()     { return getChartToken(TOKENS.expenseStroke,FALLBACKS.recExpBor); },
+    get background() {
+      return getChartToken(TOKENS.expenseFill,  FALLBACKS.recExpBg);
+    },
+    get border()     {
+      return getChartToken(TOKENS.expenseStroke, FALLBACKS.recExpBor);
+    },
   },
   oneTimeExpense: {
     get background() {

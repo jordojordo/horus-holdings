@@ -11,9 +11,9 @@ export default defineConfig({
     vueDevTools(),
   ],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  define: {
+  define:  {
     'process.env.development': JSON.stringify('development'),
-    'process.env.production': JSON.stringify('production'),
+    'process.env.production':  JSON.stringify('production'),
   },
   build: {
     commonjsOptions: {

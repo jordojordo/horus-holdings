@@ -3,10 +3,5 @@
   "compilerOptions": {
     "allowJs": true
   },
-  "include": [
-    "src",
-    "env.d.ts",
-    "vite.config.ts",
-    "../eslint.config.mjs"
-  ]
+  "include": ["src", "env.d.ts", "vite.config.ts", "../eslint.config.mjs"]
 }

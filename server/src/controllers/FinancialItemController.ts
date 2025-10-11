@@ -6,6 +6,7 @@ import User from '@server/models/User';
 import { BaseController } from '@server/controllers/BaseController';
 import { broadcast } from '@server/plugins/io/clientNamespace';
 import { pickRecurrence } from '@server/utils/recurrence';
+import { buildDateRangeWhere } from '@server/utils/dateRange';
 
 type Kind = 'income' | 'expense';
 
@@ -31,14 +32,53 @@ class FinancialItemController extends BaseController {
     try {
       const kind = inferKind(req);
       const Model = MODEL_BY_KIND[kind];
-      const user = req?.user as User;
 
-      const rows = await Model.findAll({
-        where: { userID: user.id },
-        order: [['createdAt', 'DESC']],
+      const user = req.user as User;
+      const userID: string | undefined = user?.id;
+
+      if (!userID) {
+        res.status(401).json({ error: 'Unauthorized' });
+
+        return;
+      }
+
+      const { start, end } = req.query as { start?: string; end?: string };
+
+      const where = { userID };
+
+      if (start && end) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+          res.status(400).json({ error: 'Invalid start or end timestamp' });
+
+          return;
+        }
+
+        if (startDate > endDate) {
+          res.status(400).json({ error: 'start must be <= end' });
+
+          return;
+        }
+
+        const startISO = startDate.toISOString();
+        const endISO = endDate.toISOString();
+
+        Object.assign(where, buildDateRangeWhere(startISO, endISO));
+      }
+
+      const items = await Model.findAll({
+        where,
+        order: [
+          ['date', 'ASC'],
+          ['anchorDate', 'ASC'],
+          ['endDate', 'ASC'],
+          ['createdAt', 'ASC'],
+        ],
       });
 
-      res.json(rows);
+      res.json(items);
     } catch(error) {
       this.handleError(res, error as Error, 'Error fetching items');
     }
@@ -51,7 +91,7 @@ class FinancialItemController extends BaseController {
       const user = req?.user as User;
 
       const {
-        name, amount, category, date 
+        name, amount, category, date
       } = req.body;
 
       const created = await Model.create({
@@ -77,7 +117,7 @@ class FinancialItemController extends BaseController {
       const user = req?.user as User;
       const { id } = req.params;
       const {
-        name, amount, category, date 
+        name, amount, category, date
       } = req.body;
 
       const [count] = await Model.update({
@@ -114,7 +154,7 @@ class FinancialItemController extends BaseController {
 
       if (!deleted) {
         res.status(404).json({ error: `${ kind[0].toUpperCase() + kind.slice(1) } not found` });
-        
+
         return;
       }
 

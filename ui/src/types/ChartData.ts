@@ -3,69 +3,69 @@ import type { Income, Expense } from '@/types';
 export type ItemBase = Income | Expense;
 
 export interface ChartData {
-  labels: string[];
+  labels:  string[];
   barData: {
-    labels: string[];
+    labels:   string[];
     datasets: {
-      label: string;
+      label:           string;
       backgroundColor: string;
-      borderColor?: string;
-      borderWidth?: number;
-      data: number[];
+      borderColor?:    string;
+      borderWidth?:    number;
+      data:            number[];
     }[];
   };
   lineData: {
-    labels: string[];
+    labels:   string[];
     datasets: {
-      label: string;
+      label:           string;
       backgroundColor: string;
-      borderColor?: string;
-      borderWidth?: number;
-      data: number[];
+      borderColor?:    string;
+      borderWidth?:    number;
+      data:            number[];
       // fill: boolean;
-      tension: number;
+      tension:         number;
     }[];
   };
   pieData: {
-    labels: string[];
+    labels:   string[];
     datasets: {
-      label: string;
+      label:           string;
       backgroundColor: string[];
-      data: number[];
+      data:            number[];
     }[];
   };
   stackedBarData: {
-    labels: string[];
+    labels:   string[];
     datasets: {
-      label: string;
+      label:           string;
       backgroundColor: string;
-      borderColor: string;
-      borderWidth: number;
-      data: number[];
+      borderColor:     string;
+      borderWidth:     number;
+      data:            number[];
     }[];
-  },
+  };
   donutData: {
-    labels: string[];
+    labels:   string[];
     datasets: {
-      label: string;
+      label:           string;
       backgroundColor: string[];
-      data: number[];
+      data:            number[];
     }[];
-  },
+  };
   comparisonData: {
-    labels: string[];
+    labels:   string[];
     datasets: {
-      label: string;
-      data: number[];
+      label:           string;
+      data:            number[];
       backgroundColor: string;
     }[];
-  },
-  totalIncome: number;
-  totalExpenses: number;
-  netIncome: number;
-  averageMonthlyIncome: number;
+  };
+  totalIncome:            number;
+  totalExpenses:          number;
+  netIncome:              number;
+  averageMonthlyIncome:   number;
   averageMonthlyExpenses: number;
-  savingsRate: number;
-  highestIncomeMonth: string;
-  highestExpenseMonth: string;
+  savingsRate:            number;
+  highestIncomeMonth:     string;
+  highestExpenseMonth:    string;
 }

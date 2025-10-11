@@ -1,8 +1,8 @@
 export interface ServiceConfig {
   wsScheme: string;
-  wsUrl: string;
-  wsPath: string;
-  apiUrl: string;
+  wsUrl:    string;
+  wsPath:   string;
+  apiUrl:   string;
 }
 
 export function getServiceConfig(): ServiceConfig {

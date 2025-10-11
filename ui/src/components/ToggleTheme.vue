@@ -1,27 +1,38 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from 'vue';
 
-import { useThemeStore } from '@/stores/theme'
+import { useThemeStore } from '@/stores/theme';
 
-import { KSelect } from '@kong/kongponents'
+import { KSelect } from '@kong/kongponents';
 
-const themeStore = useThemeStore()
-const mode = ref(themeStore.theme)
+const themeStore = useThemeStore();
+const mode = ref(themeStore.theme);
 
 const themeOptions = [
-  { label: "System", value: "system" },
-  { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
+  {
+    label: 'System',
+    value: 'system' 
+  },
+  {
+    label: 'Light',
+    value: 'light' 
+  },
+  {
+    label: 'Dark',
+    value: 'dark' 
+  },
 ];
 
 watch(mode, (val) => {
-  themeStore.setTheme(val as any)
-})
+  themeStore.setTheme(val as any);
+});
 
 watch(
   () => themeStore.theme,
-  v => { mode.value = v }
-)
+  (v) => {
+    mode.value = v;
+  }
+);
 </script>
 
 <template>

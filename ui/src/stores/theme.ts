@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-type ThemeMode = 'light' | 'dark' | 'system'
+type ThemeMode = 'light' | 'dark' | 'system';
 
 const STORAGE_KEY = 'theme';
 

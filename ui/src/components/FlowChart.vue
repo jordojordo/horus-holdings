@@ -1,46 +1,46 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import dayjs from 'dayjs'
-import { Filler } from 'chart.js'
+import { ref, computed } from 'vue';
+import dayjs from 'dayjs';
+import { Filler } from 'chart.js';
 
-import '@/utils/chartConfig'
-import { timePeriods } from '@/config/DateRangePeriods'
-import { useFinancialData } from '@/composables/useFinancialData'
-import { buildChartData } from '@/utils/buildChartData'
-import { useThemeStore } from '@/stores/theme'
+import '@/utils/chartConfig';
+import { timePeriods } from '@/config/DateRangePeriods';
+import { useFinancialData } from '@/composables/useFinancialData';
+import { buildChartData } from '@/utils/buildChartData';
+import { useThemeStore } from '@/stores/theme';
 
-import FinanceStats from '@/components/FinanceStats.vue'
-import CashFlowCharts from '@/components/CashFlowCharts.vue'
+import FinanceStats from '@/components/FinanceStats.vue';
+import CashFlowCharts from '@/components/CashFlowCharts.vue';
 
 type TimeframeModel = {
-  start: Date | null
-  end: Date | null
-  timePeriodsKey?: string
-}
+  start:           Date | null;
+  end:             Date | null;
+  timePeriodsKey?: string;
+};
 
 const timeframe = ref<TimeframeModel>({
-  start: period('last30d', '', '', 30).start(),
-  end: period('last30d', '', '', 30).end(),
+  start:          period('last30d', '', '', 30).start(),
+  end:            period('last30d', '', '', 30).end(),
   timePeriodsKey: 'last30d',
-})
+});
 
-const themeStore = useThemeStore()
-const today = dayjs()
+const themeStore = useThemeStore();
+const today = dayjs();
 
-const startRef = computed(() => timeframe.value.start)
-const endRef = computed(() => timeframe.value.end)
+const startRef = computed(() => timeframe.value.start);
+const endRef = computed(() => timeframe.value.end);
 
 const rangeStartISO = computed<string | undefined>(() =>
   startRef.value ? dayjs(startRef.value).format('YYYY-MM-DD') : today.startOf('month').format('YYYY-MM-DD')
-)
+);
 const rangeEndISO = computed<string | undefined>(() =>
   endRef.value ? dayjs(endRef.value).format('YYYY-MM-DD') : today.endOf('month').format('YYYY-MM-DD')
-)
+);
 
 const { incomes, expenses } = useFinancialData({
   rangeStartRef: startRef,
-  rangeEndRef: endRef,
-})
+  rangeEndRef:   endRef,
+});
 
 const chartData = computed(() => {
   return buildChartData(
@@ -48,14 +48,14 @@ const chartData = computed(() => {
     expenses.value ?? [],
     rangeStartISO.value ?? '',
     rangeEndISO.value ?? '',
-  )
-})
+  );
+});
 
 const chartOptions = {
-  responsive: true,
+  responsive:          true,
   maintainAspectRatio: false,
-  plugins: { ...Filler },
-}
+  plugins:             { ...Filler },
+};
 
 function period(
   key: string,
@@ -67,29 +67,34 @@ function period(
     key,
     display,
     timeframeText,
-    timeframeLength: () => `${days}d`,
-    start: () => {
-      const d = new Date()
+    timeframeLength: () => `${ days }d`,
+    start:           () => {
+      const d = new Date();
 
-      d.setDate(d.getDate() - days)
+      d.setDate(d.getDate() - days);
 
-      return d
+      return d;
     },
     end: () => new Date(),
-  }
+  };
 }
 
 function onRangeChange(next: TimeframeModel) {
   if (next) {
-    timeframe.value = next
+    timeframe.value = next;
   }
 }
 </script>
 
 <template>
   <div class="flow-chart-container">
-    <div class="mb-10">
-      <KLabel for="dateRange" info="Choose a relative or custom date range">Date range</KLabel>
+    <div class="date-range-wrapper mb-10">
+      <KLabel
+        for="dateRange"
+        info="Choose a relative or custom date range"
+      >
+        Date range
+      </KLabel>
       <KDateTimePicker
         id="dateRange"
         v-model="timeframe"
@@ -104,17 +109,39 @@ function onRangeChange(next: TimeframeModel) {
       />
     </div>
 
-    <FinanceStats class="mb-10" :chart-data="chartData" />
-    <CashFlowCharts :chart-data="chartData" :options="chartOptions" />
+    <KEmptyState
+      v-if="!incomes.length && !expenses.length"
+      title="No data available"
+      message="No financial data available for the selected date range."
+    />
+
+    <template v-else>
+      <FinanceStats
+        class="mb-10"
+        :chart-data="chartData"
+      />
+      <CashFlowCharts
+        :chart-data="chartData"
+        :options="chartOptions"
+      />
+    </template>
   </div>
 </template>
 
 
 <style scoped>
+:deep(.datetime-picker-display) {
+  padding-top: .15rem;
+}
+
 .flow-chart-container {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.date-range-wrapper {
+  width: fit-content;
 }
 
 .chart-grid {

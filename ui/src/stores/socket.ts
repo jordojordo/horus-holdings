@@ -11,11 +11,11 @@ import { useToaster } from '@/composables';
 const CLIENT_NAMESPACE = '/client';
 
 type State = {
-  socket: Socket | null
-  isConnected: boolean
-  sessionExpired: boolean
-  inited: boolean
-}
+  socket:         Socket | null;
+  isConnected:    boolean;
+  sessionExpired: boolean;
+  inited:         boolean;
+};
 
 export const useSocketStore = defineStore('socket', {
   state: (): State => ({
@@ -111,9 +111,9 @@ export const useSocketStore = defineStore('socket', {
         console.log(`[${ wsScheme }] token expired event received`);
 
         toaster.open({
-          appearance: "danger",
-          title: "Session Expired",
-          message: "Your session has expired. Please log in again.",
+          appearance: 'danger',
+          title:      'Session Expired',
+          message:    'Your session has expired. Please log in again.',
         });
         this.sessionExpired = true;
 

@@ -3,24 +3,24 @@ import type { RecurrenceKind, SimpleRecurrence, WeekendAdjustment } from './Recu
 export type FinanceItemKind = 'income' | 'expense';
 
 export interface FinancialItem {
-  id?: string | number;
-  name: string;
-  amount: number;
+  id?:       string | number;
+  name:      string;
+  amount:    number;
   category?: string;
 
   // one-off date when recurrenceKind === 'none'
   date?: string;
 
   // recurrence (new model)
-  recurrenceKind?: RecurrenceKind;
-  rrule?: string;
-  anchorDate?: string;
-  endDate?: string;
-  count?: number;
-  timezone?: string;
+  recurrenceKind?:    RecurrenceKind;
+  rrule?:             string;
+  anchorDate?:        string;
+  endDate?:           string;
+  count?:             number;
+  timezone?:          string;
   weekendAdjustment?: WeekendAdjustment;
-  includeDates?: string[];
-  excludeDates?: string[];
+  includeDates?:      string[];
+  excludeDates?:      string[];
 
   // server-expanded occurrences within the requested window
   occurrences?: string[];
@@ -32,9 +32,9 @@ export interface FinancialItem {
 }
 
 export interface Income extends FinancialItem {
-  kind: 'income'
+  kind: 'income';
 }
 
 export interface Expense extends FinancialItem {
-  kind: 'expense'
+  kind: 'expense';
 }
