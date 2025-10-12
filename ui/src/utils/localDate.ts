@@ -1,6 +1,6 @@
-export function toLocalDateFromYMD(ymd: string): Date | undefined {
+export function toLocalDateFromYMD(ymd: string): Date | null {
   if (!ymd) {
-    return;
+    return null;
   }
 
   // Avoids the UTC parse of new Date('YYYY-MM-DD')
@@ -9,6 +9,8 @@ export function toLocalDateFromYMD(ymd: string): Date | undefined {
   if (y && m && d) {
     return new Date(y, m - 1, d); // local midnight
   }
+
+  return null;
 }
 
 export function toYMDLocal(date: Date): string {

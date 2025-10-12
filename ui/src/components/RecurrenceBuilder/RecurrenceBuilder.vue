@@ -129,11 +129,11 @@ const recurrenceKindOptions = [
   },
 ];
 
-const anchorWrapper = computed< { start: Date | undefined; end: Date | undefined } >({
+const anchorWrapper = computed< { start: Date | null; end: Date | null } >({
   get() {
     return {
-      start: model.value.anchorDate ? toLocalDateFromYMD(model.value.anchorDate) : undefined,
-      end:   undefined,
+      start: model.value.anchorDate ? toLocalDateFromYMD(model.value.anchorDate) : null,
+      end:   null,
     };
   },
   set(val) {
@@ -145,11 +145,11 @@ const anchorWrapper = computed< { start: Date | undefined; end: Date | undefined
   },
 });
 
-const endWrapper = computed< { start: Date | undefined; end: Date | undefined } >({
+const endWrapper = computed< { start: Date | null; end: Date | null } >({
   get() {
     return {
-      start: model.value.endDate ? toLocalDateFromYMD(model.value.endDate) : undefined,
-      end:   undefined,
+      start: model.value.endDate ? toLocalDateFromYMD(model.value.endDate) : null,
+      end:   null,
     };
   },
   set(val) {
