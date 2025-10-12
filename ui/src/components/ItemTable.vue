@@ -65,6 +65,7 @@ const { toaster } = useToaster();
 
 const loading = ref(false);
 const items = ref<FinancialItem[]>([]);
+const recurrenceFilter = ref<'all' | 'recurring' | 'nonRecurring'>('all');
 const searchField = ref('');
 const sortField = ref<string | null>(null);
 const sortOrder = ref<'asc' | 'desc' | null>(null);
@@ -138,7 +139,16 @@ const filteredItems = computed(() => {
     const matchName = !searchField.value || item.name?.toLowerCase().includes(field);
     const matchCategory = !searchField.value || (item.category ?? '').toLowerCase().includes(field);
 
-    return matchName || matchCategory;
+    // recurrence filtering based on selected filter
+    let matchRecurrence = true;
+
+    if (recurrenceFilter.value === 'recurring') {
+      matchRecurrence = !!item.recurrenceKind && item.recurrenceKind !== 'none';
+    } else if (recurrenceFilter.value === 'nonRecurring') {
+      matchRecurrence = !item.recurrenceKind || item.recurrenceKind === 'none';
+    }
+
+    return (matchName || matchCategory) && matchRecurrence;
   });
 });
 
@@ -290,6 +300,15 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
       </KButton>
     </div>
 
+    <KSegmentedControl
+      v-model="recurrenceFilter"
+      :options="[
+        { label: 'All', value: 'all' },
+        { label: 'Recurring', value: 'recurring' },
+        { label: 'One‑time', value: 'nonRecurring' }
+      ]"
+      class="mb-4"
+    />
     <KTableView
       :data="sortedItems"
       :empty-state-title="emptyStateProps.title"
@@ -384,5 +403,16 @@ function recurrenceBadge(recurrence: RecurrenceKind | undefined) {
   margin-top: var(--kui-space-60, 16px);
   display: flex;
   justify-content: flex-end;
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-fields {
+    justify-content: stretch;
+  }
 }
 </style>

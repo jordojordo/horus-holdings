@@ -3,12 +3,14 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAuthStore } from '@/stores/auth';
+import { useThemeStore } from '@/stores/theme';
 import { useToaster } from '@/composables';
 
 const router = useRouter();
 const {
   isLoading, user, fetchUser, updateProfile, deleteUser
 } = useAuthStore();
+const themeStore = useThemeStore();
 const { toaster } = useToaster();
 
 const username = ref<string | undefined>(user?.Username || undefined);
@@ -148,6 +150,7 @@ const handleDelete = async() => {
         :visible="promptVisible"
         title="Delete your account?"
         action-button-appearance="danger"
+        :style="themeStore.isDark ? { '--kui-color-background-neutral-weakest': 'var(--purple-darker)' } : {}"
         @cancel="promptVisible = false"
         @proceed="handleDelete"
       >
