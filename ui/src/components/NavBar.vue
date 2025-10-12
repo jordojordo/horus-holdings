@@ -70,11 +70,16 @@ watch(() => route.fullPath, () => {
   >
     <div class="navbar-container">
       <header class="navbar-header">
-        <img
-          src="@/assets/images/horus.png"
-          alt="Logo"
-          rel="preload"
+        <RouterLink
+          to="/"
+          aria-label="Home"
         >
+          <img
+            src="@/assets/images/horus.png"
+            alt="Logo"
+            rel="preload"
+          >
+        </RouterLink>
         <RouterLink
           class="brand text-bold"
           to="/"

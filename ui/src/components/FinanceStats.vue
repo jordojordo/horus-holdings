@@ -133,7 +133,12 @@ const fmtPercent = (n?: number) => {
 }
 @media (max-width: 640px) {
   .finance-stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto auto;
+  }
+}
+@media (max-width: 320px) {
+  .finance-stats-grid {
+    grid-template-columns: auto;
   }
 }
 
