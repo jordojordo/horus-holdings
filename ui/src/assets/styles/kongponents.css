@@ -262,7 +262,7 @@
   --kui-color-text-primary: var(--purple-light);
 
   /* INFO = BLUE */
-  --kui-color-background-info-weakest: var(--blue-lightest);
+  --kui-color-background-info-weakest: var(--blue-mediumer);
   --kui-color-background-info-weaker: var(--blue-lighter);
   --kui-color-background-info-weak: var(--blue-light);
   --kui-color-background-info: var(--blue-medium);

@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 
 import { getServiceConfig } from '@/utils/service';
+import { toLocalDateFromYMD, toYMDLocal } from '@/utils/localDate';
 import { useToaster } from '@/composables';
 
 import SimpleEditor from '@/components/RecurrenceBuilder/SimpleEditor.vue';
@@ -43,7 +44,7 @@ function defaultSimple(): SimpleRecurrence {
   return {
     type:       'weekly',
     interval:   1,
-    daysOfWeek: [anchorWeekday()] 
+    daysOfWeek: [anchorWeekday()]
   };
 }
 
@@ -72,7 +73,7 @@ watch(
       setSimple({
         type:       'weekly',
         interval:   s?.interval ?? 1,
-        daysOfWeek: [anchorWeekday()] 
+        daysOfWeek: [anchorWeekday()]
       } as SimpleRecurrence);
     }
   }
@@ -82,61 +83,61 @@ const defaultTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/N
 const tzOptions = computed(() => [
   {
     label: defaultTZ,
-    value: defaultTZ 
+    value: defaultTZ
   },
   {
     label: 'America/New_York',
-    value: 'America/New_York' 
+    value: 'America/New_York'
   },
   {
     label: 'UTC',
-    value: 'UTC' 
+    value: 'UTC'
   },
 ]);
 
 const weekendOptions: { label: string; value: WeekendAdjustment }[] = [
   {
     label: 'No weekend adjustment',
-    value: 'none' 
+    value: 'none'
   },
   {
     label: 'Move to next business day',
-    value: 'next' 
+    value: 'next'
   },
   {
     label: 'Move to previous business day',
-    value: 'prev' 
+    value: 'prev'
   },
   {
     label: 'Move to nearest business day',
-    value: 'nearest' 
+    value: 'nearest'
   },
 ];
 
 const recurrenceKindOptions = [
   {
     label: 'One‑off',
-    value: 'none' 
+    value: 'none'
   },
   {
     label: 'Simple',
-    value: 'simple' 
+    value: 'simple'
   },
   {
     label: 'Advanced',
-    value: 'rrule' 
+    value: 'rrule'
   },
 ];
 
-const anchorWrapper = computed< { start: Date | null; end: Date | null } >({
+const anchorWrapper = computed< { start: Date | undefined; end: Date | undefined } >({
   get() {
     return {
-      start: model.value.anchorDate ? new Date(model.value.anchorDate) : null,
-      end:   null,
+      start: model.value.anchorDate ? toLocalDateFromYMD(model.value.anchorDate) : undefined,
+      end:   undefined,
     };
   },
   set(val) {
-    const next = val?.start ? dayjs(val.start).format('YYYY-MM-DD') : undefined;
+    const next = val?.start ? toYMDLocal(val.start) : undefined;
 
     if (model.value.anchorDate !== next) {
       model.value.anchorDate = next;
@@ -144,15 +145,15 @@ const anchorWrapper = computed< { start: Date | null; end: Date | null } >({
   },
 });
 
-const endWrapper = computed< { start: Date | null; end: Date | null } >({
+const endWrapper = computed< { start: Date | undefined; end: Date | undefined } >({
   get() {
     return {
-      start: model.value.endDate ? new Date(model.value.endDate) : null,
-      end:   null,
+      start: model.value.endDate ? toLocalDateFromYMD(model.value.endDate) : undefined,
+      end:   undefined,
     };
   },
   set(val) {
-    const next = val?.start ? dayjs(val.start).format('YYYY-MM-DD') : undefined;
+    const next = val?.start ? toYMDLocal(val.start) : undefined;
 
     if (model.value.endDate !== next) {
       model.value.endDate = next;
@@ -183,7 +184,7 @@ async function doPreview() {
     toaster.open({
       title:      'Error',
       message:    msg,
-      appearance: 'danger' 
+      appearance: 'danger'
     });
   } finally {
     loading.value = false;
