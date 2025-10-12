@@ -8,8 +8,7 @@
     "deps:update": "pnpm -r up --latest --interactive",
     "dev": "pnpm --filter server --filter ui dev",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore"
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
@@ -18,7 +17,6 @@
     "eslint": "^9.37.0",
     "eslint-plugin-vue": "~10.5.0",
     "globals": "^16.4.0",
-    "oxlint": "~1.22.0",
     "typescript-eslint": "^8.46.0"
   }
 }
