@@ -3,7 +3,7 @@ import type { FinancialItem, FinanceItemKind, RecurrenceKind } from '@/types';
 import type { TableDataFetcherParams, Toast } from '@kong/kongponents';
 
 import {
-  ref, onMounted, onBeforeUnmount, useTemplateRef, toRef, watch
+  computed, ref, onMounted, onBeforeUnmount, useTemplateRef, toRef, watch
 } from 'vue';
 import dayjs from 'dayjs';
 import axios from 'axios';
@@ -69,6 +69,10 @@ const itemToUpdate = ref<FinancialItem | undefined>(undefined);
 const promptVisible = ref(false);
 const itemToDelete = ref<FinancialItem | undefined>(undefined);
 
+const tableCacheKey = computed(() =>
+  `${ itemKindRef.value }|${ recurrenceFilter.value }|${ searchField.value }`
+);
+
 onMounted(() => {
   socket.setOnMessage(`new_${ itemKind }`, (payload: any) => {
     const data = payload?.data;
@@ -113,6 +117,7 @@ function closeEdit(): void {
 
 async function handleSaved(e: Toast): Promise<void> {
   toaster.open(e);
+  tableRef.value?.revalidate();
 }
 
 function confirmDelete(item: FinancialItem): void {
@@ -140,6 +145,8 @@ async function proceedDelete(): Promise<void> {
       appearance: 'success'
     });
     items.value = items.value.filter((i) => i.id !== item.id);
+
+    tableRef.value?.revalidate();
   } catch(err) {
     console.error(err);
     toaster.open({
@@ -253,6 +260,7 @@ watch(itemKindRef, () => {
       :headers="headers"
       :fetcher="fetcher"
       :initial-fetcher-params="{ page: 1, pageSize: 15, sortColumnKey: 'recurrenceKind', sortColumnOrder: 'desc' }"
+      :cache-key="tableCacheKey"
       :search-input="searchField"
       :client-sort="false"
     >

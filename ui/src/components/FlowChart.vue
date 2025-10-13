@@ -38,8 +38,8 @@ const rangeEndISO = computed<string | undefined>(() =>
 );
 
 const { incomes, expenses } = useFinancialData({
-  rangeStartRef: startRef,
-  rangeEndRef:   endRef,
+  rangeStartISO: rangeStartISO,
+  rangeEndISO:   rangeEndISO,
 });
 
 const chartData = computed(() => {
