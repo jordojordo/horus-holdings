@@ -194,7 +194,7 @@ async function doPreview() {
 
 <template>
   <div class="recurrence-builder flex flex-col gap-6 w-full">
-    <div class="flex flex-wrap between gap-8 mb-4">
+    <div class="date-controls flex flex-wrap between gap-8 mb-4">
       <div class="flex flex-col gap-1 w-45">
         <KLabel>Anchor date</KLabel>
         <KDateTimePicker
@@ -202,7 +202,7 @@ async function doPreview() {
           mode="date"
           :range="false"
           placeholder="Anchor date"
-          clear-button
+          :clear-button="false"
         />
       </div>
       <div class="flex flex-col gap-1 w-45">
@@ -288,5 +288,9 @@ async function doPreview() {
 </template>
 
 <style scoped>
-
+@media (max-width: 600px) {
+  .date-controls > * {
+    width: 100%;
+  }
+}
 </style>
