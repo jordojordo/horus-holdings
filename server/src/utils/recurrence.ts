@@ -16,18 +16,16 @@ export const pickRecurrence = (body: { recurrence: RecurrencePayload | undefined
   simple:            body?.recurrence?.simple
 });
 
-// function toLocalMidnight(dateISO: string, tz: string): Date {
-//   const dt = DateTime.fromISO(dateISO, { zone: tz }).startOf('day');
-
-//   return dt.toJSDate();
-// }
 
 function formatDtStart(dateISO: string, tz: string): string {
-  // iCal DTSTART in 'floating' local time (we record tz separately)
-  const dt = DateTime.fromISO(dateISO, { zone: tz }).startOf('day');
+  // Build local NOON of that civil day, then convert to UTC and mark Z.
+  const dt = DateTime.fromISO(dateISO, { zone: tz })
+    .set({
+      hour: 12, minute: 0, second: 0, millisecond: 0 
+    })
+    .toUTC();
 
-  // Use local time format without 'Z'
-  return dt.toFormat("yyyyMMdd'T'HHmmss");
+  return dt.toFormat("yyyyMMdd'T'HHmmss'Z'");
 }
 
 function weekdayFromAnchor(anchorISO: string, tz: string): number {
@@ -182,62 +180,73 @@ function adjustWeekend(dt: DateTime, policy: WeekendAdjustment): DateTime {
 
 export function expandOccurrences(payload: RecurrencePayload, window: ExpandWindow): (string | null)[] {
   if (payload.recurrenceKind === 'none') {
-    // One-off on anchorDate (or provided date in includeDates)
-    const base = payload.anchorDate;
     const tz = payload.timezone || 'UTC';
-    const dt = adjustWeekend(DateTime.fromISO(base, { zone: tz }).startOf('day'), payload.weekendAdjustment || 'none');
-    const d = dt.toISODate();
-    const list = [d];
+    const base = payload.anchorDate;
+    const dt = adjustWeekend(
+      DateTime.fromISO(base, { zone: tz }).startOf('day'),
+      payload.weekendAdjustment || 'none'
+    );
+    const one = dt.toISODate()!;
     const inc = (payload.includeDates || []).filter(Boolean);
     const exc = new Set((payload.excludeDates || []).filter(Boolean));
 
-    return [...list, ...inc].filter(d0 => d0 ? !exc.has(d0) && d0 >= window.start && d0 <= window.end : undefined);
+    return [one, ...inc].filter(d => d && !exc.has(d) && d >= window.start && d <= window.end);
   }
 
   const tz = payload.timezone || 'UTC';
-  const iCal = payload.recurrenceKind === 'simple'? compileSimpleToICal(payload.simple!, payload.anchorDate, tz, payload.endDate || undefined, payload.count || undefined): (payload.rrule || '');
+  const iCal = payload.recurrenceKind === 'simple' ? compileSimpleToICal(payload.simple!, payload.anchorDate, tz, payload.endDate || undefined, payload.count || undefined) : (payload.rrule || '');
 
   if (!iCal) {
     return [];
   }
 
-  // Parse as a set (supports multiple RRULE lines)
   const set = rrulestr(iCal, { forceset: true }) as RRuleSet;
 
-  const start = DateTime.fromISO(window.start, { zone: tz }).startOf('day');
-  const end = DateTime.fromISO(window.end, { zone: tz }).endOf('day');
+  const start = DateTime.fromISO(window.start, { zone: 'UTC' }).startOf('day');
+  const end   = DateTime.fromISO(window.end,   { zone: 'UTC' }).endOf('day');
 
   const between = set.between(start.toJSDate(), end.toJSDate(), true);
 
   const exc = new Set((payload.excludeDates || []).filter(Boolean));
-  const inc = (payload.includeDates || []).filter(Boolean).map(d => DateTime.fromISO(d, { zone: tz }).startOf('day').toJSDate());
+  const inc = (payload.includeDates || []).filter(Boolean);
 
-  // Add includes as explicit rdates
-  for (const d of inc) set.rdate(d);
+  // Extract the civil date from UTC directly (no zone conversion here!)
+  const rruleDates = between.map(d =>
+    DateTime.fromJSDate(d, { zone: 'UTC' }).toISODate()!
+  );
 
-  const adjusted = between.map(jsd => {
-    const local = DateTime.fromJSDate(jsd, { zone: tz }).startOf('day');
+  // Combine includes AFTER rrule generation (avoid JS Date rdate() TZ pitfalls)
+  const inRange = (d: string) => d >= window.start && d <= window.end;
+  const dedup = new Set([...rruleDates, ...inc.filter(inRange)]);
+  const baseList = [...dedup].filter(d => !exc.has(d));
+
+  // Apply weekend policy in the user's zone on the civil date
+  const adjusted = baseList.map(ymdStr => {
+    const local = DateTime.fromISO(ymdStr, { zone: tz }).startOf('day');
 
     return adjustWeekend(local, payload.weekendAdjustment || 'none').toISODate()!;
   });
 
-  return adjusted.filter(d => !exc.has(d));
+  return adjusted;
 }
 
 export function nextDueDate(payload: RecurrencePayload, fromISO: string): string | null {
   const tz = payload.timezone || 'UTC';
-  const iCal = payload.recurrenceKind === 'simple'? compileSimpleToICal(payload.simple!, payload.anchorDate, tz, payload.endDate || undefined, payload.count || undefined): (payload.rrule || '');
+  const iCal = payload.recurrenceKind === 'simple' ? compileSimpleToICal(payload.simple!, payload.anchorDate, tz, payload.endDate || undefined, payload.count || undefined) : (payload.rrule || '');
 
   if (!iCal) {
     return null;
   }
 
   const set = rrulestr(iCal, { forceset: true }) as RRuleSet;
-  const after = set.after(DateTime.fromISO(fromISO, { zone: tz }).toJSDate(), true);
+  const after = set.after(DateTime.fromISO(fromISO, { zone: 'UTC' }).toJSDate(), true);
 
   if (!after) {
     return null;
   }
 
-  return adjustWeekend(DateTime.fromJSDate(after, { zone: tz }).startOf('day'), payload.weekendAdjustment || 'none').toISODate();
+  // Read the civil date from UTC, THEN adjust in the user's zone
+  const ymd = DateTime.fromJSDate(after, { zone: 'UTC' }).toISODate()!;
+
+  return adjustWeekend(DateTime.fromISO(ymd, { zone: tz }).startOf('day'), payload.weekendAdjustment || 'none').toISODate();
 }

@@ -1,4 +1,7 @@
+import type { OrderItem, WhereOptions } from '@sequelize/core';
+
 import { Request, Response } from 'express';
+import { Op } from '@sequelize/core';
 
 import Income from '@server/models/Income';
 import Expense from '@server/models/Expense';
@@ -42,43 +45,63 @@ class FinancialItemController extends BaseController {
         return;
       }
 
-      const { start, end } = req.query as { start?: string; end?: string };
+      const page     = Math.max(1, Number(req.query.page) || 1);
+      const pageSize = Math.min(100, Math.max(1, Number(req.query.pageSize) || 15));
 
-      const where = { userID };
+      const SORTABLE: Record<string, string> = {
+        name:           'name',
+        amount:         'amount',
+        date:           'date',
+        category:       'category',
+        recurrenceKind: 'recurrenceKind',
+        createdAt:      'createdAt',
+        updatedAt:      'updatedAt',
+      };
 
-      if (start && end) {
-        const startDate = new Date(start);
-        const endDate = new Date(end);
+      const sortBy  = (req.query.sortBy as string) || 'createdAt';
+      const sortCol = SORTABLE[sortBy] || 'createdAt';
+      const sortDir = ((req.query.sort as string) || 'desc').toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+      const order: OrderItem[] = [[sortCol, sortDir]];
 
-        if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-          res.status(400).json({ error: 'Invalid start or end timestamp' });
+      const q          = ((req.query.q as string) || '').trim();
+      const recurrence = (req.query.recurrence as 'all' | 'recurring' | 'nonRecurring' | undefined) || 'all';
+      const start      = (req.query.start as string) || undefined;
+      const end        = (req.query.end as string) || undefined;
 
-          return;
-        }
+      const andClauses: WhereOptions[] = [
+        { userID },
+        buildDateRangeWhere(start, end),
+      ];
 
-        if (startDate > endDate) {
-          res.status(400).json({ error: 'start must be <= end' });
-
-          return;
-        }
-
-        const startISO = startDate.toISOString();
-        const endISO = endDate.toISOString();
-
-        Object.assign(where, buildDateRangeWhere(startISO, endISO));
+      // Search query
+      if (q) {
+        andClauses.push({
+          [Op.or]: [
+            { name: { [Op.like]: `%${ q }%` } },
+            { category: { [Op.like]: `%${ q }%` } },
+          ],
+        } as WhereOptions);
       }
 
-      const items = await Model.findAll({
+      // Recurrence filter
+      if (recurrence === 'recurring') {
+        andClauses.push({ recurrenceKind: { [Op.ne]: 'none' } });
+      } else if (recurrence === 'nonRecurring') {
+        andClauses.push({ [Op.or]: [{ recurrenceKind: 'none' }, { recurrenceKind: null }] });
+      }
+
+      const where = { [Op.and]: andClauses };
+
+      const { rows, count } = await Model.findAndCountAll({
         where,
-        order: [
-          ['date', 'ASC'],
-          ['anchorDate', 'ASC'],
-          ['endDate', 'ASC'],
-          ['createdAt', 'ASC'],
-        ],
+        order,
+        limit:  pageSize,
+        offset: (page - 1) * pageSize,
       });
 
-      res.json(items);
+      res.json({
+        items: rows, total: count, page, pageSize 
+      });
     } catch(error) {
       this.handleError(res, error as Error, 'Error fetching items');
     }
@@ -96,7 +119,7 @@ class FinancialItemController extends BaseController {
 
       const created = await Model.create({
         userID:               user?.id,
-        name:          name || '',
+        name:                 name || '',
         amount:               amount || 0,
         category:             category,
         date:                 date,

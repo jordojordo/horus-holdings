@@ -1,3 +1,5 @@
+import type { WhereOptions } from '@sequelize/core';
+
 import { Op } from '@sequelize/core';
 
 /**
@@ -7,7 +9,11 @@ import { Op } from '@sequelize/core';
  * - One-off items:  date BETWEEN start AND end
  * - Recurring items: anchorDate <= end AND (endDate IS NULL OR endDate >= start)
  */
-export const buildDateRangeWhere = (startISO: string, endISO: string) => {
+export const buildDateRangeWhere = (startISO?: string, endISO?: string): WhereOptions => {
+  if (!startISO || !endISO) {
+    return {};
+  }
+
   return {
     [Op.or]: [
       // One-off items (no recurrence)
@@ -19,20 +25,8 @@ export const buildDateRangeWhere = (startISO: string, endISO: string) => {
       {
         recurrenceKind: { [Op.ne]: 'none' },
         [Op.and]:       [
-          // If anchorDate is present, it must be <= end
-          {
-            [Op.or]: [
-              { anchorDate: null },
-              { anchorDate: { [Op.lte]: endISO } },
-            ],
-          },
-          // If endDate is present, it must be >= start
-          {
-            [Op.or]: [
-              { endDate: null },
-              { endDate: { [Op.gte]: startISO } },
-            ],
-          },
+          { [Op.or]: [{ anchorDate: null }, { anchorDate: { [Op.lte]: endISO } }] },
+          { [Op.or]: [{ endDate: null }, { endDate: { [Op.gte]: startISO } }] },
         ],
       },
     ],
