@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import type { FinanceMode } from '@/types';
+
+import { ref, computed, watch } from 'vue';
 import dayjs from 'dayjs';
 import { Filler } from 'chart.js';
+import { useRoute, useRouter } from 'vue-router';
 
 import '@/utils/chartConfig';
 import { timePeriods } from '@/config/DateRangePeriods';
@@ -18,14 +21,17 @@ type TimeframeModel = {
   timePeriodsKey?: string;
 };
 
+const themeStore = useThemeStore();
+const today = dayjs();
+const route = useRoute();
+const router = useRouter();
+
 const timeframe = ref<TimeframeModel>({
   start:          period('last30d', '', '', 30).start(),
   end:            period('last30d', '', '', 30).end(),
   timePeriodsKey: 'last30d',
 });
-
-const themeStore = useThemeStore();
-const today = dayjs();
+const mode = ref<FinanceMode>((route.query.mode as FinanceMode) ?? 'combined');
 
 const startRef = computed(() => timeframe.value.start);
 const endRef = computed(() => timeframe.value.end);
@@ -37,7 +43,7 @@ const rangeEndISO = computed<string | undefined>(() =>
   endRef.value ? dayjs(endRef.value).format('YYYY-MM-DD') : today.endOf('month').format('YYYY-MM-DD')
 );
 
-const { incomes, expenses } = useFinancialData({
+const { isLoading, incomes, expenses } = useFinancialData({
   rangeStartISO: rangeStartISO,
   rangeEndISO:   rangeEndISO,
 });
@@ -48,6 +54,7 @@ const chartData = computed(() => {
     expenses.value ?? [],
     rangeStartISO.value ?? '',
     rangeEndISO.value ?? '',
+    { mode: mode.value }
   );
 });
 
@@ -84,33 +91,61 @@ function onRangeChange(next: TimeframeModel) {
     timeframe.value = next;
   }
 }
+
+watch(mode, m => {
+  router.replace({ query: { ...route.query, mode: m } });
+});
 </script>
 
 <template>
   <div class="flow-chart-container">
-    <div class="date-range-wrapper mb-10">
-      <KLabel
-        for="dateRange"
-        info="Choose a relative or custom date range"
-      >
-        Date range
-      </KLabel>
-      <KDateTimePicker
-        id="dateRange"
-        v-model="timeframe"
-        mode="relativeDate"
-        :range="true"
-        :time-periods="timePeriods"
-        placeholder="Select a time range"
-        icon
-        popover-placement="bottom-start"
-        :style="themeStore.isDark ? { '--kui-color-background-primary-weakest': 'var(--purple-lighter)' } : {}"
-        @change="(value: (TimeframeModel | null)) => onRangeChange(value as TimeframeModel)"
-      />
+    <div class="toolbar mb-10">
+      <div class="mode-wrapper">
+        <KLabel
+          for="mode"
+          info="Choose the mode to show recurring (Actual), non-recurring (Projected), or combined finances"
+          :tooltip-attributes="{ placement: 'top' }"
+        >
+          Mode
+        </KLabel>
+        <KSegmentedControl
+          id="mode"
+          v-model="mode"
+          :options="[
+            { label: 'Combined', value: 'combined' },
+            { label: 'Actual', value: 'actual' },
+            { label: 'Projected', value: 'projected' }
+          ]"
+          inline
+          size="large"
+        />
+      </div>
+
+      <div class="date-range-wrapper">
+        <KLabel
+          for="dateRange"
+          info="Choose a relative or custom date range"
+          :tooltip-attributes="{ placement: 'top' }"
+        >
+          Date range
+        </KLabel>
+        <KDateTimePicker
+          id="dateRange"
+          v-model="timeframe"
+          mode="relativeDate"
+          :range="true"
+          :time-periods="timePeriods"
+          placeholder="Select a time range"
+          icon
+          popover-placement="bottom-start"
+          :style="themeStore.isDark ? { '--kui-color-background-primary-weakest': 'var(--purple-lighter)' } : {}"
+          @change="(value: (TimeframeModel | null)) => onRangeChange(value as TimeframeModel)"
+        />
+      </div>
     </div>
 
     <KEmptyState
-      v-if="!incomes.length && !expenses.length"
+      v-if="!isLoading && !incomes.length && !expenses.length"
       title="No data available"
       message="No financial data available for the selected date range."
     />
@@ -140,7 +175,15 @@ function onRangeChange(next: TimeframeModel) {
   width: 100%;
 }
 
-.date-range-wrapper {
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.date-range-wrapper, .mode-wrapper {
   width: fit-content;
 }
 
@@ -166,6 +209,11 @@ function onRangeChange(next: TimeframeModel) {
 }
 
 @media (max-width: 725px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .chart-grid {
     grid-template-columns: 1fr;
   }
@@ -177,7 +225,7 @@ function onRangeChange(next: TimeframeModel) {
 }
 
 @media (max-width: 500px) {
-  .date-range-wrapper {
+  .date-range-wrapper, .mode-wrapper {
     width: 100%;
   }
 }

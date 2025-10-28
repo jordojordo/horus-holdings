@@ -22,6 +22,7 @@ type Args = {
 export function useFinancialData({ rangeStartISO, rangeEndISO }: Args) {
   const incomes = ref<Income[]>([]);
   const expenses = ref<Expense[]>([]);
+  const isLoading = ref<boolean>(false);
 
   const { apiUrl } = getServiceConfig();
   const socket = useSocketStore();
@@ -80,6 +81,8 @@ export function useFinancialData({ rangeStartISO, rangeEndISO }: Args) {
 
   const fetchAll = async() => {
     try {
+      isLoading.value = true;
+
       controller?.abort();
       controller = new AbortController();
 
@@ -109,6 +112,8 @@ export function useFinancialData({ rangeStartISO, rangeEndISO }: Args) {
         auth.logout();
         router.push({ name: 'home' });
       }
+    } finally {
+      isLoading.value = false;
     }
   };
 
@@ -146,6 +151,7 @@ export function useFinancialData({ rangeStartISO, rangeEndISO }: Args) {
   );
 
   return {
+    isLoading,
     incomes,
     expenses,
     refresh: fetchAll,
