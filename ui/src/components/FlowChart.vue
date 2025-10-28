@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FinanceMode } from '@/types';
+import type { TimeRange } from '@kong/kongponents';
 
 import { ref, computed, watch } from 'vue';
 import dayjs from 'dayjs';
@@ -15,18 +16,12 @@ import { useThemeStore } from '@/stores/theme';
 import FinanceStats from '@/components/FinanceStats.vue';
 import CashFlowCharts from '@/components/CashFlowCharts.vue';
 
-type TimeframeModel = {
-  start:           Date | null;
-  end:             Date | null;
-  timePeriodsKey?: string;
-};
-
 const themeStore = useThemeStore();
 const today = dayjs();
 const route = useRoute();
 const router = useRouter();
 
-const timeframe = ref<TimeframeModel>({
+const timeframe = ref<TimeRange>({
   start:          period('last30d', '', '', 30).start(),
   end:            period('last30d', '', '', 30).end(),
   timePeriodsKey: 'last30d',
@@ -86,7 +81,7 @@ function period(
   };
 }
 
-function onRangeChange(next: TimeframeModel) {
+function onRangeChange(next: TimeRange | null) {
   if (next) {
     timeframe.value = next;
   }
@@ -139,7 +134,7 @@ watch(mode, m => {
           icon
           popover-placement="bottom-start"
           :style="themeStore.isDark ? { '--kui-color-background-primary-weakest': 'var(--purple-lighter)' } : {}"
-          @change="(value: (TimeframeModel | null)) => onRangeChange(value as TimeframeModel)"
+          @change="(value: (TimeRange | null)) => onRangeChange(value)"
         />
       </div>
     </div>
