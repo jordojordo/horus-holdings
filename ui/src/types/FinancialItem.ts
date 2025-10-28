@@ -2,6 +2,8 @@ import type { RecurrenceKind, SimpleRecurrence, WeekendAdjustment } from './Recu
 
 export type FinanceItemKind = 'income' | 'expense';
 
+export type FinanceMode = 'actual' | 'projected' | 'combined';
+
 export interface FinancialItem {
   id?:       string | number;
   name:      string;

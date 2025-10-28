@@ -1,12 +1,16 @@
 import type { Dayjs } from 'dayjs';
 import type {
-  ChartData, FinancialItem, Income, Expense, ItemBase
+  ChartData, FinanceMode, FinancialItem, Income, Expense, ItemBase
 } from '@/types';
 
 import dayjs from 'dayjs';
 
 import { colorConfig } from '@/config/ChartColors';
 import { expandOccurrencesFromItem } from './expandOccurrence';
+
+type BuildOptions = {
+  mode?: FinanceMode;
+};
 
 function emptyDayBuckets(start: Dayjs, end: Dayjs) {
   const m = new Map<string, number>();
@@ -63,9 +67,28 @@ export function buildChartData(
   expenses: Expense[],
   rangeStartISO: string,
   rangeEndISO: string,
+  opts: BuildOptions = {}
 ): ChartData {
+  const mode = opts.mode ?? 'combined';
+
   const start = dayjs(rangeStartISO);
   const end   = dayjs(rangeEndISO);
+
+  const isProjected = (i: ItemBase) => i.recurrenceKind && i.recurrenceKind !== 'none';
+  const isActual    = (i: ItemBase) => (i.recurrenceKind ?? 'none') === 'none';
+
+  const filterByMode = (i: ItemBase) => {
+    if (mode === 'projected') {
+      return isProjected(i);
+    } else if (mode === 'actual') {
+      return isActual(i);
+    }
+
+    return true; // combined
+  };
+
+  const filteredIncomes  = incomes.filter(filterByMode);
+  const filteredExpenses = expenses.filter(filterByMode);
 
   const incomeOcc = new Map<ItemBase, string[]>();
   const expenseOcc = new Map<ItemBase, string[]>();
@@ -96,8 +119,8 @@ export function buildChartData(
     }
   };
 
-  incomes?.forEach((it) => getOcc(incomeOcc, it).forEach((d) => addDaily(d, +it.amount)));
-  expenses?.forEach((it) => getOcc(expenseOcc, it).forEach((d) => addDaily(d, -Math.abs(+it.amount))));
+  filteredIncomes?.forEach((it) => getOcc(incomeOcc, it).forEach((d) => addDaily(d, +it.amount)));
+  filteredExpenses?.forEach((it) => getOcc(expenseOcc, it).forEach((d) => addDaily(d, -Math.abs(+it.amount))));
 
   const dayLabels = Array.from(dayBuckets.keys()).sort();
   const dailyNet  = dayLabels.map((d) => dayBuckets.get(d) || 0);
@@ -120,7 +143,7 @@ export function buildChartData(
     }
   };
 
-  incomes.forEach((it) => {
+  filteredIncomes.forEach((it) => {
     const occ = getOcc(incomeOcc, it);
     const recurring = isRecurring(it);
     const amt = Math.abs(+((it as any).amount));
@@ -138,7 +161,7 @@ export function buildChartData(
     });
   });
 
-  expenses.forEach((it) => {
+  filteredExpenses.forEach((it) => {
     const occ = getOcc(expenseOcc, it);
     const recurring = isRecurring(it);
     const amt = Math.abs(+((it as any).amount));
@@ -175,7 +198,7 @@ export function buildChartData(
   const halfPoint = start.add(end.diff(start, 'day') / 2, 'day');
   let firstHalfIncome = 0, secondHalfIncome = 0, firstHalfExpenses = 0, secondHalfExpenses = 0;
 
-  incomes.forEach((it) => {
+  filteredIncomes.forEach((it) => {
     const amt = +((it as any).amount);
 
     getOcc(incomeOcc, it).forEach((d) => {
@@ -187,7 +210,7 @@ export function buildChartData(
     });
   });
 
-  expenses.forEach((it) => {
+  filteredExpenses.forEach((it) => {
     const amt = Math.abs(+((it as any).amount));
 
     getOcc(expenseOcc, it).forEach((d) => {
