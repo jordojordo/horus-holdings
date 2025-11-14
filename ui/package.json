@@ -11,28 +11,28 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "@kong/icons": "^1.39.0",
-    "@kong/kongponents": "^9.43.2",
-    "axios": "^1.13.0",
+    "@kong/icons": "^1.39.1",
+    "@kong/kongponents": "^9.46.5",
+    "axios": "^1.13.2",
     "chart.js": "^4.5.1",
-    "dayjs": "^1.11.18",
-    "pinia": "^3.0.3",
+    "dayjs": "^1.11.19",
+    "pinia": "^3.0.4",
     "rrule": "^2.8.1",
     "socket.io-client": "^4.8.1",
-    "vue": "^3.5.22",
-    "vue-chartjs": "^5.3.2",
+    "vue": "^3.5.24",
+    "vue-chartjs": "^5.3.3",
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@tsconfig/node24": "^24.0.1",
-    "@types/node": "^24.9.1",
+    "@tsconfig/node24": "^24.0.2",
+    "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.8.1",
     "npm-run-all2": "^8.0.4",
     "postcss-custom-properties": "^14.0.6",
     "typescript": "~5.9.3",
-    "vite": "^7.1.12",
+    "vite": "^7.2.2",
     "vite-plugin-vue-devtools": "^8.0.3",
-    "vue-tsc": "^3.1.2"
+    "vue-tsc": "^3.1.3"
   }
 }
