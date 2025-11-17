@@ -4,6 +4,7 @@ import { ref, watch } from 'vue';
 import { useThemeStore } from '@/stores/theme';
 
 import { KSelect } from '@kong/kongponents';
+import { VisibilityIcon } from '@kong/icons';
 
 const themeStore = useThemeStore();
 const mode = ref(themeStore.theme);
@@ -11,15 +12,15 @@ const mode = ref(themeStore.theme);
 const themeOptions = [
   {
     label: 'System',
-    value: 'system' 
+    value: 'system'
   },
   {
     label: 'Light',
-    value: 'light' 
+    value: 'light'
   },
   {
     label: 'Dark',
-    value: 'dark' 
+    value: 'dark'
   },
 ];
 
@@ -41,7 +42,11 @@ watch(
       v-model="mode"
       :items="themeOptions"
       placeholder="Theme"
-    />
+    >
+      <template #before>
+        <VisibilityIcon />
+      </template>
+    </KSelect>
   </div>
 </template>
 
@@ -49,7 +54,7 @@ watch(
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  width: 7rem;
+  width: 8rem;
 }
 </style>
 

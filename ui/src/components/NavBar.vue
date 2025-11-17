@@ -9,6 +9,7 @@ import { useViewport } from '@/composables/useViewport';
 
 import ToggleTheme from '@/components/ToggleTheme.vue';
 import { KButton } from '@kong/kongponents';
+import { BillingIcon, CogIcon, DashboardIcon, MoneyIcon } from '@kong/icons';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -111,26 +112,26 @@ watch(() => route.fullPath, () => {
             class="nav-link text-bold"
             to="/dashboard"
           >
-            Dashboard
+            <DashboardIcon />Dashboard
           </RouterLink>
           <RouterLink
             class="nav-link text-bold"
             to="/incomes"
           >
-            Incomes
+            <MoneyIcon />Incomes
           </RouterLink>
           <RouterLink
             class="nav-link text-bold"
             to="/expenses"
           >
-            Expenses
+            <BillingIcon />Expenses
           </RouterLink>
           <RouterLink
             v-if="auth.authenticated"
             class="nav-link text-bold"
             to="/settings"
           >
-            Settings
+            <CogIcon />Settings
           </RouterLink>
 
           <div class="divider" />
@@ -264,6 +265,16 @@ header .brand {
   color: var(--foreground-nav);
   background-color: var(--background-tertiary);
   text-decoration: underline;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  span {
+    margin-right: 0.5rem;
+  }
 }
 
 .theme-button {

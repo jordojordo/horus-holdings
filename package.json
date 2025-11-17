@@ -1,7 +1,7 @@
 {
   "name": "horus-monorepo",
   "private": true,
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.22.0",
   "scripts": {
     "build": "pnpm -r build",
     "deps:check": "pnpm list -r",
@@ -11,12 +11,12 @@
     "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "@eslint/js": "^9.38.0",
+    "@eslint/js": "^9.39.1",
     "@stylistic/eslint-plugin": "^5.5.0",
     "@vue/eslint-config-typescript": "^14.6.0",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.1",
     "eslint-plugin-vue": "~10.5.1",
-    "globals": "^16.4.0",
-    "typescript-eslint": "^8.46.2"
+    "globals": "^16.5.0",
+    "typescript-eslint": "^8.46.4"
   }
 }
