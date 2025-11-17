@@ -15,13 +15,6 @@ export default defineConfig({
     'process.env.development': JSON.stringify('development'),
     'process.env.production':  JSON.stringify('production'),
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern'
-      },
-    },
-  },
   build: {
     commonjsOptions: {
       include: [
