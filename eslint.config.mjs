@@ -33,7 +33,6 @@ export default [
     files: ['server/**/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: ['./server/tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
       },
       globals: { ...globals.node },
@@ -59,7 +58,6 @@ export default [
           parser: tseslint.parser,
           projectService: true,
           tsconfigRootDir: import.meta.dirname,
-          project: ['./ui/tsconfig.eslint.json'],
           extraFileExtensions: ['.vue'],
         },
         globals: { ...globals.browser },
