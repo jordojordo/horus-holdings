@@ -14,7 +14,6 @@ import {
   ProfileIcon,
 } from '@kong/icons';
 import AppShell from '@/components/AppShell.vue';
-import ToggleTheme from '@/components/ToggleTheme.vue';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -109,10 +108,6 @@ async function handleLogout() {
           Horus Holdings
         </span>
       </div>
-    </template>
-
-    <template #sidebar-footer>
-      <ToggleTheme />
     </template>
 
     <template #header-right>
