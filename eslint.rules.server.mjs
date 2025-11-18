@@ -50,8 +50,9 @@ export default {
     singleline: { delimiter: 'semi', requireLast: false },
   }],
   '@stylistic/type-annotation-spacing': ['warn', {
-    before: false, after: true, overrides: { arrow: { before: true, after: true } }
+    before: false, after: true
   }],
+  '@stylistic/arrow-spacing': ['warn', { before: true, after: true }],
 
   'no-cond-assign': ['warn', 'except-parens'],
 

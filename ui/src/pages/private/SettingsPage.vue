@@ -6,6 +6,8 @@ import { useAuthStore } from '@/stores/auth';
 import { useThemeStore } from '@/stores/theme';
 import { useToaster } from '@/composables';
 
+import ToggleTheme from '@/components/ToggleTheme.vue';
+
 const router = useRouter();
 const {
   isLoading, user, fetchUser, updateProfile, deleteUser
@@ -108,8 +110,15 @@ const handleDelete = async() => {
     </div>
     <div
       v-else
-      class="settings-form"
+      class="settings-form mt-10"
     >
+      <KLabel>
+        Theme
+      </KLabel>
+      <ToggleTheme />
+
+      <div class="divider" />
+
       <KInput
         v-model="username"
         type="string"

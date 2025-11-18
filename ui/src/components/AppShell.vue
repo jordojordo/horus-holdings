@@ -29,8 +29,8 @@ const slots = useSlots();
 const route = useRoute();
 
 const mobileSidebarOpen = ref(false);
+const sidebarCollapsed = ref(false);
 
-// const hasSidebarTopSlot = computed(() => !!slots['sidebar-top']);
 const hasSidebarBottomSlot = computed(() => !!slots['sidebar-bottom']);
 const hasSidebarHeaderSlot = computed(() => !!slots['sidebar-header']);
 const hasSidebarFooterSlot = computed(() => !!slots['sidebar-footer']);
@@ -43,6 +43,10 @@ function closeSidebar() {
 
 function toggleSidebar() {
   mobileSidebarOpen.value = !mobileSidebarOpen.value;
+}
+
+function toggleCollapse() {
+  sidebarCollapsed.value = !sidebarCollapsed.value;
 }
 
 // Close mobile sidebar on route change
@@ -70,6 +74,7 @@ watch(
       class="shell__sidebar"
       :class="{
         'sidebar-open': mobileSidebarOpen,
+        'sidebar-collapsed': sidebarCollapsed,
       }"
     >
       <div class="shell__sidebar-inner">
@@ -77,8 +82,21 @@ watch(
         <header
           v-if="hasSidebarHeaderSlot"
           class="shell__sidebar-header"
+          :class="{
+            'sidebar-collapsed': sidebarCollapsed,
+          }"
         >
-          <slot name="sidebar-header" />
+          <div class="shell__sidebar-header-content">
+            <slot name="sidebar-header" />
+          </div>
+          <button
+            type="button"
+            class="shell__collapse-toggle"
+            :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+            @click="toggleCollapse"
+          >
+            <MenuIcon />
+          </button>
         </header>
 
         <!-- Sidebar top navigation -->
@@ -93,6 +111,7 @@ watch(
                 <RouterLink
                   :to="item.to"
                   class="shell__sidebar-link"
+                  :title="sidebarCollapsed ? item.label : undefined"
                 >
                   <component
                     :is="item.icon"
@@ -129,6 +148,7 @@ watch(
                 <RouterLink
                   :to="item.to"
                   class="shell__sidebar-link"
+                  :title="sidebarCollapsed ? item.label : undefined"
                 >
                   <component
                     :is="item.icon"
@@ -198,6 +218,11 @@ watch(
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  transition: grid-template-columns 0.3s ease;
+
+  &:has(.shell__sidebar.sidebar-collapsed) {
+    grid-template-columns: 70px minmax(0, 1fr);
+  }
 
   /* Overlay for mobile sidebar */
   &__overlay {
@@ -214,9 +239,15 @@ watch(
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 1rem;
     box-sizing: border-box;
     z-index: 20;
+    transition: padding 0.3s ease;
+
+    &.sidebar-collapsed {
+      padding: 1rem 0.5rem;
+    }
   }
 
   &__sidebar-inner {
@@ -228,14 +259,62 @@ watch(
   &__sidebar-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
     margin-bottom: 1rem;
+    transition: justify-content 0.3s ease;
+
+    .sidebar-collapsed & {
+      justify-content: center;
+    }
+  }
+
+  &__sidebar-header-content {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    transition: display 0.2s ease;
+
+    .sidebar-collapsed & {
+      display: none;
+      pointer-events: none;
+    }
+  }
+
+  &__collapse-toggle {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--foreground-primary);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.3s ease;
+
+    &:hover {
+      background-color: var(--background-tertiary);
+    }
+
+    .sidebar-collapsed & {
+      transform: rotate(90deg);
+    }
   }
 
   &__sidebar-footer {
     position: absolute;
     bottom: 1rem;
     width: calc(260px - 2rem);
+    transition: width 0.3s ease, opacity 0.2s ease;
+
+    .sidebar-collapsed & {
+      width: calc(70px - 1rem);
+      opacity: 0.8;
+    }
   }
 
   &__sidebar-section {
@@ -262,6 +341,11 @@ watch(
     margin: var(--ui-space-80, 24px) auto;
     min-height: 1px;
     width: calc(100% - 32px);
+    transition: width 0.3s ease;
+
+    .sidebar-collapsed & {
+      width: calc(100% - 8px);
+    }
   }
 
   &__sidebar-list {
@@ -282,8 +366,15 @@ watch(
     border-radius: 0.5rem;
     color: var(--foreground-primary);
     text-decoration: none;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, gap 0.3s ease;
     cursor: pointer;
+    position: relative;
+
+    .sidebar-collapsed & {
+      gap: 0;
+      justify-content: center;
+      padding: 0.5rem;
+    }
   }
 
   &__sidebar-link-icon {
@@ -292,6 +383,15 @@ watch(
 
   &__sidebar-link-label {
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.2s ease;
+
+    .sidebar-collapsed & {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
   }
 
   /* router-link-active comes from vue-router */
@@ -304,6 +404,10 @@ watch(
     background-color: var(--background-tertiary);
     color: var(--foreground-nav);
     text-decoration: underline;
+
+    .sidebar-collapsed & {
+      text-decoration: none;
+    }
   }
 
   &__main {
@@ -388,6 +492,11 @@ watch(
       transform: translateX(-100%);
       transition: transform 0.2s ease-out;
       box-shadow: 0 0 24px rgba(0, 0, 0, 0.4);
+
+      /* Disable collapse functionality on mobile */
+      &.sidebar-collapsed {
+        padding: 1rem;
+      }
     }
 
     &__sidebar.sidebar-open {
@@ -400,6 +509,25 @@ watch(
 
     &__content {
       border-top-left-radius: 0;
+    }
+
+    &__collapse-toggle {
+      display: none;
+    }
+
+    &__sidebar-header-content {
+      .sidebar-collapsed & {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    &__sidebar-link-label {
+      .sidebar-collapsed & {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+      }
     }
   }
 }

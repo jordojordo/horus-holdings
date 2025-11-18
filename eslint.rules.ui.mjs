@@ -53,9 +53,6 @@ export default {
     multiline:  { delimiter: 'semi', requireLast: true },
     singleline: { delimiter: 'semi', requireLast: false },
   }],
-  '@stylistic/type-annotation-spacing': ['warn', {
-    before: false, after: true, overrides: { arrow: { before: true, after: true } }
-  }],
 
   'no-cond-assign': ['warn', 'except-parens'],
 };
