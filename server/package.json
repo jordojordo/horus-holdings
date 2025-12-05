@@ -18,15 +18,15 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "dotenv-flow": "^4.1.0",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "express-session": "^1.18.2",
-    "joi": "^18.0.1",
-    "jsonwebtoken": "^9.0.2",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
     "luxon": "^3.7.2",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "redis": "^5.9.0",
+    "redis": "^5.10.0",
     "rrule": "^2.8.1",
     "socket.io": "^4.8.1",
     "uuid": "^13.0.0",
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
+    "@types/express": "^5.0.6",
     "@types/express-session": "^1.18.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/luxon": "^3.7.1",
@@ -44,7 +44,7 @@
     "@types/passport-local": "^1.0.38",
     "nodemon": "^3.1.11",
     "tsc-alias": "^1.8.16",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
